@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>On the origin of computational complexity</title>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>On the origin of computational complexity</h1>
+    </header>
+    <article>
+      <h2>My field is &#8220;Informatics&#8221;</h2>
+      <p>I usually tell people I&#8217;m a programmer, but that describes my job, not my field. The thing I studied for at uni is &#8220;computer science&#8221;,
+        or &#8220;informatics&#8221; as I like to call it. It is a field of science, and is not to be confused with the field of technology called
+        &#8220;programming&#8221; or &#8220;software engineering&#8221;, or indeed also &#8220;computer science&#8221;. The language in which informatics was
+        taught to me includes such constructs as the Turing machine, formal grammars, finite state machines, graphs, and expressions. In a way, this language
+        influences how we understand the topics we study. So even though people may say it&#8217;s useless to say the same thing in a different language than
+        the one it&#8217;s already been said in, I think it deepens our understanding of a subject if we describe it in different words. So this blogpost
+        describes informatics in my words.</p>
+
+      <h2>The basis: Booleans</h2>
+      <p>Booleans are variables that maybe true or false. They are an important building block of everything else in informatics. When we talk about information
+        in informatics we usually assume that this information is represented as a string of 0s and 1s. It is possible to represent information using more than
+        two digits or letters, but Shannon&#8217;s Theory of Information explains that information can always be translated into a stream of 0s and 1s, so for
+        simplicity&#8217;s sake, we usually assume we deal with Boolean (or &#8216;binary&#8217;) variables. A valuation of variables &#8220;p, q, &#8230;&#8221;
+        can be any sequence of 0s and 1s that has one digit per variable. For instance:</p>
+      <p>p q r</p>
+      <p>0&#160;1 0</p>
+      <p>A truth table can describe a function, so it is more powerful: it assigns a 0 or a 1 to each possible valuation, for instance:</p>
+      <p>p q r value</p>
+      <p>0&#160;0 0&#160;1</p>
+      <p>0&#160;0 1&#160;0</p>
+      <p>0&#160;1 0&#160;1</p>
+      <p>0&#160;1 1&#160;0</p>
+      <p>1&#160;0 0&#160;0</p>
+      <p>1&#160;0 1&#160;0</p>
+      <p>1&#160;1 0&#160;1</p>
+      <p>1&#160;1 1&#160;1</p>
+      
+      <h2>Rewriting expressions</h2>
+      <p>A state of knowledge about a list of such Boolean variables can be written as a stream of 0s and 1s, but to give a better insight into the interrelation
+        of the variables,
+        and also because it&#8217;s often shorter, we often use Boolean expressions. These consist of variable names &#8220;p, q, &#8230;&#8221; and operators
+        &#8220;NOT(&#8230;)&#8221;, &#8220;(&#8230; AND &#8230;)&#8221; and &#8220;(&#8230; OR &#8230;)&#8221;. Here are some examples of expressions that are
+        equivalent to the
+        truth table mentioned earlier:</p>
+      <p>((p AND q) OR (NOT(p) AND NOT(r)))</p>
+      <p>(NOT((p OR r) AND (NOT(p AND q))))</p>
+      <p>As you can see in this example already, one truth table can be equivalent to several different expressions. These expressions are interpreted by us humans
+        to mean
+        &#8216;AND&#8217;, &#8216;NOT&#8217; and &#8216;OR&#8217; in their real-world meanings, but the
+        way they are defined in informatics is only behavioural. They are defined
+        in terms of how the resulting expression corresponds to a truth table. Mathematicians will tell you that this is
+        on purpose; the system of expressions is defined as a
+        mathematical abstraction, not in relation to real-world phenomena which we map it onto.</p>
+      <p>When computer programs run, or we make logical deductions using pencil and paper, no information is added during the process. Information might be removed,
+        when some of
+        the information that the process started with is forgotten or thrown away halfway through, but that is optional. The information is only being reorganized.
+        So reasoning,
+        the running of computer programs, is rewriting expressions. In fact, 3-SAT, one of the most famous computation tasks in informatics, can be solved by
+        rewriting an expression from Product-of-Sums form &#8220;(a OR b OR c) AND (d OR e OR f) AND &#8230;&#8221; to Sum-of-Products form &#8220;(a AND b AND c)
+        OR (d AND e AND f) OR &#8230;&#8221;. Running an algorithm (or reasoning about Boolean information) is a process in time: it is a process of abstract
+        represented states through time, that has its counterpart in the physical world, of a machine changing its physical status through time.</p>
+      <p>This is why I don&#8217;t feel this rewriting of Boolean expressions is a good way to model reasoning. It does not take advantage of the fact that on the
+        one hand AND, OR and NOT have a meaning in our real world, and on the other hand so does time, and duration. Maybe it is because of abstracting so much from
+        these real-world phenomena, that we still haven&#8217;t been able to prove what is arguably the central point of informatics: that &#8216;hard&#8217;
+        algorithmic tasks (problems that are in NP but not in P), exist. In other words, we haven&#8217;t been able to formalize properly that logical processes
+        fundamentally take time.</p>
+      <p>We just observe that computation takes time, but leave the question of why this is so to philosophers. I like philosophy. In fact, I think the philosophical
+        implications of informatics are even more fascinating than the technological ones. Informatics is at the stage where biology was before Darwin: biologists
+        were studying species, but not their origin. In informatics, we are studying computational complexity, but we do not study its origin. Hence the title of
+        this blogpost. :)</p>
+      
+      <h2>Causality</h2>
+      <p>In the real world, we are familiar with causality: the future is partially unpredictable, meaning there are several candidate outcomes for the future,
+        when viewed from the present.  In quantum physics such uncertainty is sometimes called superposition, but we know it also as the logical &#8216;OR&#8217;
+        operator (real semantic &#8216;OR&#8217; this time, not the syntactical &#8216;OR&#8217; from Boolean expressions).</p>
+      <p>Causality is the relationship between cause and effect. It describes how causes in the relative past interrelate with effects in the relative future.
+        Memory (retaining information from the past) is part of the same relationship between past and present as causality.</p>
+      <p>Unlike the future, the past can be remembered, meaning information accumulates. Knowing several things at the same time is what we know as the
+        semantic &#8216;AND&#8217; operator. Accumulating multiple bits of information this way is exactly what an algorithm does when it &#8216;runs&#8217;.
+        It converts &#8216;OR&#8217; information (future) into &#8216;AND&#8217; information (past). Moving the present forward into the future, while putting
+        the past behind you, is what we know as the passing of time. Although not everybody realises this, and many people will give a more mundane definition
+        of informatics, this is what informatics is about - at least for me. It studies this fascinating relationship between information and time.</p>
+      
+      <h2>Knowledge items</h2>
+      <p>To express the fact that we are accumulating knowledge, we need to interpret the syntactical &#8216;AND&#8217; operator from our Boolean expressions as the
+        semantic &#8216;AND&#8217; of causality/memory. This means the entries in a truth table should be treated as collectable items. I call them knowledge items.
+        You can collect them, and they add up to your knowledge. You can throw them away if you don&#8217;t need them anymore. This is exactly what an algorithm will
+        generally attempt to do when it is rewriting expressions: accumulate useful knowledge items, which are arguments of the expression&#8217;s outer &#8216;AND&#8217;
+        operator.</p>
+      <p>At the same time, an algorithm will attempt to resolve uncertainty by resolving &#8216;OR&#8217; terms. Note that the total information state does not change.
+        The algorithm&#8217;s knowledge about the thing it&#8217;s modeling (the problem instance) does not change during the process. So in a way, when you give a
+        problem instance to a reasoning machine, you could say the machine already &#8216;knows&#8217; the answer when it starts. It does not receive any further
+        information from the outside during the reasoning process. It is only rewriting the information into a format that, as time advances, has more ANDs and
+        less ORs.</p>
+      <p>In a truth table, the zeroes are the knowledge points. This is because when you combine two truth tables with the &#8216;AND&#8217; operator, the resulting
+        truth table is found by putting a zero wherever there was one in at least one of the earlier truth tables. The ones are irrelevant in this process, look:</p>
+      <p>p q r a b a AND b</p>
+      <p>0&#160;0 0&#160;1 1&#160;1</p>
+      <p>0&#160;0 1&#160;<strong>0</strong> 1&#160;<strong>0</strong></p>
+      <p>0&#160;1 0&#160;1 1&#160;1</p>
+      <p>0&#160;1 1&#160;<strong>0</strong> 1&#160;<strong>0</strong></p>
+      <p>1&#160;0 0&#160;1&#160;<strong>0&#160;0</strong></p>
+      <p>1&#160;0 1&#160;1&#160;<strong>0&#160;0</strong></p>
+      <p>1&#160;1 0&#160;1 1&#160;1</p>
+      <p>1&#160;1 1&#160;1 1&#160;1</p>
+      <p>So the zeroes in a truth table are the knowledge items we collect as time progresses.</p>
+      
+      <h2>Non-deterministic deduction</h2>
+      <p>A logical deduction is a linear sequence of collections of knowledge items. At each step, new knowledge items can be formed from ones that are already in the
+        collection, using for instance the &#8216;AND&#8217; operator as shown in the last example. The choice of
+        which knowledge items to combine next, is not part of this
+        process. The deduction is an exact path - a proof, not an algorithm. The class of NP problems are problems
+        whose instances are solved by such proofs, such that the
+        number of steps in the proof is polynomial in the length of the description of the problem instance. Polynomial
+        means that the way the length of the shortest proof
+        increases, is bounded above by a function that is a polynomial function of the length of the description of
+        the problem instance. For instance if the length of the
+        proof is never greater than the number of bytes in the problem instance description, to the power of 7,
+        then we say the problem&#8217;s non-deterministic computational
+        complexity is O(n^7).</p>
+      <p>But non-deterministic algorithms are pretty useless to engineers. they don&#8217;t tell you which recipe to follow
+        to arrive from question to answer. They are only the
+        proofs of logical deductions, not the reasoning processes that lead to obtaining these proofs.</p>
+      
+      <h2>Deterministic tree traversal</h2>
+      <p>To obtain a proof, one option is depth-first tree traversal: simply try out all possible proofs until you find one that answers the question you wanted to answer. But
+        usually, algorithms will use a combination of trying out options (elements of an &#8216;OR&#8217; operator in the logical expression that we are rewriting), and
+        heuristics: strategies that are a function from the current collection of knowledge items, to a choice of which step to take next.
+        These heuristics are what we express
+        in computer programs.</p>
+      <p>Since usually the expression we are rewriting contains a lot of &#8216;OR&#8217; operators, and there is no way to try out all possible options without
+        &#8216;visiting&#8217; them, deterministic algorithms often take exponential time
+        in the length of the description of the problem instance. Exponential functions grow
+        a lot faster than polynomial functions, which is why even on fast computers, some computations can take seconds,
+        or hours, or years, depending on how big the logical
+        expression is that the computation rewrites.</p>
+      
+      <h2>The relation between time and logic</h2>
+      <p>Nobody in informatics has so far been able to prove that solving problems like 3-SAT is fundamentally impossible to do in polynomial time. It will be up to the
+        smart theorists to keep trying to come up with a demonstration that P is not NP. This is one of the reasons informatics is not always recognized as a
+        &#8216;science&#8217; that studies phenomena like information and time in a semantic way. Instead, our field is often categorized a mere result of mathematics
+        rather than a science that studies something: just modeling, in a syntactical way without interpreting the results as part of our real-world surroundings.</p>
+      <p>That&#8217;s why I hope that with this blogpost I&#8217;ve been able to share some of my fascination for my field of science. We are Informatics. We study
+        the relation between time and logic.</p>  
+    </article>
+    <footer>CC-BY Michiel de Jong, January 2012.</footer>
+  </body>
+</html>

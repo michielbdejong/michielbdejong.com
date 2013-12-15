@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Software freedom on the web</title>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Software freedom on the web</h1>
+    </header>
+    <article>
+      <p>Today is the 10th birthday of the Free Software Foundation Europe. If you think back to what software looked like ten years ago, in 2001, things were a
+        lot different than they are now. There was no hosted software. The term &#8216;Software-as-a-Service&#8217; was only 2 months old when FSFE was founded.
+        At the time, the big battles were (if I remember correctly), Linux against Windows, Firefox (then still called Mozilla) against Internet Explorer, and
+        LibreOffice (then still called OpenOffice) against Microsoft Office. Google docs, gmail, youtube, facebook and twitter did not exist yet. Even though the
+        internet was already ubiquitous, and the web had existed for a few years as a web of information, software was still something you installed, either on
+        your desktop computer, or on a server.</p>
+      <p>Ten years later, most newly published software is now hosted as web apps - possibly with native clients to improve the experience on smart phones. Google
+        is even releasing a laptop that has nothing but a browser on it. And unlike the installed software we used ten years ago, hosted software is never free
+        software, with wikipedia as an all-too-lonely exception. As software has moved from installed to hosted, the running costs that come with hosted software
+        have pushed free software out of the playing field. Even though the struggle for software freedom on the desktop and on the server continues, there is a
+        very important struggle ahead of us, for bringing software freedom to the web.</p>
+      <p>The reason I started the Unhosted project last September, was the lack of software freedom on the web. Now that the unhosted web exists, I can look back
+        and see that we more or less achieved two improvements over web 2.0, that may help us to increase software freedom on the web. First, the domain hosting
+        an unhosted web app only hosts source code, and no dynamic data or processes. This reduces the running costs to a fraction of what they were. So on the
+        unhosted web it&#8217;s more feasible to publish web apps as public domain software.</p>
+      <p>And second, since the unhosted project decentralizes processing to each user&#8217;s browser, it makes it more feasible for each person to patch and fork
+        a web app, and run a different revision of it in their own browser than other people. You have to take care to keep compatibility, but at least the user
+        has control over it. If you run all processes on one centralized server farm, you probably run just one version of the web app on there.</p>
+      <p>When I published version 0.1 of Unhosted, back in December, I was quite satisfied with these two achievements, and announced that there would be software
+        freedom on the unhosted web. I was wrong about that, though.</p>
+      <p>In a personal email discussion, Richard Stallman pointed out to me why Unhosted is not good enough. Because if you visit an unhosted web app in the browser,
+        you always receive the same version of it. You can only change the application&#8217;s source code if you make a copy of it, and run that copy instead of
+        the original version. If we want software freedom to exist on the web, we need to make the process of fetching a web app from the server to the browser more
+        controllable.</p>
+      <p>One option would be what I call &#8220;gitnode&#8221;: the combination of git and node.js. This would basically be one server that acts as a git instance
+        and a node.js instance at the same time, depending on through which interface and protocol you approach it. The essential part here is that the documents are
+        the same, whether you run them as node.js programs, or clone them as git repositories.</p>
+      <p>Another option for this would be to use a platform that already combines the repository server and the application server into one: CouchApp. If you happen
+        to know that an application you&#8217;re viewing is a CouchApp, and you run CouchDB locally, then you can tell your local instance to replicate it, and view
+        the app locally. You can then alter the application on your local CouchDB instance, so you have achieved software freedom. Right now, this is already possible,
+        but it&#8217;s about 5 clicks. You need to go to the admin interface of your local couch instance, select replicate, click OK, etcetera.</p>
+      <p>My idea to improve this would be to create a special, recognizable button that people can integrate into their CouchApp, and that does all of this in one
+        click. It tries to detect if you have couch running on the standard port on localhost, and if not, it offers to download CouchDB and install it first. If
+        CouchDB is already installed, then you can skip this step. The next step would be opening up a special &#8216;allow&#8217; dialogue, served by your local
+        CouchDB server&#8217;s admin interface, where you authorize the installation of the couch app. After this, you&#8217;re automatically redirected to the app,
+        on your local couch instance.</p>
+      <p>The button could be a special, recognizable &#8216;View From Your Couch&#8217; button. Especially if CouchDB were an integrated part of the browser, this
+        would truely change the way we consume web applications, and it would bring software freedom back into the game.</p>      
+    </article>
+    <footer>CC-BY Michiel de Jong, March 2011.</footer> 
+  </body>
+</html>
