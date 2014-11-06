@@ -54,18 +54,23 @@
 
       //this is called each time a batch completes:
       function batchDone() {
+        console.log('completed batch of ' + Object.keys(batchRunning).length);
         //call all callbacks of batch that just completed:
         for (var key in batchRunning) {
           setTimeout(batchRunning[key].callback, 0);
         }
-        //start a new batch:
         batchRunning = batchQueued;
         batchQueued = {};
-        var key, thisBatch = {};
-        for (var key in batchRunning) {
-          thisBatch[key] = batchRunning[key].value;
+        if (Object.keys(batchRunning).length > 0) {
+          //start a new batch:
+          var key, thisBatch = {};
+          for (var key in batchRunning) {
+           thisBatch[key] = batchRunning[key].value;
+          }
+          setItemsDirect(thisBatch, batchDone);
+        } else {
+          console.log('commit cache flushed');
         }
-        setItemsDirect(thisBatch, batchDone);
       }
       return {
         getItem: function(key, callback) {
@@ -79,7 +84,7 @@
         },
         setItem: function(key, value, callback) {
           if (Object.keys(batchRunning).length === 0) {
-            //first setItem after being idle;
+            console.log('commit cache - first setItem after being idle');;
             //queue our item and pretend we just completed an empty batch:
             batchQueued[key] = {
               value: value,
@@ -151,12 +156,11 @@
            useCommitCache = false;
            doBatch(100, function() {
              useCommitCache = true;
-             doBatch(100, function() {
+             doBatch(1000, function() {
                useCommitCache = false;
-               doBatch(100, function() {
-                 console.log('You see? On my machine, a commit cache makes IndexedDB at least 50% faster.');
-                 console.log('What I don\'t understand is why without commit cache gets slower when you repeat.');
-                 console.log('Maybe I did something wrong in the test code - feel free to view source and fork this page.');
+               doBatch(1000, function() {
+                 console.log('You see? On my machine, a commit cache makes IndexedDB at least 10x faster.');
+                 console.log('Feel free to view source and fork this page.');
                  console.log('Anyway, I think we should add one to https://github.com/mozilla/localForage! :)');
                  console.log('Run "indexedDB.deleteDatabase(\'test\');" to reset.');
                });
