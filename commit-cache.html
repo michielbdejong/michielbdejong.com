@@ -1,0 +1,166 @@
+<html>
+  <head> <meta charset="utf-8"> </head>
+  <body> See the console. </body>
+  <script>
+    //minimal wrapper around IndexedDB's over-complicated API,
+    //copied freely from http://www.html5rocks.com/en/tutorials/indexeddb/todo/
+    var db;
+
+    function onerror(e) {
+      console.log('error!', e);
+    };
+
+    function openDb(callback) {
+      var request;
+
+      db = null;
+      request = indexedDB.open('test', 1);
+
+      request.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        e.target.transaction.onerror = onerror;
+        if (db.objectStoreNames.contains('test')) {
+          db.deleteObjectStore('test');
+        }
+        db.createObjectStore('test', { keyPath: 'key' });
+      };
+
+      request.onsuccess = function(e) {
+        db = e.target.result;
+        callback();
+      };
+      request.onerror = onerror;
+    }
+
+    //function to store a bunch of items in one transaction:
+    function setItemsDirect(items, callback) {
+      var trans = db.transaction(['test'], 'readwrite');
+      var store = trans.objectStore('test');
+      for (var key in items) {
+        store.put({
+          key: key,
+          value: items[key]
+        });
+      }
+      trans.oncomplete = function(e) {
+        callback();
+      };
+      trans.onerror = onerror;
+    }
+
+    //commitCache mechanism: 
+    var commitCache = (function() {
+      var batchRunning = {}, batchQueued = {};
+
+      //this is called each time a batch completes:
+      function batchDone() {
+        var key, thisBatch = {};
+        for (var key in batchRunning) {
+          setTimeout(batchRunning[key].callback, 0);
+        }
+        batchRunning = batchQueued;
+        batchQueued = {};
+        for (var key in batchRunning) {
+          thisBatch[key] = batchRunning[key].value;
+        }
+        setItemsDirect(thisBatch, batchDone);
+      }
+      return {
+        getItem: function(key, callback) {
+          if (batchQueued[key]) {
+            callback(batchQueued[key].value);
+          } else if (batchRunning[key]) {
+            callback(batchRunning[key].value);
+          } else {
+            localForage.getItem(key, callback);
+          }
+        },
+        setItem: function(key, value, callback) {
+          if (Object.keys(batchRunning).length === 0) {
+            //first setItem after being idle;
+            //queue our item and pretend we just completed an empty batch:
+            batchQueued[key] = {
+              value: value,
+              callback: callback
+            };
+            batchDone();
+          } else {
+            if (batchQueued[key]) {
+              // consider the write we're about to overwrite as done:
+              batchQueued[key].callback();
+            }
+            batchQueued[key] = {
+              value: value,
+              callback: callback
+            };
+          }
+        }
+      }; 
+    })();
+
+    //switcher:
+    function setItem(key, value, callback) {
+      if (useCommitCache) {
+        commitCache.setItem(key, value, callback);
+      } else {
+        var items = {};
+        items[key] = value;
+        setItemsDirect(items, callback);
+      }
+    }
+
+    //running the tests:
+    var numDone, numToDo, startTime, useCommitCache, batchCallback;
+  
+    function doOne() {
+      var prefix = (useCommitCache ? 'with-' : 'without-');
+      setItem(prefix + numDone, 'value-' + numDone, function() {
+        numDone++;
+        if (numDone < numToDo) {
+          setTimeout(doOne, 0);
+        } else {
+          console.log('Did ' + numDone + ' in '
+              + ((new Date().getTime() - startTime)/1000)
+              + ' seconds.');
+          batchCallback();
+        }
+      });
+    }
+  
+    function doBatch(batchSize, callback) {
+      batchCallback = callback;
+      numDone = 0;
+      numToDo = batchSize;
+      console.log('starting ' + numToDo
+          + (useCommitCache ? ' with ' : ' without ')
+          + 'commit cache (this may take up to one minute).');
+      startTime = new Date().getTime();
+      doOne(useCommitCache);
+    }
+  
+    //...
+    openDb(function() {
+     useCommitCache = true;
+     doBatch(100, function() {
+       useCommitCache = false;
+       doBatch(100, function() {
+         useCommitCache = true;
+         doBatch(100, function() {
+           useCommitCache = false;
+           doBatch(100, function() {
+             useCommitCache = true;
+             doBatch(100, function() {
+               useCommitCache = false;
+               doBatch(100, function() {
+                 console.log('You see? On my machine, a commit cache makes IndexedDB at least 50% faster.');
+                 console.log('We should add one to https://github.com/mozilla/localForage! :)');
+                 console.log('Run "indexedDB.deleteDatabase(\'test\');" to reset.');
+               });
+             });
+            });
+          });
+        });
+      });
+    });
+  </script>
+</html>
