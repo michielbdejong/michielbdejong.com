@@ -153,7 +153,9 @@
                useCommitCache = false;
                doBatch(100, function() {
                  console.log('You see? On my machine, a commit cache makes IndexedDB at least 50% faster.');
-                 console.log('We should add one to https://github.com/mozilla/localForage! :)');
+                 console.log('What I don\'t understand is why without commit cache gets slower when you repeat.');
+                 console.log('Maybe I did something wrong in the test code - feel free to view source and fork this page.');
+                 console.log('Anyway, I think we should add one to https://github.com/mozilla/localForage! :)');
                  console.log('Run "indexedDB.deleteDatabase(\'test\');" to reset.');
                });
              });
