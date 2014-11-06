@@ -54,12 +54,14 @@
 
       //this is called each time a batch completes:
       function batchDone() {
-        var key, thisBatch = {};
+        //call all callbacks of batch that just completed:
         for (var key in batchRunning) {
           setTimeout(batchRunning[key].callback, 0);
         }
+        //start a new batch:
         batchRunning = batchQueued;
         batchQueued = {};
+        var key, thisBatch = {};
         for (var key in batchRunning) {
           thisBatch[key] = batchRunning[key].value;
         }
@@ -72,7 +74,7 @@
           } else if (batchRunning[key]) {
             callback(batchRunning[key].value);
           } else {
-            localForage.getItem(key, callback);
+            //getItemDirect(key, callback);
           }
         },
         setItem: function(key, value, callback) {
@@ -98,7 +100,7 @@
       }; 
     })();
 
-    //switcher:
+    //switch between using commit cache or not:
     function setItem(key, value, callback) {
       if (useCommitCache) {
         commitCache.setItem(key, value, callback);
@@ -112,13 +114,11 @@
     //running the tests:
     var numDone, numToDo, startTime, useCommitCache, batchCallback;
   
-    function doOne() {
+    function doOne(i) {
       var prefix = (useCommitCache ? 'with-' : 'without-');
-      setItem(prefix + numDone, 'value-' + numDone, function() {
+      setItem(prefix + i, 'value-' + i, function() {
         numDone++;
-        if (numDone < numToDo) {
-          setTimeout(doOne, 0);
-        } else {
+        if (numDone === numToDo) {
           console.log('Did ' + numDone + ' in '
               + ((new Date().getTime() - startTime)/1000)
               + ' seconds.');
@@ -135,7 +135,9 @@
           + (useCommitCache ? ' with ' : ' without ')
           + 'commit cache (this may take up to one minute).');
       startTime = new Date().getTime();
-      doOne(useCommitCache);
+      for (var i=0; i < batchSize; i++) {
+        doOne(i);
+      }
     }
   
     //...
