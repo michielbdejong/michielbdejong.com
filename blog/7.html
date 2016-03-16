@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Four simple tips for web page providers</title>
-    <link rel="author" href="https://michielbdejong.com/" />
+    <link rel="author" href="http://michielbdejong.com/" />
     <meta charset="utf-8">
     <style>
       body { background-color: #A3DDDF }
@@ -12,7 +12,6 @@
     </style>
   </head>
   <body>
-    <link rel="webmention" href="https://michielbdejong.com:7678/" />
     <header>
       <h1>Four simple tips for web page providers</h1>
     </header>
@@ -40,7 +39,7 @@
 <p>OK, so that's a problem. Six protocols for linkback? And it will only work if both hosts offer the same one? That would mean as many as 83% of all linkback requests might fail due to incompatibility of the emitting host with the receiving host. How can we solve that?</p>
 <p>We can try to invent a sort of <a href="http://xkcd.com/927/">universal standard</a>, in the same way <a href="https://en.wikipedia.org/wiki/Esperanto">Esperanto</a> tries to allow people from all nations to communicate with each other. But this would be unlikely to succeed for organizational reasons. And there is a simpler option: make each server support all six linkback protocols, plus any new ones that might pop up.</p>
 <p>If your server speaks all linkback protocols, then even if the other server supports only one of them, the communication will be successful. This works both if you are the emitter and if you are the receiver.</p>
-<p>To make hyperlinks more meaningful, we can use the 'rel' attribute. For instance, my blog post may have a link with rel="author", indicating that it was written by <a rel="author" href="https://michielbdejong.com/">me</a>. A useful link relation for blog posts that are a reply to another blog post is "in-reply-to".</p>
+<p>To make hyperlinks more meaningful, we can use the 'rel' attribute. For instance, my blog post may have a link with rel="author", indicating that it was written by <a rel="author" href="http://michielbdejong.com/">me</a>. A useful link relation for blog posts that are a reply to another blog post is "in-reply-to".</p>
 <p>In rdf, the predicate fulfills this role, for instance 'foaf:knows'. In an ActivityStreams document, each field indicates a relationship, for instance 'actor'. When your server receives a linkback notification for a URI, it can look up in which relation the URI was linked to, and display the hyperlink back to it in a corresponding way.</p>
 <p>Using polyglot rel-aware linkback, adding pages into a specific conversation, chess game, or photo tag list becomes possible on the web.</p>
 <h3>Decentralized search</h3>
