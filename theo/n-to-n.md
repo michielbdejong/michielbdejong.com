@@ -54,7 +54,7 @@ For `n=2`, there are `(2^2)!=24`:
 
 Since each function `F` can be interpreted as a permutation, it has a dual `D`, such that `D(F(A))=A`. Some functions are their own dual.
 Also, there is also a cycle length `c` such that applying `F` for `c` times in a row will be equivalent to the identity operation. For functions
-that are their own dual, `c=1`, and for functions that are their dual's dual, `c=2`. This corresponds to the cycle-type of the permutation to which
+that are their own dual, `c=1`. This corresponds to the cycle-type of the permutation to which
 the function is equivalent. For `n=1` variables, both functions have `c=1`. For `n=2`, there are 10 with `c=1` and 14 with `c=2`.
 
 We can also look at the number of input variables each output variable depends on. For instance, the output `NOT(A)` depends on only one input
@@ -74,7 +74,7 @@ It's easy to understand the information-preserving quality of `f(A, B) = (A, A X
 by first noting that `A` is preserved entirely, and *given `A`*, you can derive `B` from `A XOR B`. So although the second output does not contain
 all of `B`, in combination with (or relative to) the first output `A`, it does contain the full bit of information about `B`.
 
-There are no 2-to-2 full-bit functions where each output depends on each input; in other words, `XOR` cannot appear in the expression for both output bits. Some of them switch the position of the information from the output bits, for instance `f(A, B) = (B, A)` does this. If a function XORs one of the input bits and also switches the bits around, its dual will need to do the same. If it leaves on variable in place (possibly inverting it) and XORs the other, then its dual also shouldn't switch the bits around. Therefore, the number of inputs each output bit depends on, related to the same measure for the function's dual, looks as follows:
+There are no 2-to-2 full-bit functions where each output depends on each input; in other words, `XOR` cannot appear in the expression for both output bits. Some of them switch the position of the information from the input bits, for instance `f(A, B) = (B, A)` does this. If a function XORs one of the input bits and also switches the bits around, its dual will need to do the same. If it leaves on variable in place (possibly inverting it) and XORs the other, then its dual also shouldn't switch the bits around. Therefore, the number of inputs each output bit depends on, related to the same measure for the function's dual, looks as follows:
 
 * 6 functions XOR nothing and are their own dual (notation: '11-*')
 * 2 function (namely `(NOT(B), A)` and `(B, NOT(A)`) XOR nothing, and are each other's dual (notation: '11-11')
@@ -82,10 +82,10 @@ There are no 2-to-2 full-bit functions where each output depends on each input; 
 * 2 functions use XOR in the second output bit, and are each other's dual (notation:  '12-12')
 * 2 functions use XOR in the first output bit, and are their own dual (notation: '21-*')
 * 2 functions use XOR in the second output bit, and are their own dual (notation: '12-*')
-* 4 functions use XOR in the second output bit, yet their 4 duals do so in the first output bit (notation: '12-21')
-* 4 functions are the duals of those (notation '21-12')
+* 4 functions use XOR in the first output bit, yet their 4 duals do so in the first output bit (notation: '21-12')
+* 4 functions are the duals of those (notation '12-21')
 
-The faculty of an exponential function grows quickly: although there are just two 1-to-1 full-bit functions and 24 2-to-2 ones, for `n=3`, there are
+The number of n-to-n full-bit functions, `(2^n)!`, grows quickly: although there are just two 1-to-1 full-bit functions and 24 2-to-2 ones, for `n=3`, there are
 over 40,000. So I won't enumerate them. :)
 
 I did however look at the number of input bits each output bit depends on for each of these functions, and their duals:
@@ -117,7 +117,9 @@ I did however look at the number of input bits each output bit depends on for ea
     '332-*': 8, '332-233': 160, '332-323': 160, '332-332': 152, '332-333': 1440,
     '333-*': 408, '333-223': 192, '333-232': 192, '333-233': 1440, '333-322': 192, '333-323': 1440, '333-332': 1440, '333-333': 19272,
 
-What calls the attention is that in almost half of 3-to-3 full-bit functions (19,272 out of 40,320), all three output bits depend on all three input bits. This may seem counter-intuitive again, even after seeing that `f(A, B) = (A, A XOR B)` is lossless (loses no information), but to understand how this is possible, consider for instance `f(A, B, C) = (A XOR B, B XOR C, A XOR C)`. Its truthtable is as follows, and we can easily see that the output values are a permutation of the input values:
+What calls the attention is that in almost half of 3-to-3 full-bit functions (19,272 out of 40,320), all three output bits depend on all three input bits. It may seem counter-intuitive again that all information from each input bits is still recoverable after it has been mixed together so drastically, even after seeing that `f(A, B) = (A, A XOR B)` is lossless (loses no information). There, at least, `A` was preserved intact, and once you recover all of `A`, you can recover `B` from `A XOR B`.
+
+But to understand how this is possible, consider for instance `f(A, B, C) = (A XOR B, B XOR C, A XOR C)`. Its truthtable is as follows, and we can easily see that the output values are a permutation of the input values:
 
     A B C | (A ? B : C)  (A ? B : C) (A XOR B XOR C)
     0 0 0 |      0            0             0
@@ -129,19 +131,21 @@ What calls the attention is that in almost half of 3-to-3 full-bit functions (19
     1 1 0 |      1            0             0
     1 1 1 |      1            1             1
 
-Its dual is:
+Each of the 8 possible outputs (000, 001, 010, 011, 100, 101, 110, and 111) occurs exactly once on the right.
+By switching the left and the right part of this table, and sorting by the left part again you see that its dual is:
 
-     A B C | (A? NOT(B XOR C) : B XOR C) (C ? B : A) (C ? A : B)
-     0 0 0 |            0                     0           0
-     0 0 1 |            1                     0           0
-     0 1 0 |            1                     0           1
-     0 1 1 |            0                     1           0
-     1 0 0 |            1                     1           0
-     1 0 1 |            0                     0           1
-     1 1 0 |            0                     1           1
-     1 1 1 |            1                     1           1
+     A B C | (A XOR B XOR C) (C ? B : A) (C ? A : B)
+     0 0 0 |        0             0           0
+     0 0 1 |        1             0           0
+     0 1 0 |        1             0           1
+     0 1 1 |        0             1           0
+     1 0 0 |        1             1           0
+     1 0 1 |        0             0           1
+     1 1 0 |        0             1           1
+     1 1 1 |        1             1           1
 
 
 The last interesting observation I wanted to point out here is that apart from the many '333-333' functions, there are also some for which the
-amount of mix-up is different for the function and its dual. For instance, there are 1440 functions of type '333-332'. This might be an
+amount of mix-up is different for the function and its dual. For instance, there are 1440 functions of type '333-332': you need all input bits to
+calculate any of the output bits, but you need only 2 of the output bits to go back to the third input bit. This might be an
 interesting pointer towards understanding irreversibility.
