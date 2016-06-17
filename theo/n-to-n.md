@@ -52,14 +52,11 @@ For `n=2`, there are `(2^2)!=24`:
 * `f(A, B) = (NOT(B), A XOR B)`
 * `f(A, B) = (NOT(B), NOT(A XOR B))`
 
-[](
- To do: enumerate cycle-types.
- Since each function `F` can be interpreted as a permutation, it has a dual `D`, such that `D(F(A))=A`. Some functions are their own dual.
- There is also a cycle length `c` such that applying `F` for `c` times in a row will be equivalent to the identity operation.
- For functions
- that are their own dual, `c=1`. This relates to the [cycle-type](https://en.wikipedia.org/wiki/Permutation#Cycle_notation) of the permutation to which
- the function is equivalent. For `n=1` variables, both functions have `c=1`. For `n=2`, there are 10 with `c=1` and 14 with `c=2`.
-)
+Since each function `F` can be interpreted as a permutation, it has a dual `D`, such that `D(F(A))=A`. Some functions are their own dual.
+There is also a cycle length `c` such that applying `F` for `c` times in a row will be equivalent to the identity operation.
+This relates to the [cycle-type](https://en.wikipedia.org/wiki/Permutation#Cycle_notation) of the permutation to which the function is equivalent.
+For functions that are their own dual, `c` can be at most 2.
+For `n=1` variables, `f(A) = A` has `c=1`, and `f(A) = NOT(A)` has `c=2`. For `n=2`, there is one with `c=1` (the identity function), 9 with `c=2`, 8 with `c=3` (there are 4 ways to choose a 3-cycle, and it can cycle in both directions), and 6 with `c=4`.
 
 We can also look at the number of input variables each output variable depends on. For instance, the output `NOT(A)` depends on only one input
 variable, but the output `A XOR B` depends on two. For 2-to-2 full-bit functions, there are 8 where each output variable depends on only one

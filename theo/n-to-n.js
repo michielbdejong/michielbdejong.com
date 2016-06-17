@@ -148,6 +148,28 @@ function findDual(perm) {
   return dual;
 }
 
+function applyTable(curr, perm) {
+  var res = [];
+  for (var i = 0; i < perm.length; i++) {
+    res.push(curr[parseInt(perm[i], 2)]);
+  }
+  return res;
+}
+
+function findCycleLength(perm) {
+  var curr = new Array(perm.length);
+  for (var i = 0; i < curr.length; i++) {
+    curr[i] = i;
+  }
+  var start = curr.join(',');
+  var cycles = 0;
+  do {
+    curr = applyTable(curr, perm);
+    cycles++;
+  } while(curr.join(',') !== start);
+  return cycles;
+}
+
 function analyze(numVars) {
   var progress = 0;
   var funcs = {};
@@ -160,10 +182,14 @@ function analyze(numVars) {
     var perm = indexToPerm(curr);
     var dual = findDual(perm);
     var ownDual = (dual.join(',') === perm.join(','));
+    var cycleLength = findCycleLength(perm);
     funcs[perm] = {
-      depCount: dependencyCounts(perm).join('') + '-' + (ownDual ? '*' : dependencyCounts(dual).join('')),
+      depCount: dependencyCounts(perm).join('') + '-'
+          + (ownDual ? '*' : dependencyCounts(dual).join(''))
+          + '(' + cycleLength + ')',
       dual,
-      ownDual
+      ownDual,
+      cycleLength
     };
     curr = nextPermIndex(curr);
     if (++progress % 10000 === 0) {
