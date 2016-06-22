@@ -75,6 +75,26 @@ It's easy to understand the information-preserving quality of `f(A, B) = (A, A X
 by first noting that `A` is preserved entirely, and *given `A`*, you can derive `B` from `A XOR B`. So although the second output does not contain
 all of `B`, in combination with (or relative to) the first output `A`, it does contain the full bit of information about `B`.
 
+Another way of seeing this, is defining the bit `B` *relative to `A`*. Given
+a value for `A`
+(the `|A` and `|NOT(A)` notation), denote the value of either `B` or `NOT(B)`. Relative to `A`, there are four ways to write down `B`: as `B`, as `NOT(B)`,
+as `A XOR B`, or as `NOT(A XOR B)`. Each is made up of two superposed half-bits:
+
+* `B|NOT(A)` (used in `B` and in `A XOR B`),
+* `NOT(B)|NOT(A)` (used in `NOT(B)` and in `A XOR B`),
+* `B|A` (used in `B` and in `NOT(A XOR B)`), and
+* `NOT(B)|A` (used in `NOT(B)` and in `NOT(A XOR B)`.
+
+So relative to `A`, each of `B`, `NOT(B)`, `A XOR B`, and `NOT(A XOR B)` contain one half-bit for the case `A=0` and one half-bit for the case `A=1`.
+
+In one variable, `A` and `NOT(A)` contain the same one bit of information.
+In three variables, given `A` and `B`, there are 16 ways to write down the third bit `C`: for each value of `A,B`, either write down `C` or `NOT(C)`.
+
+By itself, `A XOR B`, does not contain the same information as `B`; some information from `A` is added and some information from `B` is lost by XOR-ing `B`
+with `A`. But when you view the universe as a superposition of the `A` universe and the `NOT(A)` universe, and optionally invert the second bit in each
+case, you see that the second output contains the same bit of information, just in a different encoding, regardless of whether you set it to `B`, `NOT(B)`,
+`A XOR B`, or `NOT(A XOR B)`.
+
 There are no 2-to-2 full-bit functions where each output depends on each input; in other words, `XOR` cannot appear in the expression for both output bits. Some of them switch the position of the information from the input bits, for instance `f(A, B) = (B, A)` does this. If a function XORs one of the input bits and also switches the bits around, its dual will need to do the same. If it leaves on variable in place (possibly inverting it) and XORs the other, then its dual also shouldn't switch the bits around. Therefore, the number of inputs each output bit depends on, related to the same measure for the function's dual, looks as follows:
 
 * 6 functions XOR nothing and are their own dual (notation: '11-*')
