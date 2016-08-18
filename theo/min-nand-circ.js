@@ -153,6 +153,12 @@ function proposeCircuit(circuit) {
   var numGatesInCircuit = circuit.length / 2;
   for (var numGates = 0; numGates <= numGatesInCircuit; numGates++) {
     console.log(`Checking for ${numGates}-gate circuits for ${valuation}.`);
+    //FIXME: Should also keep circuits that are minimal for producing a set of
+    // intermediate results, so sorted list of variable valuations on the stack.
+    // It would be good to simultaneously remove the limit of 10 variables from
+    // the representation of how ports choose their inputs. Maybe just label the
+    // inputs by their valuations? So (A NAND B) would be represented as
+    // '1110': '00110101', or maybe better as 15: [3, 5]
     if (typeof circuitsOfSize[numGates][valuation] !== 'undefined') {
       console.log(`Circuit ${circuit} is not smaller than ${circuitsOfSize[numGates][valuation]}.`);
       return;
