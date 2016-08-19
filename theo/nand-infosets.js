@@ -238,13 +238,15 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
       // console.log(`tryout(${infoset}, baseCircuit, ${leftWire}, ${rightWire})`);
       var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
       var addedWire = circuitOutput(proposedCircuit);
-      var useful = (infoset[flagPos(addedWire)] === '0');
-      if (useful) {
+      var possiblyUseful = (infoset[flagPos(addedWire)] === '0');
+      if (possiblyUseful) {
         var newInfoset = addWire(infoset, addedWire);
-        minimalCircuits[newInfoset] = proposedCircuit;
-        if (!perFlag[addedWire]) {
-          perFlag[addedWire] = proposedCircuit;
-          writeOut();
+        if (typeof minimalCircuits[newInfoset] === 'undefined') { // actually useful, not just possibly :)
+          minimalCircuits[newInfoset] = proposedCircuit;
+          if (!perFlag[addedWire]) {
+            perFlag[addedWire] = proposedCircuit;
+            writeOut();
+          }
         }
         // console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
       }
