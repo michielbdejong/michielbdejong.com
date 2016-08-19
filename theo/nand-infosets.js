@@ -109,13 +109,11 @@ function getStack(circuit) {
   if (typeof stack[circuit] === 'undefined') {
     var addedGate = circuit.slice(circuit.length - 2);
     var baseCircuit = circuit.slice(0, circuit.length -2);
-    console.log(`Split ${JSON.stringify(circuit)} into ${JSON.stringify(baseCircuit)} and ${JSON.stringify(addedGate)}`);
     var baseStack = getStack(baseCircuit);
     var addedLeftInput = baseStack[addedGate[0]];
     var addedRightInput = baseStack[addedGate[1]];
     var addedValuation = NAND(addedLeftInput, addedRightInput);
     stack[circuit] = baseStack.concat(addedValuation);
-    console.log(`Calculated stack for ${JSON.stringify(circuit)}:`, stack[circuit]);
   }
   return stack[circuit];
 }
@@ -126,14 +124,12 @@ function circuitOutput(circuit) {
 }
 
 function flagPos(wire) {
-  console.log('flagPos', wire, parseInt(wire, 2));
   return parseInt(wire, 2);
 }
 
 function addWire(infoset, wire) {
   var pos = flagPos(wire);
   res = infoset.substring(0, pos) + '1' + infoset.substring(pos+1);
-  console.log(`ORring ${infoset} with ${wire} gives ${res}, now res[${flagPos(wire)}] === ${res[flagPos(wire)]}`);
   return res;
 }
 
@@ -156,12 +152,11 @@ function sweep() {
         var useful = (infoset[flagPos(addedWire)] === '0');
         if (useful) {
           var newInfoset = addWire(infoset, addedWire);
-          console.log('Comparing', newInfoset, infoset);
           minimalCircuits[newInfoset] = proposedCircuit;
           if (!perFlag[addedWire]) {
             perFlag[addedWire] = proposedCircuit;
           }
-          console.log(`Proposing ${proposedCircuit}, which would add ${addedWire} to make ${newInfoset}.`);
+          console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
         }
       }
     }
