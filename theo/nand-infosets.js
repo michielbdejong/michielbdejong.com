@@ -153,7 +153,6 @@ function readIn() {
   try {
     var read = JSON.parse(fs.readFileSync(`progress-${numVars}.json`));
     minimalCircuits = read.minimalCircuits;
-    stack = read.stack;
     perFlag = read.perFlag;
   } catch(e) {
     console.error(`could not read from file progress-${numVars}.json`);
@@ -163,7 +162,6 @@ function readIn() {
 function writeOut() {
   fs.writeFileSync(`progress-${numVars}.json`, JSON.stringify({
     minimalCircuits,
-    stack,
     perFlag,
   }, null, 2));
 }
@@ -241,8 +239,8 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
         minimalCircuits[newInfoset] = proposedCircuit;
         if (!perFlag[addedWire]) {
           perFlag[addedWire] = proposedCircuit;
+          writeOut();
         }
-        writeOut();
         // console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
       }
       resolve();
