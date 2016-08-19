@@ -164,11 +164,13 @@ function readIn() {
 };
 
 function writeOut() {
-  fs.writeFileSync(`progress-${numVars}.json`, JSON.stringify({
+  var str = JSON.stringify({
     minimalCircuits,
     perFlag,
     baseCircuitSize,
-  }, null, 2));
+  }, null, 2);
+  fs.writeFileSync(`progress-${numVars}.json`, str);
+  fs.writeFileSync(`progress-${numVars}-${new Date().getTime()}.json`, str);
 }
 
 function addGate(toCircuit, leftWire, rightWire) {
