@@ -251,6 +251,10 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
 }
 
 function sweep() {
+  if (Object.keys(perFlag).length === numFunctions) {
+    console.log('No more sweep needed');
+    return Promise.resolve();
+  }
   console.log('sweep start');
   var promises = [];
   for (var infoset in minimalCircuits) {
@@ -265,11 +269,8 @@ function sweep() {
   }
   console.log('Starting cascade');
   return cascade(promises).then(() => {
-    console.log('After cascade');
-    if (Object.keys(perFlag).length < numFunctions) {
-      console.log('Calling next sweep');
-      return sweep();
-    }
+    console.log('After cascade, calling next sweep');
+    return sweep();
   });
 }
 
