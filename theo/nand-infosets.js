@@ -246,9 +246,9 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
           if (!perFlag[addedWire]) {
             perFlag[addedWire] = proposedCircuit;
             writeOut();
+            console.log(`Added ${proposedCircuit} for ${addedWire}.`);
           }
         }
-        // console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
       }
       resolve();
     }, 0);
