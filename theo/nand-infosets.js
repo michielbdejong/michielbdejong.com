@@ -277,6 +277,7 @@ function sweep() {
   return cascade(promises).then(() => {
     console.log('After cascade, calling next sweep');
     baseCircuitSize++;
+    writeOut();
     return sweep();
   });
 }
