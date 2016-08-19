@@ -50,21 +50,30 @@
 // 0x_1__ ____ ____ ____ + 0001 (A AND B) as calculated additionally by the second gate in [2,3,4,4]
 // 0x1101 0100 0000 0011
 
-var numVars = 2;
-var numValuations = Math.pow(2, numVars);
-var numFunctions = Math.pow(2, numValuations);
-var numInfosets = Math.pow(2, numFunctions);
+var numVars; //will be taken from argv by initalize
+var numValuations;
+var numFunctions;
+var numInfosets;
 
 var minimalCircuits = {
   // value for circuit [] to be filled in by initialize function
 };
 
 function initialize() {
+  try {
+    numVars = parseInt(process.argv[2]);
+  } catch(e) {
+    numVars = 2;
+    console.error('Defaulting numVars to 2, please specify it on the command line next time! :)');
+  }
+  numValuations = Math.pow(2, numVars);
+  numFunctions = Math.pow(2, numValuations);
+  numInfosets = Math.pow(2, numFunctions);
   var identityFuncs = {
     1: [1],
     2: [1+2, 1+4],
-    3: [1+2+4+8, 1+2+16+32, 1+4+16+64],
-    4: [1+2+4+8+16+32+64+128, 1+2+16+32+256+512+4096+8192, 1+4+16+64+256+1024+4096+16384],
+    3: [1+2+4+8, 1+2 + 16+32, 1 + 4 + 16 + 64],
+    4: [1+2+4+8+16+32+64+128, 1+2 + 16+32 + 256+512 + 4096+8192, 1 + 4 + 16 + 64 + 256 + 1024 + 4096 + 16384],
   };
   var funcs = [];
   for (var i=0; i<numFunctions; i++) {
@@ -73,9 +82,63 @@ function initialize() {
   funcs[0] = 1; // FALSE
   funcs[numFunctions - 1] = 1; // TRUE
   for(var i=0; i<identityFuncs[numVars]; i++) {
-    funcs[i] = 1;
+    funcs[identityFuncs[numVars][i]] = 1;
   }
   minimalCircuits[funcs.join('')] = [];
+  console.log('Initialized minimalCircuits', minimalCircuits);
+
+  perFlag = {
+    1: {
+      '00': [],
+      '01': [],
+      '11': [],
+    },
+    2: {
+      '0000': [],
+      '0011': [],
+      '0101': [],
+      '1111': [],
+    },
+    3: {
+      '00000000': [],
+      '00001111': [],
+      '00110011': [],
+      '01010101': [],
+      '11111111': [],
+    },
+  }[numVars];
+
+  // The empty circuit, [], already makes available 2+numVars wires, namely:
+  // Note that [] is used as an object key there, which may be a bit cryptic,
+  // but using arrays as object keys works well for storing stacks here.
+  stack[[]] = {
+    1: [
+      '00',
+      '11',
+      '01'
+    ],
+    2: [
+      '0000',
+      '1111',
+      '0011',
+      '0101',
+    ],
+    3: [
+      '00000000',
+      '11111111',
+      '00001111',
+      '00110011',
+      '01010101',
+    ],
+    4: [
+      '0000000000000000',
+      '1111111111111111',
+      '0000000011111111',
+      '0000111100001111',
+      '0011001100110011',
+      '0101010101010101',
+    ],
+  }[numVars];
 }
 
 
@@ -85,10 +148,6 @@ function addGate(toCircuit, leftWire, rightWire) {
 
 var stack = {
 };
-// The empty circuit, [], already makes available 2+numVars wires, namely:
-stack[[]] = ['0000', '1111', '0011', '0101'];
-// Note that [] is used as an object key there, which may be a bit cryptic,
-// but using arrays as object keys works well for storing stacks here.
 
 function bitNAND(left, right) {
   if (left === '1' && right === '1') {
@@ -112,6 +171,7 @@ function getStack(circuit) {
     var baseStack = getStack(baseCircuit);
     var addedLeftInput = baseStack[addedGate[0]];
     var addedRightInput = baseStack[addedGate[1]];
+    console.log('added', baseStack, addedGate, addedLeftInput, addedRightInput);
     var addedValuation = NAND(addedLeftInput, addedRightInput);
     stack[circuit] = baseStack.concat(addedValuation);
   }
@@ -133,18 +193,15 @@ function addWire(infoset, wire) {
   return res;
 }
 
-var perFlag = {
-  '0000': [],
-  '0011': [],
-  '0101': [],
-  '1111': [],
-};
+var perFlag;
 
 function sweep() {
   for (var infoset in minimalCircuits) {
     console.log(`Infoset is ${infoset}`);
     var baseCircuit = minimalCircuits[infoset];
     var numWires = 2 + numVars + baseCircuit.length/2;
+    console.log(`baseCircuit ${baseCircuit}`);
+    console.log(`var numWires = 2 + numVars + baseCircuit.length/2; ${numWires} = 2 + ${numVars} + ${baseCircuit.length/2};`);
     for (var leftWire = 0; leftWire < numWires; leftWire++) {
       for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
         var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
