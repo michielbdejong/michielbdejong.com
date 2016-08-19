@@ -14,6 +14,8 @@ var stack = {
 
 var perFlag;
 
+var baseCircuitSize;
+
 // An infoset is a subset of all n-to-1 functions which a given circuit can calculate.
 // For instance, there are 16 functions from 2-to-1 Boolean variables:
 //
@@ -146,6 +148,7 @@ function initialize() {
       '0101010101010101',
     ],
   }[numVars];
+  baseCircuitSize = 0;
   readIn();
 }
 
@@ -154,6 +157,7 @@ function readIn() {
     var read = JSON.parse(fs.readFileSync(`progress-${numVars}.json`));
     minimalCircuits = read.minimalCircuits;
     perFlag = read.perFlag;
+    baseCircuitSize = read.baseCircuitSize;
   } catch(e) {
     console.error(`could not read from file progress-${numVars}.json`);
   }
@@ -163,6 +167,7 @@ function writeOut() {
   fs.writeFileSync(`progress-${numVars}.json`, JSON.stringify({
     minimalCircuits,
     perFlag,
+    baseCircuitSize,
   }, null, 2));
 }
 
@@ -248,7 +253,7 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
   });
 }
 
-function sweep(baseCircuitSize) {
+function sweep() {
   if (Object.keys(perFlag).length === numFunctions) {
     console.log('No more sweep needed');
     return Promise.resolve();
@@ -271,14 +276,15 @@ function sweep(baseCircuitSize) {
   console.log('Starting cascade');
   return cascade(promises).then(() => {
     console.log('After cascade, calling next sweep');
-    return sweep(baseCircuitSize + 1);
+    baseCircuitSize++;
+    return sweep();
   });
 }
 
 //...
 initialize();
 
-sweep(0).then(() => {
+sweep().then(() => {
   console.log(minimalCircuits);
   console.log(perFlag);
 }, err => {
