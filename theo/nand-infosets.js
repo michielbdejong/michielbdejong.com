@@ -1,3 +1,19 @@
+var fs = require('fs');
+
+var numVars; //will be taken from argv by initalize
+var numValuations;
+var numFunctions;
+var numInfosets;
+
+var minimalCircuits = {
+  // value for circuit [] to be filled in by initialize function
+};
+
+var stack = {
+};
+
+var perFlag;
+
 // An infoset is a subset of all n-to-1 functions which a given circuit can calculate.
 // For instance, there are 16 functions from 2-to-1 Boolean variables:
 //
@@ -49,15 +65,6 @@
 // 0x____ ____ ____ __1_   1110 (A NAND B) as calculated additionally by [2,3]
 // 0x_1__ ____ ____ ____ + 0001 (A AND B) as calculated additionally by the second gate in [2,3,4,4]
 // 0x1101 0100 0000 0011
-
-var numVars; //will be taken from argv by initalize
-var numValuations;
-var numFunctions;
-var numInfosets;
-
-var minimalCircuits = {
-  // value for circuit [] to be filled in by initialize function
-};
 
 function initialize() {
   try {
@@ -139,15 +146,31 @@ function initialize() {
       '0101010101010101',
     ],
   }[numVars];
+  readIn();
 }
 
+function readIn() {
+  try {
+    var read = JSON.parse(fs.readFileSync(`progress-${numVars}.json`));
+    minimalCircuits = read.minimalCircuits;
+    stack = read.stack;
+    perFlag = read.perFlag;
+  } catch(e) {
+    console.error(`could not read from file progress-${numVars}.json`);
+  }
+};
+
+function writeOut() {
+  fs.writeFileSync(`progress-${numVars}.json`, JSON.stringify({
+    minimalCircuits,
+    stack,
+    perFlag,
+  }, null, 2));
+}
 
 function addGate(toCircuit, leftWire, rightWire) {
   return toCircuit.concat([leftWire, rightWire]);
 }
-
-var stack = {
-};
 
 function bitNAND(left, right) {
   if (left === '1' && right === '1') {
@@ -193,8 +216,6 @@ function addWire(infoset, wire) {
   return res;
 }
 
-var perFlag;
-
 function cascade(promises) {
   var thisPromise = promises.shift();
   return thisPromise.then(() => {
@@ -221,6 +242,7 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
         if (!perFlag[addedWire]) {
           perFlag[addedWire] = proposedCircuit;
         }
+        writeOut();
         // console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
       }
       resolve();
