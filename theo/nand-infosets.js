@@ -56,8 +56,9 @@ var numFunctions = Math.pow(2, numValuations);
 var numInfosets = Math.pow(2, numFunctions);
 
 var minimalCircuits = {
-//1001 0100 0000 0001 binary -> 9, 4, 0, 1 hex
-  0x9401: [],
+//F  A  B           T
+//1001 0100 0000 0001
+  '1001010000000001': [],
 };
 
 function addGate(toCircuit, leftWire, rightWire) {
@@ -106,11 +107,16 @@ function circuitOutput(circuit) {
   return circuitVars[circuitVars.length -1];
 }
 
+function flagPos(wire) {
+  console.log('flagPos', wire, parseInt(wire, 2));
+  return parseInt(wire, 2);
+}
+
 function addWire(infoset, wire) {
-  var base = parseInt(infoset);
-  var flag = Math.pow(2, numFunctions) >> (parseInt(wire, 2) + 1);
-  console.log(`ORring ${base.toString(2)} with ${flag.toString(2)} gives ${(base | flag).toString(2)}`);
-  return (base | flag);
+  var pos = flagPos(wire);
+  res = infoset.substring(0, pos) + '1' + infoset.substring(pos+1);
+  console.log(`ORring ${infoset} with ${wire} gives ${res}, now res[${flagPos(wire)}] === ${res[flagPos(wire)]}`);
+  return res;
 }
 
 var perFlag = {
@@ -122,22 +128,22 @@ var perFlag = {
 
 function sweep() {
   for (var infoset in minimalCircuits) {
-    console.log(`Infoset is ${parseInt(infoset).toString(2)}`);
+    console.log(`Infoset is ${infoset}`);
     var baseCircuit = minimalCircuits[infoset];
     var numWires = 2 + numVars + baseCircuit.length/2;
     for (var leftWire = 0; leftWire < numWires; leftWire++) {
       for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
         var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
         var addedWire = circuitOutput(proposedCircuit);
-        var newInfoset = addWire(infoset, addedWire);
-        console.log('Comparing', newInfoset, infoset);
-        var useful = (newInfoset != infoset);
+        var useful = (infoset[flagPos(addedWire)] === '0');
         if (useful) {
+          var newInfoset = addWire(infoset, addedWire);
+          console.log('Comparing', newInfoset, infoset);
           minimalCircuits[newInfoset] = proposedCircuit;
           if (!perFlag[addedWire]) {
             perFlag[addedWire] = proposedCircuit;
           }
-          console.log(`Proposing ${proposedCircuit}, which would add ${addedWire} to make ${newInfoset.toString(2)}.`);
+          console.log(`Proposing ${proposedCircuit}, which would add ${addedWire} to make ${newInfoset}.`);
         }
       }
     }
@@ -148,7 +154,5 @@ do {
   sweep();
 } while(Object.keys(perFlag).length < numFunctions);
 
-for (var infoset in minimalCircuits) {
-  console.log(parseInt(infoset).toString(2), minimalCircuits[infoset]);
-}
+console.log(minimalCircuits);
 console.log(perFlag);
