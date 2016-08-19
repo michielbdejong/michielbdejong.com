@@ -248,7 +248,7 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
   });
 }
 
-function sweep() {
+function sweep(baseCircuitSize) {
   if (Object.keys(perFlag).length === numFunctions) {
     console.log('No more sweep needed');
     return Promise.resolve();
@@ -258,6 +258,9 @@ function sweep() {
   for (var infoset in minimalCircuits) {
     // console.log(`Infoset is ${infoset}`);
     var baseCircuit = minimalCircuits[infoset];
+    if (baseCircuit.length/2 != baseCircuitSize) {
+      continue;
+    }
     var numWires = 2 + numVars + baseCircuit.length/2;
     for (var leftWire = 0; leftWire < numWires; leftWire++) {
       for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
@@ -268,14 +271,14 @@ function sweep() {
   console.log('Starting cascade');
   return cascade(promises).then(() => {
     console.log('After cascade, calling next sweep');
-    return sweep();
+    return sweep(baseCircuitSize + 1);
   });
 }
 
 //...
 initialize();
 
-sweep().then(() => {
+sweep(0).then(() => {
   console.log(minimalCircuits);
   console.log(perFlag);
 }, err => {
