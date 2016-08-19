@@ -56,10 +56,28 @@ var numFunctions = Math.pow(2, numValuations);
 var numInfosets = Math.pow(2, numFunctions);
 
 var minimalCircuits = {
-//F  A  B           T
-//1001 0100 0000 0001
-  '1001010000000001': [],
+  // value for circuit [] to be filled in by initialize function
 };
+
+function initialize() {
+  var identityFuncs = {
+    1: [1],
+    2: [1+2, 1+4],
+    3: [1+2+4+8, 1+2+16+32, 1+4+16+64],
+    4: [1+2+4+8+16+32+64+128, 1+2+16+32+256+512+4096+8192, 1+4+16+64+256+1024+4096+16384],
+  };
+  var funcs = [];
+  for (var i=0; i<numFunctions; i++) {
+    funcs.push('0');
+  }
+  funcs[0] = 1; // FALSE
+  funcs[numFunctions - 1] = 1; // TRUE
+  for(var i=0; i<identityFuncs[numVars]; i++) {
+    funcs[i] = 1;
+  }
+  minimalCircuits[funcs.join('')] = [];
+}
+
 
 function addGate(toCircuit, leftWire, rightWire) {
   return toCircuit.concat([leftWire, rightWire]);
@@ -150,6 +168,8 @@ function sweep() {
   }
 }
 
+//...
+initialize();
 do {
   sweep();
 } while(Object.keys(perFlag).length < numFunctions);
