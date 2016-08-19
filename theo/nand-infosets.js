@@ -81,7 +81,7 @@ function initialize() {
   }
   funcs[0] = 1; // FALSE
   funcs[numFunctions - 1] = 1; // TRUE
-  for(var i=0; i<identityFuncs[numVars]; i++) {
+  for(var i=0; i<identityFuncs[numVars].length; i++) {
     funcs[identityFuncs[numVars][i]] = 1;
   }
   minimalCircuits[funcs.join('')] = [];
@@ -171,7 +171,7 @@ function getStack(circuit) {
     var baseStack = getStack(baseCircuit);
     var addedLeftInput = baseStack[addedGate[0]];
     var addedRightInput = baseStack[addedGate[1]];
-    console.log('added', baseStack, addedGate, addedLeftInput, addedRightInput);
+    // console.log('added', baseStack, addedGate, addedLeftInput, addedRightInput);
     var addedValuation = NAND(addedLeftInput, addedRightInput);
     stack[circuit] = baseStack.concat(addedValuation);
   }
@@ -195,36 +195,68 @@ function addWire(infoset, wire) {
 
 var perFlag;
 
+function cascade(promises) {
+  var thisPromise = promises.shift();
+  return thisPromise.then(() => {
+    if (promises.length) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          cascade(promises).then(resolve);
+        }, 0);
+      });
+    }
+  });
+}
+
+function tryout(infoset, baseCircuit, leftWire, rightWire) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // console.log(`tryout(${infoset}, baseCircuit, ${leftWire}, ${rightWire})`);
+      var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
+      var addedWire = circuitOutput(proposedCircuit);
+      var useful = (infoset[flagPos(addedWire)] === '0');
+      if (useful) {
+        var newInfoset = addWire(infoset, addedWire);
+        minimalCircuits[newInfoset] = proposedCircuit;
+        if (!perFlag[addedWire]) {
+          perFlag[addedWire] = proposedCircuit;
+        }
+        // console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
+      }
+      resolve();
+    }, 0);
+  });
+}
+
 function sweep() {
+  console.log('sweep start');
+  var promises = [];
   for (var infoset in minimalCircuits) {
-    console.log(`Infoset is ${infoset}`);
+    // console.log(`Infoset is ${infoset}`);
     var baseCircuit = minimalCircuits[infoset];
     var numWires = 2 + numVars + baseCircuit.length/2;
-    console.log(`baseCircuit ${baseCircuit}`);
-    console.log(`var numWires = 2 + numVars + baseCircuit.length/2; ${numWires} = 2 + ${numVars} + ${baseCircuit.length/2};`);
     for (var leftWire = 0; leftWire < numWires; leftWire++) {
       for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
-        var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
-        var addedWire = circuitOutput(proposedCircuit);
-        var useful = (infoset[flagPos(addedWire)] === '0');
-        if (useful) {
-          var newInfoset = addWire(infoset, addedWire);
-          minimalCircuits[newInfoset] = proposedCircuit;
-          if (!perFlag[addedWire]) {
-            perFlag[addedWire] = proposedCircuit;
-          }
-          console.log(`Added ${proposedCircuit}, which adds ${addedWire} to make ${newInfoset}.`);
-        }
+        promises.push(tryout(infoset, baseCircuit, leftWire, rightWire));
       }
     }
   }
+  console.log('Starting cascade');
+  return cascade(promises).then(() => {
+    console.log('After cascade');
+    if (Object.keys(perFlag).length < numFunctions) {
+      console.log('Calling next sweep');
+      return sweep();
+    }
+  });
 }
 
 //...
 initialize();
-do {
-  sweep();
-} while(Object.keys(perFlag).length < numFunctions);
 
-console.log(minimalCircuits);
-console.log(perFlag);
+sweep().then(() => {
+  console.log(minimalCircuits);
+  console.log(perFlag);
+}, err => {
+  console.error(err);
+});
