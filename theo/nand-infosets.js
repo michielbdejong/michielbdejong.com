@@ -93,7 +93,7 @@ function initialize() {
   for(var i=0; i<identityFuncs[numVars].length; i++) {
     funcs[identityFuncs[numVars][i]] = 1;
   }
-  minimalCircuits[funcs.join('')] = [];
+  minimalCircuits[bin2hex(funcs.join(''))] = [];
   console.log('Initialized minimalCircuits', minimalCircuits);
 
   perFlag = {
@@ -215,9 +215,9 @@ function flagPos(wire) {
   return parseInt(wire, 2);
 }
 
-function addWire(infoset, wire) {
+function addWire(infosetBin, wire) {
   var pos = flagPos(wire);
-  res = infoset.substring(0, pos) + '1' + infoset.substring(pos+1);
+  res = infosetBin.substring(0, pos) + '1' + infosetBin.substring(pos+1);
   return res;
 }
 
@@ -234,17 +234,18 @@ function cascade(promises) {
   });
 }
 
-function tryout(infoset, baseCircuit, leftWire, rightWire) {
+function tryout(infosetBin, baseCircuit, leftWire, rightWire) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      // console.log(`tryout(${infoset}, baseCircuit, ${leftWire}, ${rightWire})`);
+      // console.log(`tryout(${infosetBin}, baseCircuit, ${leftWire}, ${rightWire})`);
       var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
       var addedWire = circuitOutput(proposedCircuit);
-      var possiblyUseful = (infoset[flagPos(addedWire)] === '0');
+      var possiblyUseful = (infosetBin[flagPos(addedWire)] === '0');
       if (possiblyUseful) {
-        var newInfoset = addWire(infoset, addedWire);
-        if (typeof minimalCircuits[newInfoset] === 'undefined') { // actually useful, not just possibly :)
-          minimalCircuits[newInfoset] = proposedCircuit;
+        var newInfosetBin = addWire(infosetBin, addedWire);
+        var newInfosetHex = bin2hex(newInfosetBin);
+        if (typeof minimalCircuits[newInfosetHex] === 'undefined') { // actually useful, not just possibly :)
+          minimalCircuits[newInfosetHex] = proposedCircuit;
           if (!perFlag[addedWire]) {
             perFlag[addedWire] = proposedCircuit;
             writeOut();
@@ -257,6 +258,25 @@ function tryout(infoset, baseCircuit, leftWire, rightWire) {
   });
 }
 
+function convert(str, from, to, fromStep, pad) {
+  var res = '';
+  for (var i=0; i<str.length; i+=fromStep) {
+    var fromChunk = str.substring(i, i+fromStep);
+    var toChunk = parseInt(fromChunk, from).toString(to);
+    var toChunkPadded = (pad + toChunk).slice(-pad.length);
+    res += toChunkPadded;
+  }
+  return res;
+}
+
+function hex2bin(hex) {
+  return convert(hex, 16, 2, 1, '0000');
+}
+
+function bin2hex(bin) {
+  return convert(bin, 2, 16, 4, '0');
+}
+
 function sweep() {
   if (Object.keys(perFlag).length === numFunctions) {
     console.log('No more sweep needed');
@@ -264,16 +284,17 @@ function sweep() {
   }
   console.log('sweep start');
   var promises = [];
-  for (var infoset in minimalCircuits) {
-    // console.log(`Infoset is ${infoset}`);
-    var baseCircuit = minimalCircuits[infoset];
+  for (var infosetHex in minimalCircuits) {
+    var infosetBin = hex2bin(infosetHex);
+    // console.log(`Infoset is ${infosetHex}`);
+    var baseCircuit = minimalCircuits[infosetHex];
     if (baseCircuit.length/2 != baseCircuitSize) {
       continue;
     }
     var numWires = 2 + numVars + baseCircuit.length/2;
     for (var leftWire = 0; leftWire < numWires; leftWire++) {
       for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
-        promises.push(tryout(infoset, baseCircuit, leftWire, rightWire));
+        promises.push(tryout(infosetBin, baseCircuit, leftWire, rightWire));
       }
     }
   }
