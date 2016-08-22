@@ -1,11 +1,4 @@
 {
-  "minimalCircuits": {
-    "d": [],
-    "f": [
-      1,
-      2
-    ]
-  },
   "perFlag": {
     "10": [
       1,
@@ -15,5 +8,16 @@
     "00": [],
     "01": []
   },
-  "baseCircuitSize": 1
+  "baseCircuitSize": 1,
+  "minimalCircuitsThisSize": {},
+  "baseCircuits": [
+    {
+      "infosetHex": "f",
+      "circuit": [
+        1,
+        2
+      ]
+    }
+  ],
+  "lastBaseCircuitTried": 0
 }
