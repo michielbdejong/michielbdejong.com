@@ -5,16 +5,13 @@ var numValuations;
 var numFunctions;
 var numInfosets;
 
-var minimalCircuits = {
-  // value for circuit [] to be filled in by initialize function
-};
-
-var stack = {
-};
-
+// Value for these variables to be filled in by initialize function
+var baseCircuits;
+var minimalCircuitsThisSize;
+var stack;
 var perFlag;
-
 var baseCircuitSize;
+var lastBaseCircuitTried;
 
 // An infoset is a subset of all n-to-1 functions which a given circuit can calculate.
 // For instance, there are 16 functions from 2-to-1 Boolean variables:
@@ -93,8 +90,11 @@ function initialize() {
   for(var i=0; i<identityFuncs[numVars].length; i++) {
     funcs[identityFuncs[numVars][i]] = 1;
   }
-  minimalCircuits[bin2hex(funcs.join(''))] = [];
-  console.log('Initialized minimalCircuits', minimalCircuits);
+  baseCircuits = [{
+    infosetHex: bin2hex(funcs.join('')),
+    circuit: [],
+  }];
+  console.log('Initialized baseCircuits', baseCircuits);
 
   perFlag = {
     1: {
@@ -120,6 +120,7 @@ function initialize() {
   // The empty circuit, [], already makes available 2+numVars wires, namely:
   // Note that [] is used as an object key there, which may be a bit cryptic,
   // but using arrays as object keys works well for storing stacks here.
+  stack = {};
   stack[[]] = {
     1: [
       '00',
@@ -148,16 +149,20 @@ function initialize() {
       '0101010101010101',
     ],
   }[numVars];
+  minimalCircuitsThisSize = {};
   baseCircuitSize = 0;
+  lastBaseCircuitTried = -1;
   readIn();
 }
 
 function readIn() {
   try {
     var read = JSON.parse(fs.readFileSync(`progress-${numVars}.json`));
-    minimalCircuits = read.minimalCircuits;
+    minimalCircuitsThisSize = read.minimalCircuitsThisSize;
     perFlag = read.perFlag;
+    baseCircuits = read.baseCircuits;
     baseCircuitSize = read.baseCircuitSize;
+    lastBaseCircuitTried = read.lastBaseCircuitTried;
   } catch(e) {
     console.error(`could not read from file progress-${numVars}.json`);
   }
@@ -165,8 +170,10 @@ function readIn() {
 
 function writeOut() {
   var str = JSON.stringify({
-    minimalCircuits,
+    lastBaseCircuitTried,
     perFlag,
+    baseCircuits,
+    minimalCircuitsThisSize,
     baseCircuitSize,
   }, null, 2);
   fs.writeFileSync(`progress-${numVars}.json`, str);
@@ -237,15 +244,17 @@ function cascade(promises) {
 function tryout(infosetBin, baseCircuit, leftWire, rightWire) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      // console.log(`tryout(${infosetBin}, baseCircuit, ${leftWire}, ${rightWire})`);
+      // console.log(`tryout(${infosetBin}, ${baseCircuit}, ${leftWire}, ${rightWire})`);
       var proposedCircuit = addGate(baseCircuit, leftWire, rightWire);
       var addedWire = circuitOutput(proposedCircuit);
       var possiblyUseful = (infosetBin[flagPos(addedWire)] === '0');
+      // console.log(proposedCircuit, addedWire, possiblyUseful);
       if (possiblyUseful) {
         var newInfosetBin = addWire(infosetBin, addedWire);
         var newInfosetHex = bin2hex(newInfosetBin);
-        if (typeof minimalCircuits[newInfosetHex] === 'undefined') { // actually useful, not just possibly :)
-          minimalCircuits[newInfosetHex] = proposedCircuit;
+        // console.log(newInfosetBin, newInfosetHex);
+        if (typeof minimalCircuitsThisSize[newInfosetHex] === 'undefined') { // actually useful, not just possibly :)
+          minimalCircuitsThisSize[newInfosetHex] = proposedCircuit;
           if (!perFlag[addedWire]) {
             perFlag[addedWire] = proposedCircuit;
             writeOut();
@@ -277,6 +286,24 @@ function bin2hex(bin) {
   return convert(bin, 2, 16, 4, '0');
 }
 
+function circuitSizeUp() {
+  baseCircuits = [];
+  for (var infosetHex in minimalCircuitsThisSize) {
+    baseCircuits.push({
+      infosetHex,
+      circuit: minimalCircuitsThisSize[infosetHex]
+    });
+  }
+
+  baseCircuits = baseCircuits.sort((a, b) => {
+    return (parseInt(a.infosetHex, 16) > parseInt(b.infosetHex, 16));
+  });
+
+  minimalCircuitsThisSize = {};
+  baseCircuitSize++;
+  lastBaseCircuitTried = -1;
+}
+
 function sweep() {
   if (Object.keys(perFlag).length === numFunctions) {
     console.log('No more sweep needed');
@@ -284,24 +311,24 @@ function sweep() {
   }
   console.log('sweep start');
   var promises = [];
-  for (var infosetHex in minimalCircuits) {
-    var infosetBin = hex2bin(infosetHex);
-    // console.log(`Infoset is ${infosetHex}`);
-    var baseCircuit = minimalCircuits[infosetHex];
-    if (baseCircuit.length/2 != baseCircuitSize) {
-      continue;
-    }
-    var numWires = 2 + numVars + baseCircuit.length/2;
-    for (var leftWire = 0; leftWire < numWires; leftWire++) {
-      for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
-        promises.push(tryout(infosetBin, baseCircuit, leftWire, rightWire));
-      }
+  var infosetHex = baseCircuits[lastBaseCircuitTried + 1].infosetHex;
+  var baseCircuit = baseCircuits[lastBaseCircuitTried + 1].circuit;
+  var infosetBin = hex2bin(infosetHex);
+  // console.log(`Infoset is ${infosetHex}`);
+
+  var numWires = 2 + numVars + baseCircuit.length/2;
+  for (var leftWire = 0; leftWire < numWires; leftWire++) {
+    for (var rightWire = leftWire; rightWire < numWires; rightWire++) {
+      promises.push(tryout(infosetBin, baseCircuit, leftWire, rightWire));
     }
   }
   console.log('Starting cascade');
   return cascade(promises).then(() => {
     console.log('After cascade, calling next sweep');
-    baseCircuitSize++;
+    lastBaseCircuitTried++;
+    if (lastBaseCircuitTried === baseCircuits.length - 1) {
+      circuitSizeUp();
+    }
     writeOut();
     return sweep();
   });
@@ -311,7 +338,7 @@ function sweep() {
 initialize();
 
 sweep().then(() => {
-  console.log(minimalCircuits);
+  console.log(minimalCircuitsThisSize);
   console.log(perFlag);
 }, err => {
   console.error(err);
