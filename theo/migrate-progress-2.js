@@ -25,7 +25,7 @@ function migrateFile(fileName) {
     return (parseInt(a.infosetHex, 16) > parseInt(b.infosetHex, 16));
   });
   
-  read.lastBaseCircuitTried = 0;
+  read.lastBaseCircuitTried = -1;
 
   fs.writeFileSync(fileName, JSON.stringify(read, null, 2));
 }
