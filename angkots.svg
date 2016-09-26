@@ -1364,9 +1364,9 @@
     <text x="106.8091" y="-6.569100000000001" fill="black" font-weight="normal" font-size="12px" text-anchor="middle" transform="translate(106.8091 -6.569100000000001) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8091 6.569100000000001) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)">07, 07A, 08, 09, 23</text>
     <ellipse 
       cx="106.8181" cy="-11.5549"
-      rx="112" ry="40" transform="translate(106.8181 -6.5549) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8181 6.5549) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)"
+      rx="80" ry="40" transform="translate(106.8181 -6.5549) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8181 6.5549) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)"
       fill="white" stroke="black" stroke-width="2"/>
-    <text x="106.8181" y="-6.55478" fill="black" font-weight="bold" font-size="24px" text-anchor="middle" transform="translate(106.8181 -6.55478) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8181 6.55478) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)">Ciparigi (?)</text>
+    <text x="106.8181" y="-6.55478" fill="black" font-weight="bold" font-size="24px" text-anchor="middle" transform="translate(106.8181 -6.55478) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8181 6.55478) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)">Ciparigi</text>
     <text x="106.8181" y="-6.5551" fill="black" font-weight="normal" font-size="12px" text-anchor="middle" transform="translate(106.8181 -6.5551) scale(0.000014999999999999999 -0.000014999999999999999) translate(-106.8181 6.5551) translate(106.7975 -6.592499999999999) rotate(0) translate(-106.7975 6.592499999999999)">07, 07A, 09</text>
     <ellipse 
       cx="106.8044" cy="-11.5705"
