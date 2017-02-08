@@ -10,7 +10,7 @@
 function getIPR(key) {
     var amount = items[key].price;
     var SHOP_ACCOUNT = 'https://ilp-kit.michielbdejong.com:10000/ipr/';
-    var xhr = new XmlHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open('GET', SHOP_ACCOUNT + amount, true);
     xhr.responseType = 'json';
     xhr.onload = function(e) {
