@@ -15,7 +15,7 @@ function getIPR(key) {
     xhr.responseType = 'json';
     xhr.onload = function(e) {
       buy(key, xhr.response);
-    });
+    };
     xhr.send();
 }
 
