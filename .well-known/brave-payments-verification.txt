@@ -1,0 +1,4 @@
+This is a Brave Payments publisher verification file.
+
+Domain: michielbdejong.com
+Token: 78efd8ccd47d9fde9c67a31b99fb463edb41737f67cfbe752296ca1ed9cd901e
