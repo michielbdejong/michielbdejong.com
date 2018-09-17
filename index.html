@@ -4,7 +4,6 @@
     <title>Michiel de Jong</title>
     <meta charset="utf-8" />
     <meta name="description" content="Michiel B. de Jong" />
-    <meta name="flattr:id" content="qjjrw5">
     <link rel="author" href="http://michielbdejong.com/" />
     <style>
       body {background-color: #404040 }
@@ -16,6 +15,11 @@
       article a { color: #404040 }
       footer a { color: #D3FDFF }
     </style>
+
+    <!-- Browser Donations: Flattr -->
+    <meta name="flattr:id" content="qjjrw5">
+
+    <!-- Browser Donations: LedgerLoops -->
     <script>
       function go() {
         if (window.setLedgerLoopsChannel) {
@@ -27,6 +31,15 @@
         }
       }
       go();
+    </script>
+
+    <!-- Browser Donations: Coil -->
+    <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+    <script src="https://cdn.coil.com/donate.js"></script>
+    <script>
+    window.WebMonetizationScripts.donate({
+      paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
+    })
     </script>
   </head>
   <body>
