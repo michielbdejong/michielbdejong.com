@@ -20,27 +20,16 @@
     <meta name="flattr:id" content="qjjrw5">
 
     <!-- Browser Donations: LedgerLoops -->
-    <script>
-      function go() {
-        if (window.setLedgerLoopsChannel) {
-          console.log('setting LedgerLoops channel');
-          window.setLedgerLoopsChannel('wss://monetization-hubbie.herokuapp.com');
-        } else {
-          console.log('waiting...');
-          setTimeout(go, 1000);
-        }
-      }
-      go();
-    </script>
+    <link rel="ledgerloops:channel" href="wss://monetization-hubbie.herokuapp.com">
 
-    <!-- Browser Donations: Coil -->
+    <!-- Browser Donations: Coil (disabled)
     <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
     <script src="https://cdn.coil.com/donate.js"></script>
     <script>
     window.WebMonetizationScripts.donate({
       paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
     })
-    </script>
+    </script> -->
   </head>
   <body>
     <header>
