@@ -16,6 +16,18 @@
       article a { color: #404040 }
       footer a { color: #D3FDFF }
     </style>
+    <script>
+      function go() {
+        if (window.setLedgerLoopsChannel) {
+          console.log('setting LedgerLoops channel');
+          window.setLedgerLoopsChannel('wss://monetization-hubbie.herokuapp.com');
+        } else {
+          console.log('waiting...');
+          setTimeout(go, 1000);
+        }
+      }
+      go();
+    </script>
   </head>
   <body>
     <header>
