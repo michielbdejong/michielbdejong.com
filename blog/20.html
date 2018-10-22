@@ -23,7 +23,6 @@
 <h2>Network Money</h2><p>
 When I just moved to Madrid in 2005, I opened a bank account close to where I worked. What surprised me there were their banking fees: 1 euro for each transaction, and (it gets better) for recurring transactions, like paying my rent every month, the fee was even 1.50 euros. Of course, it doesn't cost the bank a euro to transfer the rent from my account to my landlord's account, and it definitely doesn't cost them an extra 50 cents to set up a cron job that does this once every month!
 </p><p>
-When I just moved to Madrid in 2005, I opened a bank account close to where I worked. What surprised me there were their banking fees: 1 euro for each transaction, and (it gets better) for recurring transactions, like paying my rent every month, the fee was even 1.50 euros. Of course, it doesn't cost the bank a euro to transfer the rent from my account to my landlord's account, and it definitely doesn't cost them an extra 50 cents to set up a cron job that does this once every month!
 A bit insulted by the bank's steep fees, I went to my bank's branch (it was the Deutsche Bank branch on Calle Serrano) and took out the amount in banknotes and coins (they didn't charge a fee for this), then walked over, with the physical money in my pocket, to the BBVA branch around the corner, on Principe Vergara. There, between 11:00 and 12:00 you were allowed to deposit cash into any BBVA bank account, and that's how I paid my rent each month - with a healthy walk and refusing to participate in my bank's fee scheme.
 </p><p>
 <img src="representative-asset-transfer.png">
@@ -41,24 +40,30 @@ LETS systems administer community currencies, and in 2004, Ryan Fugger came up w
 </p><p>
 When a computer system is capable of administering multiple interconnected LETS systems, it's a small step to setting it up with one "currency" per user. Of course, only that user's direct neighbors would except that currency, so trading your own currency as a tradable asset doesn't get you very far, and in such a system you basically need to rely entirely on network transactions.
 </p>
+<pre>
+4    5    6    7    8    9    10   11   12   13   14   15   16   17   18
+ripple              COND                               ILP       ILP/LUX SNAP
+                                   OpenTabs                 LedgerLoops NettingAtEq
+                         BTC            HTLC           LND            ILP/STREAM
+</pre>
 <h2>Multi-hop</h2><p>
 A banking network like SEPA can function well if all banks are connected with all other banks. But to achieve maximum reach with limited connections between nodes, multi-hop is useful. The way to do this was already invented in 2008, again by Ryan Fugger as we will see.
 </p><p>
 Fugger wrote down his ideas of interpersonal IOUs in a <a href="http://blog.hasslberger.com/docs/decentralizedcurrency.pdf">whitepaper</a> and implemented <a href="https://classic.ripple.com">RipplePay</a>, a server that can keep track of trustlines between users, and resolve debt loops when they occur. Implementing many people's trustlines on one processing server is a shortcut that simplifies a lot of the challenges, but it doesn't take advantage of the resilience and scalability a network architecture can offer. Fugger continued to work on his vision of an <a href="http://ripple-project.org/Implementation/Components.html">interserver Ripple system</a>, and in 2008, he proposed a version of the protocol with <a href="https://groups.google.com/d/msg/rippleusers/sPbKz7519ts/ktc6f5r6NT8J">conditional transfers and staggered timeouts</a>.
-I can recommend a blogpost by Adrian Hope-Bailie explaining <a href="https://adrian.hopebailie.com/the-power-of-conditional-payments-2d1ea531250a">the power of conditional payments</a>
 </p><p>
 A ledger transfer can be committed in one or two phases. In the simple case, one-phase commit, you just add the transfer to the ledger, done.
 In a two-phase commit, the first step is to block the funds on the sender's account, but not to credit the recipient's account yet. This first step specifies the conditions under which this transfer becomes final, and a timeout.
 In the <a href="http://ripple-project.org/Protocol/Protocol06.html">Ripple Distributed Transaction Protocol</a> (the protocol for the interserver Ripple system that eventually was never implementend), this first step was called a Promise (nowadays it's often called a conditional transfer).
+I can recommend a blogpost by Adrian Hope-Bailie explaining <a href="https://adrian.hopebailie.com/the-power-of-conditional-payments-2d1ea531250a">the power of conditional payments</a>
 </p><p>
 There are then two things that can happen in the second step: if the condition is not met before the timeout, the transfer is rolled back. This is called a Promise Release in interserver Ripple Classic; nowadays we often call this a "reject". If the condition is met, the transaction is committed.
 </p><p>
 Such two-phase commit transfers can be chained together: first, set up a transaction on ledger 1, then set up a transaction on ledger 2 with a shorter timeout. Once the transaction on ledger 2 is finalized, this dictates the fate of the transaction on ledger 1.
 </p><p>
 There were a few more iterations of the two-phase commit idea in more recent years.
-In 2015, the Interledger project <a href="https://groups.google.com/d/msg/rippleusers/q80f229KDX0/hKF9n1WMCAAJ">was launched</a>, leading to the definition of <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-01">crypto-conditions</a> as a very generic way to define conditional ledger transfers.
+In 2015, work on Network Ledger Technology resumed as the Interledger project <a href="https://groups.google.com/d/msg/rippleusers/q80f229KDX0/hKF9n1WMCAAJ">was launched</a>, with very similar goals as interserver Ripple CLassic. The Interledger project lead to the definition of <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-01">crypto-conditions</a> as a very generic way to define conditional ledger transfers.
 </p><p>
-A year later, I independently described LedgerLoops challenges as <a href="https://github.com/ledgerloops/ledgerloops.com/blob/b2b294de47723a439072a45dc1ff92a0bdf3625a/doc/whitepaper.pdf">cryptographically triggered IOUs</a>. When I showed my LedgerLoops whitepaper to my friend Melvin Carvalho, he pointed me to Interledger, and indeed the two projects were very similar.
+A year later, I independently invented LedgerLoops challenges as <a href="https://github.com/ledgerloops/ledgerloops.com/blob/b2b294de47723a439072a45dc1ff92a0bdf3625a/doc/whitepaper.pdf">cryptographically triggered IOUs</a>. When I showed my LedgerLoops whitepaper to my friend Melvin Carvalho, he pointed me to Interledger, and indeed the two projects were very similar, and I ended up working on Interledger for Ripple Luxembourg.
 </p>
 <h3>Hashlocks</h3><p>
 Parallel to these developments in what I'll call Network Ledger Technology (NLT), in 2009 the field of Distributed Ledger Technology (DLT) was born, with the launch of Bitcoin, a blockchain-based crypto-currency. The implementation of Bitcoin makes extensive use of the SHA256 hash function: a function that converts a secret into a hash, in such a way that on the one hand, it's easy to check that the hash indeeds corresponds to the secret, but on the other hand, when given only the hash of a secret, it's not easy to discover what the secret might have been.
@@ -122,9 +127,3 @@ I'm not actually sure whether Lightning supports quoting, but I'm pretty sure it
   * tying up liquidity
   * money transmitter service
 </p><p>
-<pre>
-4    5    6    7    8    9    10   11   12   13   14   15   16   17   18
-ripple              COND                               ILP       ILP/LUX SNAP
-                                   OpenTabs                 LedgerLoops NettingAtEq
-                         BTC            HTLC           LND            ILP/STREAM
-</pre>
