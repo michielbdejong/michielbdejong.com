@@ -1,129 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Network Ledger Technology</title>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Network Ledger Technology: The First 15 Years</title>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
-      body { margin: 0px auto; padding: 3em 0em 3em 0em; font:15px sans-serif; line-height:1.4em; width:50em; background-color: #101050; color: #EFEFEF }
-      h1 { font:75px sans-serif }
-      h2 { font:25px sans-serif }
-      p { text-align: justify }
-      p img { margin-top: 2em; margin-bottom: 2em; box-shadow: 0 0 2em #2020A0; border-radius: 0.5em  }
-      td img { margin: 1em; margin-left: 2em; border-radius: 0.5em }
-      a { color: #00FF00 }
-      table a { color: #008F00 }
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      footer { width: 40em; margin: 5em auto; color: white }
     </style>
   </head>
-  <body>
-
-<h1>Network Ledger Technology: The First 15 Years</h1>
-
-<h2>Network Money</h2><p>
-When I just moved to Madrid in 2005, I opened a bank account close to where I worked. What surprised me there were their banking fees: 1 euro for each transaction, and (it gets better) for recurring transactions, like paying my rent every month, the fee was even 1.50 euros. Of course, it doesn't cost the bank a euro to transfer the rent from my account to my landlord's account, and it definitely doesn't cost them an extra 50 cents to set up a cron job that does this once every month!
-</p><p>
-A bit insulted by the bank's steep fees, I went to my bank's branch (it was the Deutsche Bank branch on Calle Serrano) and took out the amount in banknotes and coins (they didn't charge a fee for this), then walked over, with the physical money in my pocket, to the BBVA branch around the corner, on Principe Vergara. There, between 11:00 and 12:00 you were allowed to deposit cash into any BBVA bank account, and that's how I paid my rent each month - with a healthy walk and refusing to participate in my bank's fee scheme.
-</p><p>
+    <header>
+      <h1>Network Ledger Technology:<br>The First 15 Years</h1>
+    </header>
+    <article>
+<h2>Network Ledger Technology</h2><p>
+Fifteen years ago, I used to live in Spain, and pay my rent on foot. Online banking existed, but costed one euro per bank transfer - and 1.50 for a recurring payment. I didn't want to pay 1.50 to my bank each month, so instead I would exchange my bank account balance for actual representative money, walk to the closest branch of my landlord's bank, and deposit it there, making his bank account balance go up.
+</p>
 <img src="representative-asset-transfer.png">
-The money transfer I used to execute on foot once a month
+<p>
+When you pay your rent using online banking, or with a recurring payment, your bank does not send actual bank notes to your landlord's bank. Instead, a network transfer is executed, and debt amounts in the databases ("ledgers") of both banks change, but you're not directly using representative money when you make a payment through the banking network.
 </p><p>
-We often think of money of something you can own and trade. And in the case of bank notes and coins which you physically carry, we can think of money as a tradable asset. Even balance at a specific bank can be thought of as a tradable asset, even when you transfer it to another account at the same bank by sending an authenticated message. Examples are Bitcoin and m-Pesa.
+In 2004, Ryan Fugger wrote a
+<a href="http://blog.hasslberger.com/docs/decentralizedcurrency.pdf">paper</a>
+explaining how payments through a social network could work in the same way as payments in the banking network. A ledger is just a database that keeps track of debt between people. It works with an append-only list of transactions that change the account balance. Your bank keeps a ledger with all the bank accounts of all its customers. But a tab behind the bar in your favorite cafe, or a piece of paper tracking what you owe your friends while you're on holiday together, or the database of a community currency ("LETS") system, can also be seen as a ledger.
 </p><p>
-But when I say I have money in my bank account, what I really mean is that the bank owes me money. And when I use my balance to pay someone at a different bank, it no longer makes sense to say I'm "sending money". 
-</p><p>
-My credit at my bank is reduced and someone else's credit at some other bank is increased.
-</p><p>
-This idea of 'network money' was already implemented in the <a href="https://en.wikipedia.org/wiki/Hawala">Hawala system</a> in the 8th century. However, the Hawala system did not have the digital technology yet that we have nowadays.
-</p><p>
-LETS systems administer community currencies, and in 2004, Ryan Fugger came up with the idea of effectively interconnecting such community currencies in the same way banks are interconnected. With that, the field of Network Ledger Technology (NLT) was born.
-</p><p>
-When a computer system is capable of administering multiple interconnected LETS systems, it's a small step to setting it up with one "currency" per user. Of course, only that user's direct neighbors would except that currency, so trading your own currency as a tradable asset doesn't get you very far, and in such a system you basically need to rely entirely on network transactions.
+What Fugger realized is that by exchanging messages, a network of ledgers could work together to create an experience as if you were transacting on a single network-wide ledger. He first implemented
+<a href="https://classic.ripple.com">RipplePay</a>,
+a single-server version of this idea. Although it didn't send network messages yet, it demonstrated his idea that the trust that is inherent in a (social) trade network can be used to coordinate that same trade, without the need for a separate network of banks. And with that, he founded the field of Network Ledger Technology was born.
 </p>
-<pre>
-4    5    6    7    8    9    10   11   12   13   14   15   16   17   18
-ripple              COND                               ILP       ILP/LUX SNAP
-                                   OpenTabs                 LedgerLoops NettingAtEq
-                         BTC            HTLC           LND            ILP/STREAM
-</pre>
-<h2>Multi-hop</h2><p>
-A banking network like SEPA can function well if all banks are connected with all other banks. But to achieve maximum reach with limited connections between nodes, multi-hop is useful. The way to do this was already invented in 2008, again by Ryan Fugger as we will see.
+
+<h2>Multihop</h2><p>
+In its most basic form, Network Ledger Technology (NLT) is any form of messaging that allows for "money transfer withouth money movement": Alice pays her agent, who does not forward the money itself, but instead sends a message to Bob's agent, and Bob's agents pays out an equivalent amount of money to Bob. The
+<a href="https://en.wikipedia.org/wiki/Hawala">Hawala network</a>
+already implemented this, and of course, so does the correspondent banking system.
 </p><p>
-Fugger wrote down his ideas of interpersonal IOUs in a <a href="http://blog.hasslberger.com/docs/decentralizedcurrency.pdf">whitepaper</a> and implemented <a href="https://classic.ripple.com">RipplePay</a>, a server that can keep track of trustlines between users, and resolve debt loops when they occur. Implementing many people's trustlines on one processing server is a shortcut that simplifies a lot of the challenges, but it doesn't take advantage of the resilience and scalability a network architecture can offer. Fugger continued to work on his vision of an <a href="http://ripple-project.org/Implementation/Components.html">interserver Ripple system</a>, and in 2008, he proposed a version of the protocol with <a href="https://groups.google.com/d/msg/rippleusers/sPbKz7519ts/ktc6f5r6NT8J">conditional transfers and staggered timeouts</a>.
+But the true power of NLT becomes apparent when three or more agents can sit inbetween Alice and Bob, so that there are multiple message hops involved.
 </p><p>
-A ledger transfer can be committed in one or two phases. In the simple case, one-phase commit, you just add the transfer to the ledger, done.
-In a two-phase commit, the first step is to block the funds on the sender's account, but not to credit the recipient's account yet. This first step specifies the conditions under which this transfer becomes final, and a timeout.
-In the <a href="http://ripple-project.org/Protocol/Protocol06.html">Ripple Distributed Transaction Protocol</a> (the protocol for the interserver Ripple system that eventually was never implementend), this first step was called a Promise (nowadays it's often called a conditional transfer).
-I can recommend a blogpost by Adrian Hope-Bailie explaining <a href="https://adrian.hopebailie.com/the-power-of-conditional-payments-2d1ea531250a">the power of conditional payments</a>
+In 2008, it was again Ryan Fugger who first proposed the two-phase commit system, using
+<a href="https://groups.google.com/d/msg/rippleusers/sPbKz7519ts/ktc6f5r6NT8J">conditional transfers and staggered timeouts</a>:
+first, each node along the route promises to pay the next node *if* a delivery receipt is presented. The destination node presents the delivery receipt, and this receipt is passed back along the path. If no valid receipt from the destination is presented within a certain timeout, the conditional transfer is rolled back. A good explanation is found in Adrian Hope-Bailie's blogpost
+"<a href="https://adrian.hopebailie.com/the-power-of-conditional-payments-2d1ea531250a">the power of conditional payments</a>".
 </p><p>
-There are then two things that can happen in the second step: if the condition is not met before the timeout, the transfer is rolled back. This is called a Promise Release in interserver Ripple Classic; nowadays we often call this a "reject". If the condition is met, the transaction is committed.
-</p><p>
-Such two-phase commit transfers can be chained together: first, set up a transaction on ledger 1, then set up a transaction on ledger 2 with a shorter timeout. Once the transaction on ledger 2 is finalized, this dictates the fate of the transaction on ledger 1.
-</p><p>
-There were a few more iterations of the two-phase commit idea in more recent years.
-In 2015, work on Network Ledger Technology resumed as the Interledger project <a href="https://groups.google.com/d/msg/rippleusers/q80f229KDX0/hKF9n1WMCAAJ">was launched</a>, with very similar goals as interserver Ripple CLassic. The Interledger project lead to the definition of <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-01">crypto-conditions</a> as a very generic way to define conditional ledger transfers.
-</p><p>
-A year later, I independently invented LedgerLoops challenges as <a href="https://github.com/ledgerloops/ledgerloops.com/blob/b2b294de47723a439072a45dc1ff92a0bdf3625a/doc/whitepaper.pdf">cryptographically triggered IOUs</a>. When I showed my LedgerLoops whitepaper to my friend Melvin Carvalho, he pointed me to Interledger, and indeed the two projects were very similar, and I ended up working on Interledger for Ripple Luxembourg.
+Although the delivery receipt could be implemented using a cryptographic signature, in 2012 Gregory Maxwell
+<a href="https://bitcointalk.org/index.php?topic=91843.msg1013304#msg1013304">proposed</a>
+a simpler option, and nowadays, most message-based NLT systems use SHA256 hashlocks to implement the two-phase commit: the promise specifies the SHA256 hash of a secret string. The commit message coming back carries that secret as the delivery receipt.
 </p>
-<h3>Hashlocks</h3><p>
-Parallel to these developments in what I'll call Network Ledger Technology (NLT), in 2009 the field of Distributed Ledger Technology (DLT) was born, with the launch of Bitcoin, a blockchain-based crypto-currency. The implementation of Bitcoin makes extensive use of the SHA256 hash function: a function that converts a secret into a hash, in such a way that on the one hand, it's easy to check that the hash indeeds corresponds to the secret, but on the other hand, when given only the hash of a secret, it's not easy to discover what the secret might have been.
-</p><p>
-Ryan Fugger had already propsed his design for a two-phase commit four years earlier, but in 2012, while talking about doing what would later be called a cross-chain atomic transaction (XCAT), Gregory Maxwell <a href="https://bitcointalk.org/index.php?topic=91843.msg1013304#msg1013304">proposed</a> the idea of a hashlock, or Hash Time Locked Contract (HTLC).
-</p><p>
-The idea is to use a secret string as the proof-of-payment, and then use the sha256 hash of that secret string to define the condition of the conditional ledger transfers that should be cryptographically triggered by that proof of delivery.
-In 2015, <a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a> was invented, and it was the first NLT system to use hashlocks not just for xcat (where there are just two ledgers involved), but for implementing multi-hop transactions in general, across ledger network.
-</p><p>
-The simple beauty of hashlocks was soon realised by others, and in November 2016, LedgerLoops <a href="https://github.com/ledgerloops/ledgerloops.com/commit/927536d317d9bb881eae1782050052b5e8e9c528#diff-f74fd036c29a9ae1b28bb57ba2e88568">switched to hashlocks</a>, <a href="https://github.com/interledger/rfcs/issues/153">followed</a> by Interledger in February 2017. The Raiden project uses <a href="https://github.com/raiden-network/raiden/issues/399">SHA-3 instead of SHA-256</a>, but otherwise their use of hashlocks for multi-hop is largely the same.
-</p>
-<h3>Synchronized Network Accounting</h3><p>
-A lot of time and energy was spent trying to define how two neighbors in an NLT network should message each other. Banks often send SWIFT messages to each other to coordinate network transfers, but for interpersonal transactions, a lot of the functionality of SWIFT isn't needed, while at the same time, SWIFT doesn't offer support for hashlocks and conditional transfers. Once I realized how similar the Interledger and LedgerLoops projects were, I joined Ripple to work on Interledger, and at the time, we were using a protocol that went by the slightly vacuous name of "plugin virtual". It was an idempotent http POSTs with a JSON format, where the secret and the condition were base64-encoded. The two peers would cross-post so that one HTTP request is made from payer to payee in the first phase, and one HTTP request from payee to payer is made in the second phase.
-</p><p>
-In 2018, Bob Way invented SNAP (which stands for Synchronized Network Accounting Protocol), and I recently implemented his idea as the basic protocol to use in the LedgerLoops project. SNAP is very similar to Plugin-Virtual, but it differs in that it not only describes what message sequences are valid, but it also has the very valuable quality that there are convergent balance semantics linked to it. This means that, even though the two peers can temporarily disagree on their latest account balances, if lost messages are resent until they get through, then once all messages have been delivered, both peers are guaranteed to have the exact same synchronized view of the ledger between them.
-</p><p>
-One tricky subject there is how timing disputes are dealt with; what if a hashlock secret was presented in time, but that message was lost or delayed on the data network, and when the message was eventually delivered, the timeout for the conditional transaction had already passed? There is no way to settle that, unless you go through some sort of timestamping server (the solution proposed by Fugger in 2008). In Plugin-Virtual, balances were allowed (and even expected) to go out-of-sync over time, and agreement was not expected on the ledger layer (only on the reconciliation layer that you would supposedly build on top of Plugin-Virtual). In SNAP, the payee is always right, at least at the protocol level. The reconciliation layer can then still dispute transactions and add revert transactions where both parties find that desirable.
-</p>
+
 <h2>Payments</h2><p>
-Network transactions can be used to rebalance a debt, or to make a payment.
-</p>
-<h3>Best-effort approach</h3><p>
-A best-effort payment is a payment that is not guaranteed to succeed entirely within any certain time.
-</p>
-<h4>Unpaid Transactions</h4><p>
-An example of best-effort payments is what I started working on myself in 2011, in the <a href="https://groups.google.com/d/msg/unhosted/2IUC2ralu-U/qwGENz65t_EJ">OpenTabs project</a>. The idea there is that instead of paying a friend, you just find peace in owing them money. The idea of settling debt loops was there from the start, but at the time I had no more than a handwavy idea of how to implement it. I had not heard of the two-phase commit which Fugger had already invented three years earlier, and at that time, at least to my knowledge, hashlocks had yet to be invented. I also had no good idea about how to detect debt loops without everybody exposing their personal information about their debt to one neighbor to their other neighbors.
-</p> <p>
-In 2016, I invented LedgerLoops as an improvement on OpenTabs, where both loop detection and loop resolution were dealt with a lot more effectively. As mentioned before, loop resolution was first done using a two-phase commit, with ledger transfers conditional on "LedgerLoops challenges"; simple cryptographic puzzles that were first based on elliptic curve signatures, and later using the SHA256 hash function.
-</p> <p>
-In the currently implemented version of LedgerLoops, loops need to be expressed in the <a href="https://unicurn.com">Universal Currency Reference (UCR)</a> - an Esperanto-like unit of value. This means loops will just fail to settle if someone tries to charge a transaction fee.
-In 2018, I invented Netting-at-Equilibrium which is an attempt to treat transaction fees as a feature - if someone is in a hurry to settle a loop, they may "cross the spread" to incentivize other to participate in that loop too.
-</p>
-<h4>Streaming Payments</h4><p>
-Another form of best-effort payments are the streaming payments currently offered by the Interledger project. They are similar to the post-trade loop resolution done by LedgerLoops, except that in ILP/STREAM, the transactions follow a semi-circle (from initiator to addressee) instead of a full circle.
-</p>
-<h3>All-or-Nothing Payments and Quoting</h3><p>
-The functionality originally envisioned by Ripple Classic, and also offered by for instance <a href="https://trustlines.network">TrustlinesNetwork</a> and by the version of Interledger we developed in Luxembourg, is that a network of ledgers should allow its users to make payments that either succeed within reasonable time, or fail within reasonable time. In the Luxembourg stack, we used <a href="https://github.com/interledger/rfcs/blob/4e8b3482988433372bc6f01a9044330a06343bb5/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md">Liquidity Routing</a> (pretty similar to the <a href="http://ripple-project.org/Protocol/KnowledgeRouting.html">KnowledgeRouting</a> envisioned in Ripple Classic).
+When using multi-hop transfers to implement payments, the sender should somehow indicate where in the network the intended recipient can be found. Fugger's
+<a href="http://ripple-project.org/Implementation/Components.html">hypothetical interserver Ripple system</a>
+would have used
+<a href="http://ripple-project.org/Protocol/KnowledgeRouting.html">KnowledgeRouting</a>
+and cells. In 2017 at the Interledger project we implemented something quite similar, called
+<a href="https://github.com/interledger/rfcs/blob/4e8b3482988433372bc6f01a9044330a06343bb5/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md">Liquidity Routing</a>,
+using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the Mojaloop network. Nowadays, I'm working on the
+<a href="https://unicurn.com">Unicurn</a>
+project which is basically a continuation of this line of research.
 </p><p>
-Another thing that I think was pretty cool in the Luxembourg stack (but no longer supported by ILP/STREAM) was the quoting protocol: a user could first ask for a quote to see if they agree with the exchange rate and transaction fee, before they commit to making a payment. Of course, the payee can see how much arrives, and the payer can include instructions like 'only accept this payment if at least 99 USD arrives', when for instance paying 100 USD and being willing to pay at most a 1% fee. But that has the problem that if intermediaries intercept that message and are able to read it, they could just charge the full 1%, and also it means users need to think what fee percentage their absolute limit is in each situation, which is harder than reacting with yes or no to a specific quote.
+A quite different but remarkably clever approach to using Network Ledger Technology for payments is the
+<a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a>:
+there, connections in the network are not trade credit relationships, but random connections between strangers, backed by a layer of Distributed Ledger Technology (DLT), namely the Bitcoin ledger. Routing in the Lightning Network uses route broadcast messages and routing hints in payments replace the role of Fugger's cells and Interledger's address prefixes.
 </p><p>
-I'm not actually sure whether Lightning supports quoting, but I'm pretty sure it does support all-or-nothing payments.
+On one side of the spectrum, Lightning Network does not use the trust between people, and only serves to increase the performance of the underlying DLT system. One interesting consequence of the random connections and onion routing is that when you forward someone else's payment in the Lightning Network, even if you are being paid a commission for doing so, you have no way of know who your customer is, and so in a sense, you are not offering a money transfer service.
+</p><p>
+At the other end of the spectrum are commercial banks which are tightly regulated, and which now also start to use multi-hop correspondent banking.
+</p><p>
+For most other NLT systems in between, a network participant will probably need to take some responsibility for which payments they forward, and this sometimes makes it a bit harder to convince people to configure their NLT node as an open relay.
 </p>
-<h2>Hybrid systems</h2>
-<h3>NLT on top of DLT: Lightning Network</h3>
-<p>Lightning Network can be seen as a network of trustlines on top of Bitcoin. With that, it has a clever niche in that any bitcoin user can peer with any other bitcoin user in the Lightning Network, even if they don't trust this other user for one cent. With that, Lightning is able to implement onion routing, which provides some anonymity, and is at the same time a good protection against being seen as a money transmitter when you just participate in a social network ledger.
-</p>
-<h3>NLT pegged to DLT: Trustlines Network</h3>
-<p>Apart from being implemented in an Ethereum smart contract, Trustlines Network uses Ethereum in a second way: since you are always somehow connected to someone who is willing to send ETH in exchange for network money, the value of your balance on the trustlines with your peers can be expressed in ETH. Of course, this only works well as long as everybody's trustline balance is still quite removed from the limit, otherwise the value of a unit on that trustline will be worth a lot less.
-</p>
-<h2>Routing Payments</h3>
-  4.1 onion routing: innovative way to think of network, requires a layer-1 blockchain for the actual trust
-  4.2 semi-total knowledge:
-    * Fugger's KnowledgeRouting and Cells; Luxembourg Stack
-    * liquidity routing: The Luxembourg Stack, 2017 
 
-<h2>Cycle Detection</h2>
-
-<h2>Fees, Incentives, and Regulation</h2>
-  * free-option -> xcat with rollback https://github.com/interledger/interledger/wiki/Testnet-of-Testnets-design
-  * make your competitor look bad
-  * tying up liquidity
-  * money transmitter service
+<h2>Streaming</h2><p>
+In 2018, Evan Schwartz
+<a href="https://medium.com/interledger-blog/simplifying-interledger-the-graveyard-of-possible-protocol-features-b35bf67439be">invented a simplified version</a>
+of our Luxembourg Interledger system: ILP/STREAM. It does not support all-or-nothing payments, but instead proposes to resolve debts bit-by-bit using tiny payments. Since the payments are so small and generally occur in streams with lots of other small payments to the same destination, it's not necessary to keep track of price information in the routing table. Instead, streams can start splitting over multiple paths, and whichever path proves more reliable and cheaper, receives more and more traffic as the stream continues. ILP/STREAM does use hierarchical Interledger adresses, and it also uses the two-phase commit principle to ripple value through the network.
 </p><p>
+An additional advantage of allowing only many small payments is that a link in the network can efficiently be implemented using an unconditional payment channel on top of a DLT layer. After each small payment, a new payment channel claim can be exchanged, which resets the trustline between two nodes, thus allowing for one-way traffic with many times the value of the maximum trust limit between the peers (as long as both trust the same DLT system).
+</p><p>
+Coil uses ILP/STREAM to offer a flatrate donations platform.
+</p>
+
+<h2>Debt loops</h2><p>
+Taking the idea of streaming payments one step further, NLT could also be used to settle debt loops. In a way, in-network is the ultimate way to coordinate trade, since no payment services are needed. The flows of goods and services are not traded against counter-flows of money, but are written down in one ledger per trade relationship, and then netted out directly between themselves.
+</p><p>
+In 2011, I published the
+<a href="https://groups.google.com/d/msg/unhosted/2IUC2ralu-U/qwGENz65t_EJ">OpenTabs</a>
+idea, which promoted leaving debts unpaid, but also had a handwavy idea of loop detection by sharing your friendlist with your close friends.
+</p><p>
+In 2016 I rebooted the OpenTabs project under the name LedgerLoops, and included a more detailed (but unfinished) distributed loop detection algorithm, and an implementation of debt loop resolution using circular hashlock transactions.
+</p><p>
+In 2018, I implemented an improved loop detection algorithm based on probes, and drafted an idea for netting at equilibrium.
+</p><p>
+Whereas in general LedgerLoops does not support exchange rates or transaction fees, with netting at equilibrium, each node considers its neighbors as potential trade pairs.
+</p><p>
+It would be willing to trade between any two of its neighbors, but can demand any exchange rate they want. If a node wants a trade to happen, they can slowly improve their exchange rate offer for that pair, until payments start flowing over that path. The idea is that whoever is in more of a hurry to get rid of a certain debt, can cross the spread to make the debt resolution happen. This would still not count as money transfer, since each node is only exchanging their own credit with their own direct neighbors, not offering a service for a stranger.
+</p><p>
+The main problem with using an NLT system that only supports debt loop resolution and/or streaming, is that it's not usable as a payment system. For instance, when buying a coffee in a cafe, you want the debt to be settled in a matter of seconds, not a week later. Otherwise you would have to stay inside the cafe for all that time, or the cafe has no guarantee of payment before you leave. Also, you don't know what the exchange rate is going to be.
+</p>
+
+<h2>Conclusion</h2><p>
+  Network Ledger Technology (NLT) is an exciting new field of research, and a lot has happened in various small research projects over the last 15 years. Currently, ILP/STREAM is being developed for streaming payments, LightningNetwork (NLT on top of Bitcoin),
+<a href="https://trustlines.network">TrustlinesNetwork</a>
+ (on top of Ethereum) and Unicurn (pure messaging) are being developed for all-or-nothing payments, and LedgerLoops is being developed for debt loop resolution.
+</p><p>
+This overview is still under development, let me know if you know of any other NLT projects or developments that should be mentioned in it!
+</p>
+    </article>
+  </body>
+</html>
