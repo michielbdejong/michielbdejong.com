@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Synchronized Network Accounting Protocol (SNAP)</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+
+    <!-- Browser Donations: Flattr -->
+    <meta name="flattr:id" content="qjjrw5">
+
+    <!-- Browser Donations: LedgerLoops -->
+    <link rel="ledger" href="wss://monetization-hubbie.herokuapp.com">
+
+    <!-- Browser Donations: Coil -->
+    <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+    <script src="https://cdn.coil.com/donate.js"></script>
+    <script>
+    window.WebMonetizationScripts.donate({
+      paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
+    })
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Synchronized Network Accounting Protocol (SNAP)</h1>
+    </header>
+    <article>
+<h2>An Open Protocol for Peer-to-Peer Ledgers</h2><p>
+Correspondent banking is usually implemented using a nostro/vostro account, on a ledger administered by one of the two banks.
+But last spring a colleague of mine at Ripple, Bob Way, showed me his design for a protocol that would allow the two banks to administer a bilateral ledger cooperatively. His Synchronized Network Accounting Protocol (abbreviated SNAP) is guaranteed to be convergent (the two parties will eventually reach consensus on the current ledger state), yet it is much simpler and more efficient than the multilateral consensus ledgers we know from the DLT scene. This blogpost describes my open source implementation of SNAP.
+</p><h2>Messaging</h2><p>
+At the lowest layer, SNAP requires the two participating parties to be able to communicate with each other, for instance over IP. The next layer up would be message integrity, for instance https. This is a generic solution for making sure that each message either arrives intact, or does not arrive at all, and that no messages arrive that were not sent by the other party. This layer also ensures that the order in which messages are delivered is the same as the order in which they were sent. On top of the message integrity layer are SNAP's idempotent messages and acknowledgements. They are UTF-8 JSON encoded objects with, among other fields, a msgId and a msgType field. There are four message types: PROPOSE, ACCEPT, REJECT, and ACK. At this layer, PROPOSE, ACCEPT, or REJECT messages with the same msgId can be repeated indefinitely, as long as the content is identical each time, until an ACK with the same msgId is received. At that point, the sender can stop repeating the message, and both parties know that this message was sent, and that it was received and acknowledged.
+</p><h2>Ledger Entries</h2><p>
+For each party, the msgId of PROPOSE messages should be an increasing integer, starting with zero. So if Alice sends a message with msgId 17, then this is her 18th PROPOSE message sent (regardless of how many PROPOSE messages went in the other direction).
+Both ACCEPT and REJECT messages respond to a PROPOSE message, and like ACK messages, they should copy the msgId from the PROPOSE message. As you might expect, if a PROPOSE message is responded to with an ACCEPT message, then the ledger entry state will change from pending to accepted, and if it is responded to with a REJECT message, then the ledger entry state will change from pending to rejected. This way, the ledger between Alice and Bob contains two ordered append-only lists: proposals from Alice (whether pending, accepted, or rejected), and proposals from Bob (whether pending, accepted, or rejected). Pending proposals can become accepted or rejected after they have been appended to one of these two lists, but after that, no more changes to that ledger entry are possible.
+</p><h2>Balances and Overdraft Limits</h2><p>
+At the next layer up, ledger entries take on a meaning with regards to financial bookkeeping. Each PROPOSE message has an amount and a unit. The amount is an integer, so for instance to write down 1.34 USD, you could set the amount to 134 and the unit to "1E-2 USD". Optionally, a PROPOSE message specifies named from and to accounts, although if these fields are left out, it's implied that the transaction is from the sender of the message, to its recipient. There could be many more named accounts on the ledger than just the two messaging parties, though.
+The two lists of ledger entries, and they states they are in, determine three balance amounts for each named ledger account: current, payable, and receivable. Current is the sum of amounts of accepted entries to this account, minus the sum of amounts of accepted and pending entries from this account. Payable is the sum of amounts of pending entries from this account, and receivable is the sum of amounts of pending entries to this account. This means that when a ledger entry is first proposed:<ul>
+<li> the current balance of the from account decreases by the proposed amount</li>
+<li> the payable balance of the from account increases by the proposed amount</li>
+<li> the receivable balance of the to account increases by the proposed amount</li>
+</ul>
+
+</p><p>
+When a ledger entry is rejected, the amount moves back from payable to current for the from account, and disappears from the receivable balance of the to account.
+</p><p>
+When a ledger entry is accepted, the amount disappears from the payable balance of the from account, and moves from receivable to current for the to account.
+</p><p>
+To limit risk, a sensible mechanism would be to put a limit on one's own current+receivable balance, since that is the maximum loss you would make if the other party would refuse to settle this ledger.
+</p><h2>Example</h2><p>
+Alice to Bob:
+<pre>
+{
+  "msgId": 0,
+  "msgType": "PROPOSE",
+  "amount": 134,
+  "unit": "1E-2 USD",
+  "condition": "324rf23dqw3a4r432qszdfq43htay",
+  "expiresAT": "2018-12-31 14:34.212"
+}
+</pre>
+Bob to Alice:
+<pre>
+{
+  "msgId": 0,
+  "msgType": "ACK",
+}
+{
+  "msgId": 0,
+  "msgType": "ACCEPT",
+  "preimage": "4t4q3sdregethbeythbergxzf4rwa34eytwserdf"
+}
+</pre>
+Alice to Bob:
+<pre>
+{
+  "msgId": 0,
+  "msgType": "ACK",
+}
+</pre>
+Note that in this example, the proposal is conditional, and its acceptance contains the preimage of a hashlock. The SNAP protocol does not specify how to verify whether Bob presented the correct preimage to be able to receive the conditional transfer from Alice, nor whether he sent his ACCEPT message in time before the expiresAt timeout. Both those issues would be for Alice and Bob to reconcile out of band.
+   </article>
+  </body>
+</html>
