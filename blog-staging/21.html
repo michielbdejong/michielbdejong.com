@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="author" href="https://michielbdejong.com/" />
-    <title>Network Ledger Technology: The First 15 Years</title>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <style>
-      body { background-color: #A3DDDF }
-      header { width: 40em; margin: 5em auto; color: white }
-      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
-      footer { width: 40em; margin: 5em auto; color: white }
-    </style>
+ <head>
+ <link rel="author" href="https://michielbdejong.com/" />
+ <title>Network Ledger Technology: The First 15 Years</title>
+ <meta charset="utf-8" />
+ <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+ <link rel="icon" href="/favicon.ico" type="image/x-icon">
+ <style>
+ body { background-color: #A3DDDF }
+ header { width: 40em; margin: 5em auto; color: white }
+ article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+ footer { width: 40em; margin: 5em auto; color: white }
+ </style>
 
-    <!-- Browser Donations: Flattr -->
-    <meta name="flattr:id" content="qjjrw5">
+ <!-- Browser Donations: Flattr -->
+ <meta name="flattr:id" content="qjjrw5">
 
-    <!-- Browser Donations: LedgerLoops -->
-    <link rel="ledger" href="wss://monetization-hubbie.herokuapp.com">
+ <!-- Browser Donations: LedgerLoops -->
+ <link rel="ledger" href="wss://monetization-hubbie.herokuapp.com">
 
-    <!-- Browser Donations: Coil -->
-    <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
-    <script src="https://cdn.coil.com/donate.js"></script>
-    <script>
-    window.WebMonetizationScripts.donate({
-      paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
-    })
-    </script>
-  </head>
-  <body>
-    <header>
-      <h1>Network Ledger Technology:<br>The First 15 Years</h1>
-    </header>
-    <article>
+ <!-- Browser Donations: Coil -->
+ <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+ <script src="https://cdn.coil.com/donate.js"></script>
+ <script>
+ window.WebMonetizationScripts.donate({
+ paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
+ })
+ </script>
+ </head>
+ <body>
+ <header>
+ <h1>Network Ledger Technology:<br>The First 15 Years</h1>
+ </header>
+ <article>
 <h2>Network Ledger Technology</h2><p>
-Fifteen years ago, I used to live in Spain, and pay my rent on foot. Online banking existed, but costed one euro per bank transfer - and 1.50 for a recurring payment. I didn't want to pay 1.50 to my bank each month, so instead I would exchange my bank account balance for actual representative money, walk to the closest branch of my landlord's bank, and deposit it there, making his bank account balance go up.
+Fifteen years ago, I used to live in Spain, and pay my rent on foot. Online banking existed, but costed one euro per bank transfer - and (ridiculously) 1.50 if part of a recurring payment. I didn't want to pay 1.50 to my bank each month, so instead I would exchange my bank account balance for actual bank notes, walk to the closest branch of my landlord's bank, and deposit it there, making his bank account balance go up.
 </p>
 <img src="representative-asset-transfer.png">
 <p>
-When you pay your rent using online banking, or with a recurring payment, your bank does not send actual bank notes to your landlord's bank. Instead, a network transfer is executed, and debt amounts in the databases ("ledgers") of both banks change, but you're not directly using representative money when you make a payment through the banking network.
+The value bank notes have is already a social construct. But when you pay your rent using online banking, or with a recurring payment, your bank does not even transfer such bank notes to your landlord's bank. Instead, a <em>network transfer</em> is executed, and debt amounts in the databases ("ledgers") of both banks change, but you're not directly using currency when you make a payment through the banking network.
 </p><p>
 In 2004, Ryan Fugger wrote a
 <a href="http://blog.hasslberger.com/docs/decentralizedcurrency.pdf">paper</a>
-explaining how payments through a social network could work in the same way as payments in the banking network. A ledger is just a database that keeps track of debt between people. It works with an append-only list of transactions that change the account balance. Your bank keeps a ledger with all the bank accounts of all its customers. But a tab behind the bar in your favorite cafe, or a piece of paper tracking what you owe your friends while you're on holiday together, or the database of a community currency ("LETS") system, can also be seen as a ledger.
+explaining how payments through a social network could work in the same way as payments in the banking network. A ledger is just a database that keeps track of debt between people. It works with an append-only list of transactions that change the account balance. Your bank keeps a ledger with all the bank accounts of all its customers. But a tab behind the bar in your favorite cafe, a piece of paper tracking what you owe your friends while you're on holiday together, or the database of a community currency ("LETS") system, can also be seen as a ledger.
 </p><p>
 What Fugger realized is that by exchanging messages, a network of ledgers could work together to create an experience as if you were transacting on a single network-wide ledger. He first implemented
-<a href="https://classic.ripple.com">RipplePay</a>,
-a single-server version of this idea. Although it didn't send network messages yet, it demonstrated his idea that the trust that is inherent in a (social) trade network can be used to coordinate that same trade, without the need for a separate network of banks. And with that, he founded the field of Network Ledger Technology was born.
+<a href="https://classic.ripplepay.com">RipplePay</a>,
+a single-server version of this idea. Although it didn't send network messages yet, it demonstrated his idea that the trust that is inherent in a (social) trade network can be used to coordinate that same trade, without the need for a separate network of banks. And with that, the field of Network Ledger Technology was born.
 </p>
 
 <h2>Multihop</h2><p>
@@ -58,11 +58,11 @@ But the true power of NLT becomes apparent when three or more agents can sit inb
 </p><p>
 In 2008, it was again Ryan Fugger who first proposed the two-phase commit system, using
 <a href="https://groups.google.com/d/msg/rippleusers/sPbKz7519ts/ktc6f5r6NT8J">conditional transfers and staggered timeouts</a>:
-first, each node along the route promises to pay the next node *if* a delivery receipt is presented. The destination node presents the delivery receipt, and this receipt is passed back along the path. If no valid receipt from the destination is presented within a certain timeout, the conditional transfer is rolled back. A good explanation is found in Adrian Hope-Bailie's blogpost
+first, each node along the route promises to pay the next node <em>if</em> a delivery receipt is presented. The destination node presents the delivery receipt, and this receipt is passed back along the path. If no valid receipt from the destination is presented within a certain timeout, the conditional transfer is rolled back. A good explanation is found in Adrian Hope-Bailie's blogpost
 "<a href="https://adrian.hopebailie.com/the-power-of-conditional-payments-2d1ea531250a">the power of conditional payments</a>".
 </p><p>
 Although the delivery receipt could be implemented using a cryptographic signature, in 2012 Gregory Maxwell
-<a href="https://bitcointalk.org/index.php?topic=91843.msg1013304#msg1013304">proposed</a>
+<a href="https://bitcointalk.org/index.php?topic=91843.msg1013304#msg1013304">invented hashlocks</a> as
 a simpler option, and nowadays, most message-based NLT systems use SHA256 hashlocks to implement the two-phase commit: the promise specifies the SHA256 hash of a secret string. The commit message coming back carries that secret as the delivery receipt.
 </p>
 
@@ -72,52 +72,57 @@ When using multi-hop transfers to implement payments, the sender should somehow 
 would have used
 <a href="http://ripple-project.org/Protocol/KnowledgeRouting.html">KnowledgeRouting</a>
 and cells. In 2017 at the Interledger project we implemented something quite similar, called
-<a href="https://github.com/interledger/rfcs/blob/4e8b3482988433372bc6f01a9044330a06343bb5/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md">Liquidity Routing</a>,
-using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the Mojaloop network. Nowadays, I'm working on the
+<a href=" https://github.com/interledger/rfcs/blob/b2872f36eda171866a6c32533438c31cada10f97/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md#next-version-liquidity-routing">Liquidity Routing</a>,
+using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the <a href="http://mojaloop.io/">Mojaloop</a> network. Nowadays, I'm working on the
 <a href="https://unicurn.com">Unicurn</a>
 project which is basically a continuation of this line of research.
 </p><p>
 A quite different but remarkably clever approach to using Network Ledger Technology for payments is the
 <a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a>:
-there, connections in the network are not trade credit relationships, but random connections between strangers, backed by a layer of Distributed Ledger Technology (DLT), namely the Bitcoin ledger. Routing in the Lightning Network uses route broadcast messages and routing hints in payments replace the role of Fugger's cells and Interledger's address prefixes.
+there, connections in the network are not trade credit relationships, but random connections between strangers, backed by a layer of Distributed Ledger Technology (DLT), namely the Bitcoin ledger. Onion routing is used to anonymize payment traffic. Pathfinding in the Lightning Network uses route broadcast messages and routing hints in payments replace the role of Fugger's cells and Interledger's address prefixes.
 </p><p>
-On one side of the spectrum, Lightning Network does not use the trust between people, and only serves to increase the performance of the underlying DLT system. One interesting consequence of the random connections and onion routing is that when you forward someone else's payment in the Lightning Network, even if you are being paid a commission for doing so, you have no way of know who your customer is, and so in a sense, you are not offering a money transfer service.
+On one side of the spectrum, Lightning Network does not use the trust between people, and only serves to increase the performance of the underlying DLT system. One interesting consequence of the random connections and onion routing is that when you forward someone else's payment in the Lightning Network, even if you are being paid a commission for doing so, you have no way of knowing who your customer is, and so in a sense, you are not offering a money transmission service.
 </p><p>
-At the other end of the spectrum are commercial banks which are tightly regulated, and which now also start to use multi-hop correspondent banking.
+At the other end of the spectrum are commercial banks which are tightly regulated, and it's Ripple.com (the startup born out of the Ripple project) who are now <a href="https://ripple.com/insights/siam-commercial-bank-pioneers-ripplenets-multi-hop-feature/">pioneering the multi-hop feature</a> there too.
 </p><p>
 For most other NLT systems in between, a network participant will probably need to take some responsibility for which payments they forward, and this sometimes makes it a bit harder to convince people to configure their NLT node as an open relay.
 </p>
 
 <h2>Streaming</h2><p>
 In 2018, Evan Schwartz
-<a href="https://medium.com/interledger-blog/simplifying-interledger-the-graveyard-of-possible-protocol-features-b35bf67439be">invented a simplified version</a>
-of our Luxembourg Interledger system: ILP/STREAM. It does not support all-or-nothing payments, but instead proposes to resolve debts bit-by-bit using tiny payments. Since the payments are so small and generally occur in streams with lots of other small payments to the same destination, it's not necessary to keep track of price information in the routing table. Instead, streams can start splitting over multiple paths, and whichever path proves more reliable and cheaper, receives more and more traffic as the stream continues. ILP/STREAM does use hierarchical Interledger adresses, and it also uses the two-phase commit principle to ripple value through the network.
+<a href="https://medium.com/interledger-blog/simplifying-interledger-the-graveyard-of-possible-protocol-features-b35bf67439be">drastically simplified</a>
+our Luxembourg Interledger system and proposed its successor: <a href="https://interledger.org/rfcs/0001-interledger-architecture/">ILP/STREAM</a>. It allows users to resolve debts bit-by-bit using "<a href="https://medium.com/interledger-blog/make-a-chunked-payment-on-interledger-26e74607e202">chunked payments</a>" instead of all-or-nothing payments.
+</p><p>
+Since the payment chunks are so small and generally occur in streams with lots of other small payment chunks to the same destination, it's not necessary to keep track of price information in the routing table. Instead, streams can start splitting over multiple paths, and whichever path proves more reliable and cheaper, receives more and more traffic as the stream continues. ILP/STREAM does use hierarchical Interledger adresses for pathfinding, and uses SHA256 hashlocks to let multi-hop transactions "ripple" through the network.
 </p><p>
 An additional advantage of allowing only many small payments is that a link in the network can efficiently be implemented using an unconditional payment channel on top of a DLT layer. After each small payment, a new payment channel claim can be exchanged, which resets the trustline between two nodes, thus allowing for one-way traffic with many times the value of the maximum trust limit between the peers (as long as both trust the same DLT system).
 </p><p>
-Coil uses ILP/STREAM to offer a flatrate donations platform.
+<a href="https://coil.com">Coil.com</a> use ILP/STREAM to offer a flatrate donations platform.
 </p>
 
 <h2>Debt loops</h2><p>
-Taking the idea of streaming payments one step further, NLT could also be used to settle debt loops. In a way, in-network is the ultimate way to coordinate trade, since no payment services are needed. The flows of goods and services are not traded against counter-flows of money, but are written down in one ledger per trade relationship, and then netted out directly between themselves.
+Taking the idea of streaming payments one step further, NLT could also be used to settle debt loops. In a way, in-network multilateral netting is the ultimate way to coordinate trade, since no payment services are needed. The flows of goods and services are not traded against counter-flows of money, but are written down in one ledger per trade relationship, and then netted out directly between themselves.
 </p><p>
 In 2011, I published the
 <a href="https://groups.google.com/d/msg/unhosted/2IUC2ralu-U/qwGENz65t_EJ">OpenTabs</a>
 idea, which promoted leaving debts unpaid, but also had a handwavy idea of loop detection by sharing your friendlist with your close friends.
 </p><p>
-In 2016 I rebooted the OpenTabs project under the name LedgerLoops, and included a more detailed (but unfinished) distributed loop detection algorithm, and an implementation of debt loop resolution using circular hashlock transactions.
+In 2016 I rebooted the OpenTabs project under the name <a href="https://ledgerloops.com">LedgerLoops</a>, and included a more detailed (but unfinished) distributed loop detection algorithm, and an implementation of debt loop resolution using circular hashlock transactions.
 </p><p>
 In 2018, I implemented an improved loop detection algorithm based on probes, and drafted an idea for netting at equilibrium.
 </p><p>
 Whereas in general LedgerLoops does not support exchange rates or transaction fees, with netting at equilibrium, each node considers its neighbors as potential trade pairs.
 </p><p>
-It would be willing to trade between any two of its neighbors, but can demand any exchange rate they want. If a node wants a trade to happen, they can slowly improve their exchange rate offer for that pair, until payments start flowing over that path. The idea is that whoever is in more of a hurry to get rid of a certain debt, can cross the spread to make the debt resolution happen. This would still not count as money transfer, since each node is only exchanging their own credit with their own direct neighbors, not offering a service for a stranger.
+A node would be willing to trade between any two of its neighbors, but can demand any exchange rate they want. If a node wants a trade to happen, they can slowly improve their exchange rate offer for that pair, until payments start flowing over that path. The idea is that whoever is in more of a hurry to get rid of a certain debt, can cross the spread to make the debt resolution happen. This would still not count as money transmission, since each node is only exchanging their own credit with their own direct neighbors, not offering a service for a stranger.
 </p><p>
-The main problem with using an NLT system that only supports debt loop resolution and/or streaming, is that it's not usable as a payment system. For instance, when buying a coffee in a cafe, you want the debt to be settled in a matter of seconds, not a week later. Otherwise you would have to stay inside the cafe for all that time, or the cafe has no guarantee of payment before you leave. Also, you don't know what the exchange rate is going to be.
+The main problem with using an NLT system that only supports debt loop resolution and/or streaming, is that it's not usable as a payment system. For instance, when buying a coffee in a cafe, you want the debt to be settled in a matter of seconds, not a week later. Otherwise you would have to stay inside the cafe for all that time, or the cafe has no guarantee of payment before you leave. So you would want the entire debt of the coffee to be settled quickly.
+If no multi-hop path can be found for the payment, or if the best exchange rate is not good enough, you want to have the option to pay another way, and not end up stuck with a partially settled debt to the cafe.
+</p><p>
+Therefore, I decided that apart from working on LedgerLoops, I will also work on Unicurn, which will be a simplified version of the <a href="https://github.com/interledgerjs/ilp-kit">ilp-kit</a> software we developed at Ripple, and as far as I know is now the only project focused on purely message-based network ledger technology for all-or-nothing payments. In that sense, it's also an attempt to continue developing the original Ripple Classic vision that started the Network Ledger Technology field, now almost fifteen years ago.
 </p>
 
 <h2>Conclusion</h2><p>
-  Network Ledger Technology (NLT) is an exciting new field of research, and a lot has happened in various small research projects over the last 15 years. Currently, there are roughly five active projects:</p>
+ Network Ledger Technology (NLT) is an exciting new field of research, and a lot has happened in various small research projects over the last 15 years. Currently, there are roughly five active projects:</p>
 <p>
 LightningNetwork (NLT on top of Bitcoin),
 <a href="https://trustlines.network">TrustlinesNetwork</a>
@@ -127,6 +132,6 @@ And finally, LedgerLoops is being developed for debt loop resolution.
 </p><p>
 This overview is still under development, let me know if you know of any other NLT projects or developments that should be mentioned in it!
 </p>
-    </article>
-  </body>
+ </article>
+ </body>
 </html>
