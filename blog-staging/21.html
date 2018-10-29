@@ -73,9 +73,7 @@ would have used
 <a href="http://ripple-project.org/Protocol/KnowledgeRouting.html">KnowledgeRouting</a>
 and cells. In 2017 at the Interledger project we implemented something quite similar, called
 <a href=" https://github.com/interledger/rfcs/blob/b2872f36eda171866a6c32533438c31cada10f97/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md#next-version-liquidity-routing">Liquidity Routing</a>,
-using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the <a href="http://mojaloop.io/">Mojaloop</a> network. Nowadays, I'm working on the
-<a href="https://unicurn.com">Unicurn</a>
-project which is basically a continuation of this line of research.
+using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the <a href="http://mojaloop.io/">Mojaloop</a> network.
 </p><p>
 A quite different but remarkably clever approach to using Network Ledger Technology for payments is the
 <a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a>:
@@ -117,8 +115,15 @@ A node would be willing to trade between any two of its neighbors, but can deman
 </p><p>
 The main problem with using an NLT system that only supports debt loop resolution and/or streaming, is that it's not usable as a payment system. For instance, when buying a coffee in a cafe, you want the debt to be settled in a matter of seconds, not a week later. Otherwise you would have to stay inside the cafe for all that time, or the cafe has no guarantee of payment before you leave. So you would want the entire debt of the coffee to be settled quickly.
 If no multi-hop path can be found for the payment, or if the best exchange rate is not good enough, you want to have the option to pay another way, and not end up stuck with a partially settled debt to the cafe.
+</p>
+<h2>Coming Soon: The Unicurn Network</h2><p>
+Fugger's hypothetical interserver Ripple System was never implemented. Since then, we've seen quite a few projects that propose a central database to which people can submit their IOUs (the <a href="https://groups.google.com/forum/#!forum/rippleusers">Ripple Users</a> mailinglist contains a lot of references to people's personal projects), but not many message-based systems that are not tied to a specific DLT ledger like Lightning.
 </p><p>
-Therefore, I decided that apart from working on LedgerLoops, I will also work on Unicurn, which will be a simplified version of the <a href="https://github.com/interledgerjs/ilp-kit">ilp-kit</a> software we developed at Ripple, and as far as I know is now the only project focused on purely message-based network ledger technology for all-or-nothing payments. In that sense, it's also an attempt to continue developing the original Ripple Classic vision that started the Network Ledger Technology field, now almost fifteen years ago.
+It seems that the <a href="https://github.com/interledgerjs/ilp-kit">ilp-kit stack</a> we developed at Ripple was the most advanced working implementation of a purely message-based Network Ledger in the sense of Fugger's seminal paper, but it has been deprecated and superseded by ILP/STREAM.
+</p><p>
+This means that something that's currently missing from the field of Network Ledger Technology is a good strawman project that implements simple all-or-nothing payments based on interserver messaging.
+</p><p>
+Therefore, I decided that apart from working on LedgerLoops, I will also work on what I'll call the <a href="https://unicurn.network">Unicurn Network</a>. The basic idea is to form a network of <a href="./20.html">SNAP</a> links and use landmarks as routing hints. To simplify the technical requirements and to discourage speculation, all multi-hop transactions in the Unicurn Network should have the <a href="https://unicurn.com">Unicurn</a> as their unit of value (hence the name). Unicurn Network will be my attempt to continue developing the original Ripple Classic vision that started the exciting field of Network Ledger Technology, now almost 15 years ago.
 </p>
 
 <h2>Conclusion</h2><p>
@@ -126,8 +131,8 @@ Therefore, I decided that apart from working on LedgerLoops, I will also work on
 <p>
 LightningNetwork (NLT on top of Bitcoin),
 <a href="https://trustlines.network">TrustlinesNetwork</a>
- (RipplePay in an Ethereum contract) and Unicurn (pure messaging) are being developed for all-or-nothing payments.
-ILP/STREAM is being developed for streaming payments.
+ (RipplePay in an Ethereum contract) and <a href="https://unicurn.network">Unicurn Network</a> (pure messaging) are being developed for all-or-nothing payments.
+ILP/STREAM is being developed for streaming and chunked payments.
 And finally, LedgerLoops is being developed for debt loop resolution.
 </p><p>
 This overview is still under development, let me know if you know of any other NLT projects or developments that should be mentioned in it!
