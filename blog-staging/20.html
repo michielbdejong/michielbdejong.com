@@ -1,92 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="author" href="https://michielbdejong.com/" />
-    <title>Synchronized Network Accounting Protocol (SNAP)</title>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <style>
-      body { background-color: #A3DDDF }
-      header { width: 40em; margin: 5em auto; color: white }
-      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
-      footer { width: 40em; margin: 5em auto; color: white }
-    </style>
+ <head>
+ <link rel="author" href="https://michielbdejong.com/" />
+ <title>Synchronized Network Accounting Protocol (SNAP)</title>
+ <meta charset="utf-8" />
+ <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+ <link rel="icon" href="/favicon.ico" type="image/x-icon">
+ <style>
+ body { background-color: #A3DDDF }
+ header { width: 40em; margin: 5em auto; color: white }
+ article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+ footer { width: 40em; margin: 5em auto; color: white }
+ </style>
 
-    <!-- Browser Donations: Flattr -->
-    <meta name="flattr:id" content="qjjrw5">
+ <!-- Browser Donations: Flattr -->
+ <meta name="flattr:id" content="qjjrw5">
 
-    <!-- Browser Donations: LedgerLoops -->
-    <link rel="ledger" href="wss://monetization-hubbie.herokuapp.com">
+ <!-- Browser Donations: LedgerLoops -->
+ <link rel="ledger" href="wss://monetization-hubbie.herokuapp.com">
 
-    <!-- Browser Donations: Coil -->
-    <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
-    <script src="https://cdn.coil.com/donate.js"></script>
-    <script>
-    window.WebMonetizationScripts.donate({
-      paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
-    })
-    </script>
-  </head>
-  <body>
-    <header>
-      <h1>Synchronized Network Accounting Protocol (SNAP)</h1>
-    </header>
-    <article>
+ <!-- Browser Donations: Coil -->
+ <script src="https://polyfill.webmonetization.org/polyfill.js"></script>
+ <script src="https://cdn.coil.com/donate.js"></script>
+ <script>
+ window.WebMonetizationScripts.donate({
+ paymentPointer: '$twitter.xrptipbot.com/michielbdejong'
+ })
+ </script>
+ </head>
+ <body>
+ <header>
+ <h1>Synchronized Network Accounting Protocol (SNAP)</h1>
+ </header>
+ <article>
 <h2>An Open Protocol for Peer-to-Peer Ledgers</h2><p>
-Correspondent banking is usually implemented using a nostro/vostro account, on a ledger administered by one of the two banks.
-But last spring a colleague of mine at Ripple, Bob Way, showed me his design for a protocol that would allow the two banks to administer a bilateral ledger cooperatively. His Synchronized Network Accounting Protocol (abbreviated SNAP) is guaranteed to be convergent (the two parties will eventually reach consensus on the current ledger state), yet it is much simpler and more efficient than the multilateral consensus ledgers we know from the DLT scene. This blogpost describes my open source implementation of SNAP.
+Correspondent banking is usually implemented using a nostro/vostro party, on a ledger administered by one of the two banks, and
+this requires an unnaturally asymmetric relationship between the two parties. Distributed Ledger Technology (DLT) offers the potential for the two banks to run a private blockchain instead, but that's more complex, slower, and more expensive to run.
+</p><p>
+Now, there is an open source alternative. Last spring, a colleague of mine at Ripple, Bob Way, showed me his design for a protocol that would allow the two banks to administer a bilateral ledger cooperatively. His Synchronized Network Accounting Protocol (abbreviated SNAP) is guaranteed to be convergent (the two parties will eventually reach common knowledge and bilateral consensus on the current ledger state), yet unlike nostro/vostro partys it does not require promoting one of the two parties into a leader role, and it is much simpler and more efficient than the multilateral consensus ledgers we know from the DLT scene. This blogpost describes my open source implementation of SNAP.
 </p><h2>Messaging</h2><p>
-At the lowest layer, SNAP requires the two participating parties to be able to communicate with each other, for instance over IP. The next layer up would be message integrity, for instance https. This is a generic solution for making sure that each message either arrives intact, or does not arrive at all, and that no messages arrive that were not sent by the other party. This layer also ensures that the order in which messages are delivered is the same as the order in which they were sent. On top of the message integrity layer are SNAP's idempotent messages and acknowledgements. They are UTF-8 JSON encoded objects with, among other fields, a msgId and a msgType field. There are four message types: PROPOSE, ACCEPT, REJECT, and ACK. At this layer, PROPOSE, ACCEPT, or REJECT messages with the same msgId can be repeated indefinitely, as long as the content is identical each time, until an ACK with the same msgId is received. At that point, the sender can stop repeating the message, and both parties know that this message was sent, and that it was received and acknowledged.
+At the lowest layer, SNAP requires both parties to run a reliable database, a computer that may power down at any time, but that is otherwise reliable, and to have a digital communication channel between them, for instance over IP. The next layer up would be message integrity, for instance https. This is a generic solution for making sure that each message either arrives intact, or does not arrive at all, and that no messages arrive that were not sent by the other party. This layer also ensures that the order in which messages are delivered is the same as the order in which they were sent. On top of the message integrity layer are SNAP's idempotent messages and acknowledgements. They are UTF-8 JSON encoded objects with, among other fields, a msgId and a msgType field. There are four message types: PROPOSE, ACCEPT, REJECT, and ACK. At this layer, PROPOSE, ACCEPT, or REJECT messages with the same msgId can be repeated indefinitely, as long as the content is identical each time, until an ACK with the same msgId is received. The sender can then stop repeating the message, and both parties know that this message was sent, and that it was received and acknowledged.
 </p><h2>Ledger Entries</h2><p>
-For each party, the msgId of PROPOSE messages should be an increasing integer, starting with zero. So if Alice sends a message with msgId 17, then this is her 18th PROPOSE message sent (regardless of how many PROPOSE messages went in the other direction).
-Both ACCEPT and REJECT messages respond to a PROPOSE message, and like ACK messages, they should copy the msgId from the PROPOSE message. As you might expect, if a PROPOSE message is responded to with an ACCEPT message, then the ledger entry state will change from pending to accepted, and if it is responded to with a REJECT message, then the ledger entry state will change from pending to rejected. This way, the ledger between Alice and Bob contains two ordered append-only lists: proposals from Alice (whether pending, accepted, or rejected), and proposals from Bob (whether pending, accepted, or rejected). Pending proposals can become accepted or rejected after they have been appended to one of these two lists, but after that, no more changes to that ledger entry are possible.
+For each party, the msgId of PROPOSE messages should be an increasing integer, starting with zero. So if Alice sends a message to Bob with msgId 17, then this is message concerns her 18th proposal to him (regardless of how many messages she sends about this same proposal, and regardless of how many proposals went in the other direction).
+Both ACCEPT and REJECT messages respond to a PROPOSE message, and like ACK messages, they should copy the msgId from the PROPOSE message. As you might expect, if a PROPOSE message is responded to with an ACCEPT message, then the proposal's state will change from pending to accepted, and if it is responded to with a REJECT message, then its state will change from pending to rejected. This way, common knowledge is built up between Alice and Bob in two ordered append-only lists: proposals from Alice (whether pending, accepted, or rejected), and proposals from Bob (whether pending, accepted, or rejected). Pending proposals can become accepted or rejected after they have been appended to one of these two lists, but after that, no more changes to that ledger entry are possible.
 </p><h2>Balances and Overdraft Limits</h2><p>
-At the next layer up, ledger entries take on a meaning with regards to financial bookkeeping. Each PROPOSE message has an amount and a unit. The amount is an integer, so for instance to write down 1.34 USD, you could set the amount to 134 and the unit to "1E-2 USD". Optionally, a PROPOSE message specifies named from and to accounts, although if these fields are left out, it's implied that the transaction is from the sender of the message, to its recipient. There could be many more named accounts on the ledger than just the two messaging parties, though.
-The two lists of ledger entries, and they states they are in, determine three balance amounts for each named ledger account: current, payable, and receivable. Current is the sum of amounts of accepted entries to this account, minus the sum of amounts of accepted and pending entries from this account. Payable is the sum of amounts of pending entries from this account, and receivable is the sum of amounts of pending entries to this account. This means that when a ledger entry is first proposed:<ul>
-<li> the current balance of the from account decreases by the proposed amount</li>
-<li> the payable balance of the from account increases by the proposed amount</li>
-<li> the receivable balance of the to account increases by the proposed amount</li>
+At the next layer up, ledger entries take on a meaning with regards to financial bookkeeping. Each proposal has an amount and a unit. The amount is an integer, so for instance to write down 1.34 USD, you could set the amount to 1340 and the unit to "1E-3 USD".
+The two lists of ledger entries, and the states they are in, determine three balance amounts for each party: current, payable, and receivable. Current is the sum of amounts of accepted by party, minus the sum of amounts proposed by this party. Payable is the sum of amounts of pending proposals from this party, and receivable is the sum of amounts of pending proposals from the other party. This means that when a ledger entry is first proposed:<ul>
+<li> the current balance of the proposer decreases by the proposed amount</li>
+<li> the payable balance of the proposer increases by the proposed amount</li>
+<li> the receivable balance of the receiver increases by the proposed amount</li>
 </ul>
 
 </p><p>
-When a ledger entry is rejected, the amount moves back from payable to current for the from account, and disappears from the receivable balance of the to account.
+When a ledger entry is rejected, the amount moves back from payable to current for the proposer, and disappears from the receivable balance of the receiver.
 </p><p>
-When a ledger entry is accepted, the amount disappears from the payable balance of the from account, and moves from receivable to current for the to account.
+When a ledger entry is accepted, the amount disappears from the payable balance of the proposer, and moves from receivable to current for the receiver.
 </p><p>
-To limit risk, a sensible mechanism would be to put a limit on one's own current+receivable balance, since that is the maximum loss you would make if the other party would refuse to settle this ledger.
+To limit risk of default, a sensible mechanism would be to put a limit on one's own current+receivable balance, since that is the maximum loss you would make if the other party would one day refuse to settle this ledger.
 </p><h2>Example</h2><p>
 Alice to Bob:
 <pre>
 {
-  "msgId": 0,
-  "msgType": "PROPOSE",
-  "amount": 134,
-  "unit": "1E-2 USD",
-  "condition": "324rf23dqw3a4r432qszdfq43htay",
-  "expiresAT": "2018-12-31 14:34.212"
+ "msgId": 0,
+ "msgType": "PROPOSE",
+ "amount": 1340,
+ "unit": "1E-3 USD",
+ "condition": "89e05e4ca83c24627ebf29dcc607cdbb55061c48cab9017b8f029ff8d5c28dc6",
+ "expiresAT": "2018-10-29T09:46:17.634Z"
 }
 </pre>
 Bob to Alice:
 <pre>
 {
-  "msgId": 0,
-  "msgType": "ACK",
+ "msgId": 0,
+ "msgType": "ACK",
 }
 {
-  "msgId": 0,
-  "msgType": "ACCEPT",
-  "preimage": "4t4q3sdregethbeythbergxzf4rwa34eytwserdf"
+ "msgId": 0,
+ "msgType": "ACCEPT",
+ "preimage": "17e4615a2e2a318ea4220b32176eb3980e8ddcd3e47d10f56ce7a7b30a7c05a5"
 }
 </pre>
 Alice to Bob:
 <pre>
 {
-  "msgId": 0,
-  "msgType": "ACK",
+ "msgId": 0,
+ "msgType": "ACK",
 }
 </pre>
-Note that in this example, the proposal is conditional, and its acceptance contains the preimage of a hashlock. The SNAP protocol does not specify how to verify whether Bob presented the correct preimage to be able to receive the conditional transfer from Alice, nor whether he sent his ACCEPT message in time before the expiresAt timeout. Both those issues would be for Alice and Bob to reconcile out of band.
-   </article>
-  </body>
+Note that if one of the two parties breaks the rules of the SNAP protocol, for instance by sending both a REJECT and an ACCEPT message for the same proposal, the confusion would be for Alice and Bob to reconcile out of band. But as long as both parties follow the protocol rules, they will eventual reach bilateral consensus on each proposal, and with that on the current, payable and receivable balance of each party. Even if some messages are lost because for instance one of the two computers crashes or the network connection is temporarily down, consensus will eventually be recovered once both computers and the connection between them is back up.
+</p><h2>Conditional Transfers and Multi-hop</h2><p>
+A PROPOSAL message can optionally have a 'condition' field (32-byte hex string) and an 'expiresAt' field (Datetime). If the 'expiresAt' message is present, the other party may not accept the proposal after that time. So once that time has past, they may only reject the proposal. They may repeat an ACCEPT message though, and if the first ACCEPT message was lost in the network, there is no way for the proposer to distinguish between that legitimate situation, and a situation in which the accepter is cheating. If necessary, a trusted third party could be used to record and vouch for the first time the ACCEPT message was sent. This idea of <a href="http://ripple-project.org/Protocol/RegistryCommitMethod.html">commit registries</a> was already discussed a decade ago, in the context of Ripple Classic Protocol.
+</p><p>
+If the condition field is present, the other party is only allowed to accept that proposal if they include a 'preimage' field in the ACCEPT message, also with a 32-byte hex string, such that the bytes of the condition are the SHA256 hash of the bytes of the preimage.
+The way to use these conditions and timeouts to implement multi-hop transactions would be as follows:
+</p><ul><li> Alice and Charlie collaborate to choose a secret preimage to use as a proof-of-delivery, which Charlie knows, but Bob doesn't.
+</li><li> Alice uses the SHA256 hash of that preimage as the condition in a PROPOSE message to Bob, and optionally sets the expiresAt field.
+</li><li> Bob sends a PROPOSE message to Charlie, with the same condition. If Alice's PROPOSE message contained an expiresAt field, he sets an expiresAt field in his message to Charlie, with a slightly earlier time.
+</li><li>Charlie accepts Bob's proposal, and with that, Bob obtains the preimage as proof that the second hop was delivered. Now he can accept the proposal from Alice, using that same preimage.
+</li></ul><p>
+The idea of using a proof-of-delivery mechanism for multi-hop transactions was originally proposed for the Ripple Classic Protocol, and later used in the Lighting Network, LedgerLoops, ILP/STREAM, and other "network of ledgers" technologies. The booming field of what I'll call "Network Ledger Technology (NLT)" will be the subject of my next blogpost!
+ </p></article>
+ </body>
 </html>
