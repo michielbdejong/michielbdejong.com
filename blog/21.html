@@ -75,6 +75,8 @@ and cells. In 2017 at the Interledger project we implemented something quite sim
 <a href=" https://github.com/interledger/rfcs/blob/b2872f36eda171866a6c32533438c31cada10f97/0010-connector-to-connector-protocol/0010-connector-to-connector-protocol.md#next-version-liquidity-routing">Liquidity Routing</a>,
 using hierarchical addresses, route broadcast messages that described the exchange rate and maximum transfer amount, and quote requests that could explore connectivity and fee information before a payment was made. Something similar was implemented in the <a href="http://mojaloop.io/">Mojaloop</a> network.
 </p><p>
+Around the same time, Stanislas Polu developed <a href="https://web.archive.org/web/20180313200319/https://settle.network/">SettleNetwork</a>, which uses <a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a> as the hash function for the hashlock on multi-hop transactions, and no explicit timeouts. It uses a routing model where all servers ("mints") have knowledge of all exchange offers.
+</p><p>
 A quite different but remarkably clever approach to using Network Ledger Technology for payments is the
 <a href="https://en.wikipedia.org/wiki/Lightning_Network">Lightning Network</a>:
 there, connections in the network are not trade credit relationships, but random connections between strangers, backed by a layer of Distributed Ledger Technology (DLT), namely the Bitcoin ledger. Onion routing is used to anonymize payment traffic. Pathfinding in the Lightning Network uses route broadcast messages and routing hints in payments replace the role of Fugger's cells and Interledger's address prefixes.
@@ -119,7 +121,9 @@ Also, if no multi-hop path can be found for the payment, or if the best exchange
 <h2>NLT-KIT: A Strawman Project</h2><p>
 Fugger's hypothetical interserver Ripple System was never implemented. Since then, we've seen quite a few projects that propose a central database to which people can submit their IOUs (the <a href="https://groups.google.com/forum/#!forum/rippleusers">Ripple Users</a> mailinglist contains a lot of references to people's personal projects), but not many message-based systems that are not tied to a specific DLT ledger like Lightning.
 </p><p>
-It seems that the ilp-kit stack we developed at the Interledger project was the most advanced working implementation of a purely message-based Network Ledger in the sense of Fugger's seminal paper, but it <a href="https://github.com/interledger-deprecated/ilp-kit">has been deprecated</a> and superseded by ILP/STREAM.
+It seems that SettleNetwork and the ilp-kit stack we developed at the Interledger project were the most advanced working implementations of a purely message-based Network Ledger in the sense of Fugger's seminal paper.
+But  even though a fully functional implementation of SettleNetwork is available <a href="https://github.com/spolu/settle">on github</a>, the website no longer seems to be operational.
+And ilp-kit has now <a href="https://github.com/interledger-deprecated/ilp-kit">been deprecated</a> and superseded by ILP/STREAM.
 </p><p>
 This means that something that's currently missing from the field of Network Ledger Technology is a good strawman project that implements simple all-or-nothing payments based on interserver messaging.
 </p><p>
