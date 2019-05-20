@@ -1,0 +1,23 @@
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+@prefix schem: <http://schema.org/>.
+@prefix ldp: <http://www.w3.org/ns/ldp#>.
+@prefix pim: <http://www.w3.org/ns/pim/space#>.
+
+@prefix : <#>.
+@prefix profile: <.>.
+@prefix pod: <https://pod-server.herokuapp.com/>.
+@prefix inbox: <https://pod-server.herokuapp.com/inbox/>.
+@prefix settings: <https://pod-server.herokuapp.com/settings/>.
+
+profile: a foaf:PersonalProfileDocument; foaf:maker :me; foaf:primaryTopic :me.
+
+:me
+    vcard:fn "Michiel de Jong";
+    ldp:inbox inbox:;
+    pim:storage pod:;
+    solid:account pod:;
+    pim:preferencesFile settings:prefs.ttl;
+    solid:privateTypeIndex settings:privateTypeIndex.ttl;
+    solid:publicTypeIndex settings:publicTypeIndex.ttl;
