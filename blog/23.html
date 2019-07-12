@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <link rel="author" href="https://michielbdejong.com/" />
+   <title>CORS bug in several browsers</title>
+   <meta charset="utf-8" />
+   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   <style>
+     body { background-color: #A3DDDF }
+     header { width: 40em; margin: 5em auto; color: white }
+     article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+     article p img { width: 100% }
+     footer { width: 40em; margin: 5em auto; color: white }
+   </style>
+ </head>
+ <body>
+ <header>
+ <h1>CORS bug in several browsers</h1>
+ </header>
+ <article>
+<h2>Introduction</h2><p>
+I'm a big fan of cross-origin backends for progressive web apps. They require CORS headers on their HTTP responses, and I've had my fair share of
+fiddling with those at the <a href="https://unhosted.org">Unhosted web apps</a> project, then at Mozilla's Firefox OS project, and currently at
+the Solid project, as an employee of <a href="https://inrupt.net">inrupt</a>.
+When I first read about this bug in <a href="https://github.com/solid/web-access-control-spec/blob/master/Background.md#epilog-a-second-cors-twist">in the Solid docs</a>,
+I found it hard to believe that this would really be a browser bug, but I've
+since seen it with my own eyes, and so will you now!
+</p><h2>Steps to reproduce</h2><p>
+<ul>
+<li>Click: <a href="https://site-one.5apps.com" target="_1">site one</a></li>
+<li>Click: <a href="https://site-two.5apps.com" target="_2">site two</a></li>
+<li>Click: <a href="https://site-three.5apps.com" target="_3">site three</a></li>
+<li>Click: <a href="https://site-four.5apps.com" target="_4">site four</a></li>
+</ul>
+</p><h2>Expected behaviour</h2><p>
+You would expect all four to work:
+</p><p>
+<img src="expected.png">
+</p><p>
+</p><h2>Actual behaviour</h2><p>
+The second one fails:
+</p><p>
+<img src="actual.png">
+</p><p>
+This affects Chrome and Firefox, on both Mac and Windows, but not Safari on Mac.
+</p><p>
+</p><h2>Analysis so far</h2><p>
+The intriguing thing is, after several hours of diggin, I still don't actually know exactly what is triggering this.
+Site-one and site-two retrieve <a href="https://www.w3.org/People/Berners-Lee/card">Tim Berners-Lee's FOAF profile</a>,
+whereas site-three and site-four retrieve <a href="https://testing-pod-server.michielbdejong.com:1234/People/Berners-Lee/card">my seemingly identical copy</a> of it.
+Both are served over HTTP/2, with exactly the same HTTP headers, and the URLs only differ in the domain name part (I also tried putting it on port 443 instead of port 1234, no difference).
+The only difference I can think of is that www.w3.org uses HSTS and my testing server doesn't:
+</p><p>
+<img src="curl-tim.png">
+</p><p>
+<img src="curl-me.png">
+</p><p>
+The thing that's going wrong is that in the site-one/site-two case, the browser ignores the <tt><b>Vary: Origin</b></tt> header, and caches the result from site-one in the http cache,
+including the <tt><b>Access-Control-Allow-Origin: https://site-one.5apps.com</b></tt> header. Therefore, the cross-origin request from site-two.5apps.com is blocked.
+In this case, doing just a GET, this could be worked around using <tt><b>Access-Control-Allow-Origin: *</b></tt>, but for POST and other verbs, the server needs to echo the origin
+from the HTTP request's <tt><b>Origin</b></tt> there.
+For some mysterious reason, the same thing does not go wrong for site-three/site-four! :)
+</p>
+ </article>
+ </body>
+</html>
