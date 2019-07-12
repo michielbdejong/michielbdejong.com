@@ -46,7 +46,7 @@ The second one fails:
 This affects Chrome and Firefox, on both Mac and Windows, but not Safari on Mac.
 </p><p>
 </p><h2>Analysis so far</h2><p>
-The intriguing thing is, after several hours of diggin, I still don't actually know exactly what is triggering this.
+The intriguing thing is, after several hours of digging, I still don't actually know exactly what is triggering this.
 Site-one and site-two retrieve <a href="https://www.w3.org/People/Berners-Lee/card">Tim Berners-Lee's FOAF profile</a>,
 whereas site-three and site-four retrieve <a href="https://testing-pod-server.michielbdejong.com:1234/People/Berners-Lee/card">my seemingly identical copy</a> of it.
 Both are served over HTTP/2, with exactly the same HTTP headers, and the URLs only differ in the domain name part (I also tried putting it on port 443 instead of port 1234, no difference).
