@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
    <link rel="author" href="https://michielbdejong.com/" />
-   <title>CORS bug in several browsers</title>
+   <title>CORS subtlety in several browsers</title>
    <meta charset="utf-8" />
    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
    <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -16,9 +16,14 @@
  </head>
  <body>
  <header>
- <h1>CORS bug in several browsers</h1>
+ <h1>CORS subtlety in several browsers</h1>
  </header>
  <article>
+<h2>Update: this is a subtlety, not a bug</h2>
+<p>
+I thought that Firefox and Chrome were incorrectly sharing http cache content across origins despite a `Vary: Origin` header, but it turned out
+that the Vary header doesn't forbid cache sharing altogether; if ETags match, then cache sharing is still allowed. See the comment threads on
+the bugs linked at the bottom for more details.</p>
 <h2>Introduction</h2><p>
 I'm a big fan of cross-origin backends for progressive web apps. They require CORS headers on their HTTP responses, and I've had my fair share of
 fiddling with those at the <a href="https://unhosted.org">Unhosted web apps</a> project, then at Mozilla's Firefox OS project, and currently at
