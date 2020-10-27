@@ -22,5 +22,10 @@
          fjs.parentNode.insertBefore(js, fjs);
        }(document, 'script', 'facebook-jssdk'));
     </script>
+    <h2>Welcome to this Facebook->Solid contacts importer</h2>
+    <fb:login-button 
+      scope="public_profile,email"
+      onlogin="checkLoginState();">
+    </fb:login-button>
   </body>
 </html>
