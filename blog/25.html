@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <link rel="author" href="https://michielbdejong.com/" />
+   <title>Linked Data on the Move</title>
+   <meta charset="utf-8" />
+   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   <style>
+     body { background-color: #A3DDDF }
+     header { width: 40em; margin: 5em auto; color: white }
+     article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+     article p img { width: 100% }
+     footer { width: 40em; margin: 5em auto; color: white }
+   </style>
+ </head>
+ <body>
+  <header>
+    <h1>Solid: Linked Data on the Move</h1>
+  </header>
+  <article>
+    <p>
+      My current main research project is <a href="https://github.com/solid/webmonetization">Solid + WebMonetization</a>>:
+      How can creators get paid for the content they publish on Solid? A simple first step was
+      <a href="https://github.com/solid/node-solid-server/pull/1546/files#diff-a6372b8448021fb187a18e2e3f74864b89a1fd94464585bbe5f9c504a415bc4cR55">linking
+      each Solid pod to a Payment Pointer</a>, but once we did that, we bumped
+      into some more fundamental unanswered questions, like: other than looking at tags in the current HTML page, which is quite imprecise,
+      what are ways to discover the creator of content on Solid, or to pay one of your Solid friends, or to publish content on Solid in the first place?
+    </p>
+
+    <h1>Social Linked Data</h1>
+    <p>
+      The name 'Solid' comes from '<em>SO</em>cial <em>LI</em>nked <em>D</em>ata'. Linked data is data with hyperlinks in it, that point to other, related
+      pieces of data, that can then be linked again, to form a web. The web of documents we know works best if documents stay at the URL where they were first
+      published. This works well for documentation, but for social and personal data it's not always a reasonable requirement.
+    </p>
+    <p>
+      Users of any social application will want data portability: the ability to move data around. With <a href="https://indiehosters.net/">IndieHosters</a> we
+      initially set out to offer managed personal server hosting, including a domain name registration, but in a federated network of hosting providers. That way, a user
+      could seamlessly take their domain name and personal server from one provider to the next, at least within the network of IndieHosters-compatible personal server hosting providers.
+      That idea didn't really take off though, and nowadays most Solid users don't own their URLs, mainly because a Solid pod on a subdomain is free, and a
+      domain name is not.
+    </p>
+    <p>
+      So when you switch to a different pod provider, all your URLs change. And not only that: if you were given access to data through your WebID (as is the basis of Web Access Control),
+      then your new WebID will not give you the same access. This means that switching from one WebID or pod provider to another is painful. It's OK if documentation is linked to hard-coded URLs,
+      but for personal data it's less desirable.
+    </p>
+    <p>
+      Another point where hyperlinks break is when data is sent in a message. The sender and the receiver of a message will both have a record of the message that was sent.
+      And the message itself, even in flight, can also contain relative URLs inside itself.
+    </p>
+    <p>
+      And last but not least, when data is used socially, the person hosting the data in their pod is not necessarily the authoritative author of that data. This means that a lot of use cases,
+      whenever we try to build pilot projects with Solid, end up using verifiable credentials instead of straight-up linked data, where the URL hierarchy determines authority.
+    </p>
+    <p>
+      So to make Solid a success, we should stop just thinking of linked data, and start thinking of linked data on the move. Not in the least for determining who should be allowed to monetize 
+      a given piece of content. In Solid, the owner of the pod where the content is hosted will not automatically be the author of that content. The author data should be annotated inside the content
+      as it moves around, gets sent and received, and gets included in news feeds and on web pages.
+    </p>
+    <h1>Solid Messaging</h1>
+    <p>
+      One thing we haven't even fully worked out yet, especially when thinking about people who may sometimes change their WebID, is messaging.
+      In each WebID profile on Solid, there is a link to an LDP Inbox, to where messages can be delivered with unauthenticated http POST.
+      When this happens, the recipient has no way of knowing who sent that message. So for contacts with whom you converse repeatedly, you will want to set up a sender-specific inbox.
+      That inbox would then only allow the WebID's of that sender to POST to it, so you can know for sure who sent the message.
+    </p>
+    <p>
+      Also, when you read messages in either your global inbox or one of your sender-specific inboxes, you will want to have a way to mark them as read. The way we currently implemented this
+      in <a href="">solid-logic</a> is by moving read messages to a date-indexed archive.
+    </p>
+    <p>
+      To discover a person's global inbox, you can just follow the link from one of their WebID's. But when they assign you a sender-specific inbox, you first need to read and understand the 
+      notification they send you about that, and then you have to somehow store the information as an attribute of that person in your addressbook.
+    </p>
+    <p>
+      When you move from one pod provider to another, if your WebID doesn't change then you can update the global inbox triple in your profile, and just need to send notifications about the 
+      sender-specific inboxes that move. These senders should then parse and apply these messages in their addressbooks, so that next time they message you, the message will go to the new
+      sender-specific inbox which you created at the new pod provider. If your WebID also changes, then the thing to do would be to first send out notifications that you have a new WebID,
+      then people can update their ACL documents and their addressbook entries about you, to reference both your old and your new WebID, then you start using only your new one, and then you
+      can send a message to deprecate the old WebID.
+    </p>
+    <p>
+      All of this is basic plumbing for Social Linked Data, and we're currently implementing it as part of Solid OS.
+    </p>
+    <h1>Federated Bookkeeping</h1>
+    <p>
+      Apart from allowing linked data to be moved, I had to finally admit we should also allow it to be copied. I was always a big advocate of "data at the source", but now that I'm working
+      more and more with <a href="https://federatedbookkeeping.org/">Federated Bookkeeping</a>, I realised that you cannot always just link to the system-of-record, you sometimes want to keep
+      a copy for your own administration. This is a huge step away from the basic design of linked data, but I think it's the right one for Solid to take at this point, at least for the
+      <a href="https://github.com/solid/money-pane">Solid OS MoneyPane</a>.
+    </p>
+    <p>
+      One thing I kept running into is that I wanted to import my bank statements, converting them to a richer data format, but without losing the original. My bank doesn't allow me to retrieve
+      my MT940 bank statement exports with https+WAC yet, so I need to download and upload them from my bank to my pod. There, I keep a copy of both the original, some metadata about the provenance
+      of the original document, and then my converted version of it.
+    </p>
+    <p>
+      The same happens with peer-to-peer messaging. Last year, I presented <a href="https://github.com/ledgerloops/snap-solid#snap-solid-as-used-in-nlt-kit">SNAP on Solid</a> at the global Solid World
+      meetup. In that implementation, each peer would keep a copy of each message they send in a 'sent box', and a copy of each message they receive in a sender-specific inbox like the ones described above.
+      So this is not linked data in the classical sense. This is data inside a message that was sent at some point in time, and of which different parties (the sender and the receiver) keep a copy.
+      Neither the sender's copy nor the recipient's copy is the "real" main copy of that message.
+    </p>
+    <h1>Linked but not Stationary</h1>
+    <p>
+      In all of this, I didn't even mention how data moves between apps and pods. A user may use a mobile device to run a local-first app, which
+      <a href="https://unhosted.org/practice/29/Offline-first-web-app-design.html">asynchronously synchronizes</a>
+      its data to the user's pod. There may be multiple devices competing to edit the same resource. There may even be multiple users combining their
+      incremental edits collaboratively. This is, however, a less fundamental deviation from URL-based data, since the copy of the pod is always the authoritative one.
+      The devices sit around it in a hub-and-spokes formation.
+    </p>
+    <p>
+      We could use proper device-to-device messaging, for instance via WebRTC, and this may of course be in scope for Web Monetization,
+      for instance when you pay for a videocall with a coach or therapist. But that is mainly out of scope for Solid. We have no way to link to data that moves
+      neither from nor to a (pod) server.</p>
+    <p>
+      In short, I think Solid is an evolution of the semantic web. It sits at the sweet spot of classic web servers and more dynamic ways to use (personal) data.
+      Solid extends the semantic web to allow data not only to link, but also to move. Hence the title of this blogpost: Linked data on the move!
+    </p>
+  </article>
+ </body>
+</html>
