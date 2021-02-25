@@ -16,22 +16,27 @@
  </head>
  <body>
   <header>
-    <h1>Solid: Linked Data on the Move</h1>
+    <h1>Linked Data on the Move</h1>
   </header>
   <article>
     <p>
-      My current main research project is <a href="https://github.com/solid/webmonetization">Solid + WebMonetization</a>>:
+      My current main research project is <a href="https://github.com/solid/webmonetization">Solid + WebMonetization</a>:
       How can creators get paid for the content they publish on Solid? A simple first step was
       <a href="https://github.com/solid/node-solid-server/pull/1546/files#diff-a6372b8448021fb187a18e2e3f74864b89a1fd94464585bbe5f9c504a415bc4cR55">linking
       each Solid pod to a Payment Pointer</a>, but once we did that, we bumped
       into some more fundamental unanswered questions, like: other than looking at tags in the current HTML page, which is quite imprecise,
-      what are ways to discover the creator of content on Solid, or to pay one of your Solid friends, or to publish content on Solid in the first place?
+      what are ways to discover the creator of content on Solid? or to pay one of your Solid friends?
+      </p>
+      <p>
+        I created some draft building blocks in the <a href="https://github.com/solid/money-pane">Solid OS MoneyPane</a>, but I soon realized a lot of plumbing is missing if we want creators to publish content
+        on Solid in the first place. Our existing Linked Data framework is lacking some functionality if we want to use it for data that moves around between creators,
+        data owners, data hosters, and consumers.
     </p>
 
     <h1>Social Linked Data</h1>
     <p>
-      The name 'Solid' comes from '<em>SO</em>cial <em>LI</em>nked <em>D</em>ata'. Linked data is data with hyperlinks in it, that point to other, related
-      pieces of data, that can then be linked again, to form a web. The web of documents we know works best if documents stay at the URL where they were first
+      The name 'Solid' comes from '<em>SO</em>cial <em>LI</em>nked <em>D</em>ata'. Linked data is data with hyperlinks in it, that point to related
+      pieces of data, that can then be linked again, to form a web. We know the web of documents works best if documents stay at the URL where they were first
       published. This works well for documentation, but for social and personal data it's not always a reasonable requirement.
     </p>
     <p>
@@ -39,10 +44,10 @@
       initially set out to offer managed personal server hosting, including a domain name registration, but in a federated network of hosting providers. That way, a user
       could seamlessly take their domain name and personal server from one provider to the next, at least within the network of IndieHosters-compatible personal server hosting providers.
       That idea didn't really take off though, and nowadays most Solid users don't own their URLs, mainly because a Solid pod on a subdomain is free, and a
-      domain name is not.
+      domain name costs money.
     </p>
     <p>
-      So when you switch to a different pod provider, all your URLs change. And not only that: if you were given access to data through your WebID (as is the basis of Web Access Control),
+      So when you switch to a different pod provider, all your URLs change. And not only that: if you were given access to data through your WebID, as is the basis of Web Access Control (WAC),
       then your new WebID will not give you the same access. This means that switching from one WebID or pod provider to another is painful. It's OK if documentation is linked to hard-coded URLs,
       but for personal data it's less desirable.
     </p>
@@ -51,17 +56,19 @@
       And the message itself, even in flight, can also contain relative URLs inside itself.
     </p>
     <p>
-      And last but not least, when data is used socially, the person hosting the data in their pod is not necessarily the authoritative author of that data. This means that a lot of use cases,
-      whenever we try to build pilot projects with Solid, end up using verifiable credentials instead of straight-up linked data, where the URL hierarchy determines authority.
+      And last but not least, when data is used socially, the person hosting the data in their pod is not necessarily the authoritative author of that data.
+      This means that whenever we try to build pilot projects with Solid, a lot of use cases
+      end up using <a href="https://en.wikipedia.org/wiki/Verifiable_credentials">verifiable credentials</a> where an additional signature determines authority,
+      instead of straight-up linked data where the hostname determines authority.
     </p>
     <p>
       So to make Solid a success, we should stop just thinking of linked data, and start thinking of linked data on the move. Not in the least for determining who should be allowed to monetize 
-      a given piece of content. In Solid, the owner of the pod where the content is hosted will not automatically be the author of that content. The author data should be annotated inside the content
-      as it moves around, gets sent and received, and gets included in news feeds and on web pages.
+      a given piece of content. In Solid, the owner of the pod where the content is hosted will not automatically be the author of that content. The author's identity should be annotated inside the content
+      as it moves around, gets sent and received, and gets included in news feeds and on web pages. We should decouple the author identity from the hoster identity.
     </p>
     <h1>Solid Messaging</h1>
     <p>
-      One thing we haven't even fully worked out yet, especially when thinking about people who may sometimes change their WebID, is messaging.
+      Another thing we haven't fully worked out yet, especially when thinking about people who may sometimes change their WebID, is messaging.
       In each WebID profile on Solid, there is a link to an LDP Inbox, to where messages can be delivered with unauthenticated http POST.
       When this happens, the recipient has no way of knowing who sent that message. So for contacts with whom you converse repeatedly, you will want to set up a sender-specific inbox.
       That inbox would then only allow the WebID's of that sender to POST to it, so you can know for sure who sent the message.
@@ -72,10 +79,10 @@
     </p>
     <p>
       To discover a person's global inbox, you can just follow the link from one of their WebID's. But when they assign you a sender-specific inbox, you first need to read and understand the 
-      notification they send you about that, and then you have to somehow store the information as an attribute of that person in your addressbook.
+      notification they send you about that, and then you have to somehow store the information, as an attribute of that person, in your addressbook.
     </p>
     <p>
-      When you move from one pod provider to another, if your WebID doesn't change then you can update the global inbox triple in your profile, and just need to send notifications about the 
+      When you move from one pod provider to another, if your WebID doesn't change, then you can update the global inbox triple in your profile, and just need to send notifications about the 
       sender-specific inboxes that move. These senders should then parse and apply these messages in their addressbooks, so that next time they message you, the message will go to the new
       sender-specific inbox which you created at the new pod provider. If your WebID also changes, then the thing to do would be to first send out notifications that you have a new WebID,
       then people can update their ACL documents and their addressbook entries about you, to reference both your old and your new WebID, then you start using only your new one, and then you
@@ -88,8 +95,8 @@
     <p>
       Apart from allowing linked data to be moved, I had to finally admit we should also allow it to be copied. I was always a big advocate of "data at the source", but now that I'm working
       more and more with <a href="https://federatedbookkeeping.org/">Federated Bookkeeping</a>, I realised that you cannot always just link to the system-of-record, you sometimes want to keep
-      a copy for your own administration. This is a huge step away from the basic design of linked data, but I think it's the right one for Solid to take at this point, at least for the
-      <a href="https://github.com/solid/money-pane">Solid OS MoneyPane</a>.
+      a copy for your own administration. This is a huge step away from the basic design of linked data, but I think it's the right one for Solid to take at this point, at least when we
+      use Solid for bookkeeping.
     </p>
     <p>
       One thing I kept running into is that I wanted to import my bank statements, converting them to a richer data format, but without losing the original. My bank doesn't allow me to retrieve
