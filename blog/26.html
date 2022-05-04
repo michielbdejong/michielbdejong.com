@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
    <link rel="author" href="https://michielbdejong.com/" />
-   <title>...</title>
+   <title>CLOGS - a framework for data analysis</title>
    <meta charset="utf-8" />
    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
    <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -16,11 +16,67 @@
  </head>
  <body>
   <header>
-    <h1>...</h1>
+    <h1>CLOGS - a framework for data analysis</h1>
   </header>
   <article>
     <p>
-      ...
+      A framework for data analysis, or maybe just a silly acronym: CLOGS.
+      <ol>
+        <li><strong>C</strong>ontent: the data as a sequence of symbols, i.e. Shannon's definition of information.</li>
+        <li><strong>L</strong>anguage: the step from the content to its (hopefully unambiguous) meaning.</li>
+        <li><strong>O</strong>rigin: which human or organisation sent this data?</li>
+        <li><strong>G</strong>rounding: the step from fiction to non-fiction. The link to reality or to common ideas.</li>
+        <li><strong>S</strong>peech-act: the intended or expected effect of this data on its audience.</li>
+      </ol>
+    </p>
+    <p>
+      Keeping this checklist in mind helps me think about for instance
+      <a href="https://www.w3.org/2013/data/">the Web of Data</a>. There, the response of a http request
+      is the content.
+      The Content-Type header helps point at the language, although there are several layers there: 
+      a document might be JSON with a UTF-8 encoding, and on top of that it might be JSON-LD. If it is then the data itself
+      points to ontologies that help the receiver to interpret it unambiguously.
+      The language of this web page is HTML - instructions for displaying a web page.
+      But at a deeper layer, the language of its "title" tag is English.
+      At an even deeper layer the abbreviation 'CLOGS' is a pun on wooden shoes which (at least in tourist shops)
+      are a symbol for the Netherlands.
+      Language is all those layers - as long as it's a common understanding and it's reasonably clear and unambiguous
+      to the receiver that the meaning was intended.
+    </p>
+    <p>
+      The web architecture has a good definition of origin, for instance when it comes to trusting the publisher of
+      executable code, or trusting (the data on) an e-commerce or online banking website based on its TLS certificate.
+      Also in  electronic data internchange, blockchain systems, self-sovereign identity, gossip networks, etc, digital
+      signatures are often used to sign data. The receiver might know the author of the data (and their domain name or
+      public key), or trust a data publishing platform on which a piece of data appears with some level of recommendations.
+      Sometimes the meaning of a piece of data is related to origin. For instance, a message saying that some stranger wants
+      to buy your guitar is only trustworthy if it also comes from that stranger. Like language, and like identity, origin
+      has multiple layers.
+    </p>
+    <p>
+      Grounding is a term we used in 1990s bottom-up AI research, claiming that intelligence in small robots or autonomous agents is 
+      more meaningful than the expert systems that came before it in top-down AI. It provides the link between the story and
+      actual entities that the receiver already knew from elsewhere, or that at least exist in the physical world. Grounding
+      is also essential for deduplicating data when it is synced from one system to another.
+    </p>
+    <p>
+      The <a href="https://en.wikipedia.org/wiki/Speech_act">speech-act</a> behind a piece of data can be a promise, a request,
+      or any way in which the sender of the data is trying to affect the audience. When you send a timesheet, a receipt or an
+      invoice to your manager or to a client, you are not just sharing data, you are also asking to get paid, and both sender and
+      receiver understand this even though it's not part of the meaning of the content.
+      Even when data is just on the web,
+      there is some meaning to the fact itself that that data appears there: it implies that this data has met the requirements
+      for appearing on whichever website it appears on.
+    </p>
+    <p>
+      To interpret the speech-act of a piece of data, it's obviously important
+      to understand its origin first. In <a href="https://federatedbookkeeping.org">Federated Bookkeeping</a> we try
+      to interpret incoming data from other systems to automatically update our own records and trigger routine business
+      actions automatically.
+      When doing so, it's vitally important to not only understand the <strong>C</strong>ontents of a business document through
+      the <strong>L</strong>anguage in which it is written, but also be aware of the <strong>O</strong>rigin,
+      the <strong>G</strong>rounding and the <strong>S</strong>peech-act of each
+      incoming and outgoing message. I hope the CLOGS acronym can help us reason about this.
     </p>
   </article>
  </body>
