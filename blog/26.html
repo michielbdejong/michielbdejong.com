@@ -1,32 +1,27 @@
-<h2>Solid and Inrupt: a merge request</h2>
-<p>With their <a href="https://inrupt.com/blog/V1.1-Release">latest blogpost</a>,
-  Inrupt have announced a number of new features in their enterprise Solidserver.
-We can expect the Inrupt-funded community edition to implement these same features.
-So what does that mean for the other Solid server implementations and for Solid app
-developers?</p>
-<h3>Admin apps and user apps</h3>
-<p>Each Solid pod server implementation is expected to have some features that
-  add value beyond just being a spec-compliant server that passes the independent
-  Solid test suite. And because of this, each server is likely to have a little bit
-  of server-specific eco-system around it. A good example of this is admin apps: they
-  can be used by a Solid user to configure which other apps and users have access to
-  their pod. Of course, we want to standardise how admin apps work, because we want
-  to standardise everything. But at least the incompatibilities between access management
-  protocols like <a href="">WAC</a> and <a href="">ACP</a> are only limiting a Solid user
-  in their choice of admin app.</p>
-  <p>What is more important is to standardise the interaction between user apps (i.e.
-    all Solid apps that are not admin apps), identity providers, and pod servers.
-  In this blogpost we will only consider the impact of spec changes on app developers.
-  
-  <h3>Announcing and Distributing your Solid app</h3>
-  <p>When you have built a Solid app, you will want to add it to the Solid-Nextcloud 
-    launcher, host it on a dedicated FQDN so that it can be referred to by its origin
-    in WAC, and since last week, also give it an app-webid so that it can be referred
-    to in ACP.
-  
-  <h3>User login</h3>
-  <p>When a user logs into your app with their web browser, they will do a redirect
-    dance to the identity provider and back. The exact details of this dance can affect
-    the user experience of your app. In general, it's best to use either solid-auth-fetcher 
-    or 
-  </p>
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <link rel="author" href="https://michielbdejong.com/" />
+   <title>...</title>
+   <meta charset="utf-8" />
+   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   <style>
+     body { background-color: #A3DDDF }
+     header { width: 40em; margin: 5em auto; color: white }
+     article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+     article p img { width: 100% }
+     footer { width: 40em; margin: 5em auto; color: white }
+   </style>
+ </head>
+ <body>
+  <header>
+    <h1>...</h1>
+  </header>
+  <article>
+    <p>
+      ...
+    </p>
+  </article>
+ </body>
+</html>
