@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
    <link rel="author" href="https://michielbdejong.com/" />
-   <title>CLOGS - a framework for data analysis</title>
+   <title>Let your data wear CLOGS</title>
    <meta charset="utf-8" />
    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
    <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -16,11 +16,11 @@
  </head>
  <body>
   <header>
-    <h1>CLOGS - a framework for data analysis</h1>
+    <h1>Let your data wear CLOGS</h1>
   </header>
   <article>
     <p>
-      A framework for data analysis, or maybe just a silly acronym: CLOGS.
+      A checklist for what to store when importing data into a system, with a silly acronym: CLOGS.
       <ol>
         <li><strong>C</strong>ontent: the data as a sequence of symbols, i.e. Shannon's definition of information.</li>
         <li><strong>L</strong>anguage: the step from the content to its (hopefully unambiguous) meaning.</li>
@@ -29,6 +29,7 @@
         <li><strong>S</strong>peech-act: the intended or expected effect of this data on its audience.</li>
       </ol>
     </p>
+    <img src="./Dutchclogs.jpg" />
     <p>
       Keeping this checklist in mind helps me think about for instance
       <a href="https://www.w3.org/2013/data/">the Web of Data</a>. There, the response of a http request
@@ -69,14 +70,32 @@
       for appearing on whichever website it appears on.
     </p>
     <p>
+      The actual enforcement of
+      access control would be done by the data hosting service involved in transporting the data, but the
+      information needed to carry out access control can be part of the scope of the CLOGS checklist.
+      The speech act is where consent for resharing would be signalled, which gets close to access control.
+      And there may be access control information included in the content of the data, for instance when storing data 
+      on a Solid pod and adding ACL files to it with Web Access Control instructions.
+    </p>
+    <p>
+      One piece of data can also change through multiple versions over time, in which case we need to keep track of
+      versioning information. In that case you should probably apply the CLOGS checklist to each changeset. For instance,
+      an invoice can be seen as a document that changes in the status of an order. This approach implies that the
+      "current state" of a dataset is built by replaying the change log, and each node in a federation does that calculation
+      deterministically. There may be other valid ways to share versioned data between systems though, so I'm not entirely
+      sure yet about this point.
+    </p>
+    <p>
       To interpret the speech-act of a piece of data, it's obviously important
       to understand its origin first. In <a href="https://federatedbookkeeping.org">Federated Bookkeeping</a> we try
       to interpret incoming data from other systems to automatically update our own records and trigger routine business
       actions automatically.
+      This is a form of <a href="https://en.wikipedia.org/wiki/Master_data_management">Master Data Management</a>,
+      although maybe instead of a single source of truth, Federated Bookkeeping aims to create a distributed source of truth.
       When doing so, it's vitally important to not only understand the <strong>C</strong>ontents of a business document through
       the <strong>L</strong>anguage in which it is written, but also be aware of the <strong>O</strong>rigin,
       the <strong>G</strong>rounding and the <strong>S</strong>peech-act of each
-      incoming and outgoing message. I hope the CLOGS acronym can help us reason about this.
+      incoming and outgoing message. I hope the CLOGS acronym can help us reason about that.
     </p>
   </article>
  </body>
