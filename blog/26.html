@@ -97,6 +97,16 @@
       the <strong>G</strong>rounding and the <strong>S</strong>peech-act of each
       incoming and outgoing message. I hope the CLOGS acronym can help us reason about that.
     </p>
+    <p>
+      <strong>ADDENDUM:</strong> other aspects of data that I thought could have deserved a place in the acronym would have been
+      versioning and authorization. The Origin carries authentication which may inform authorization, and the Speech-act may inform
+      versioning, but I still think both should ideally live at a higher layer of a properly CLOGS-aware system. In order to do
+      versioning, interpretation of the messages is needed. If you set support for versioning and access control as requirements for
+      a system, you need quite a bit of context and need to make assumptions in order to construct a single latest version of the
+      truth. I think there are many situations in Federated Bookkeeping where a computer system can achieve a single full up-to-date
+      message log at the CLOGS layer, from which various version of the truth, according to a various set of authority rules,
+      can then be constructed at a higher layer.
+    </p>
   </article>
  </body>
 </html>
