@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+ <html lang="en">
+  <head>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Spinners don't scale</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      article p img { width: 100% }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+   <header>
+     <h1>Spinners don't scale</h1>
+   </header>
+   <article>
+     <h2>Spinner-first vs local-first</h2>
+     <p>
+      When a user clicks, swipes or types in a UI, the ideal reaction would consist of two things: first, a confirmation that the
+      gesture was understood successfully (for instance, the letter you typed appears on the screen, or the button you clicked changes
+      colour), as the application transitions from the 'idle' to the 'processing' state. And second, either the UI contents is
+      updated to the new resulting state (in the case of success) or an error message is shown (in the case of failure) as the
+      application transitions back to 'idle'.
+    </p>
+    <p>
+      If the application's code is spread out over multiple servers with network delays between them, the developer has two options:
+      keep the UI in the 'processing' state until all ripple effects of the user's action have propagated to all corners of the network,
+      and news about that has travelled back all the way to the device that is displaying the UI, or go back to 'idle' state even if not all
+      effects of the action have been confirmed yet.
+    </p>
+    <p>
+      In the first case a spinner can be shown; to tell the user to wait, and also to cover
+      up parts of the UI for which the old contents is known to be stale but the new correct contents is not known yet.
+      We might therefore call this approach 'spinner-first', because after each actions, first, a spinner is shown.
+    </p>
+    <p>
+      In the second case, the UI might still display that it is in a 'syncing' or 'offline' state for as long as the ripple effects of a
+      user's action might still cause that action to fail, or for as long as closing the application on the local device might still lead
+      to data loss - or at least to other users elsewhere not seeing the intended results of your action. This approach is often called 
+      'offline-first' or 'local-first', meaning that the user's action completes locally first, and its results ripple out to other
+      network nodes second, but also that the developer should think about local or about offline first, and worry about online or remote 
+      second (in the same way as the term 'mobile-first' from the 2010s means that startups should cater for smartphone users first,
+      before worrying too much about desktop users).
+    </p>
+    <h2>Federated Data</h2>
+    <p>
+      A recurring theme in my research is data portability and federated data architectures. In particular, in
+      <a href="https://federatedbookkeeping.org">Federated Bookkeeping</a> we
+      look at networks of sovereign systems, where each node in a network is free to choose its own software stack and data model,
+      and peering with other nodes comes second ("local architecture requirements first").
+    </p>
+    <p>
+      Also, different links in a Federated Bookkeeping network might use different and unrelated sync protocols, in terms of data transport,
+      sync coordination, as well as data representation ("heterogeneous network links").
+    </p>
+    <p>
+      Additionally, nodes in a Federated Bookkeeping
+      network are sovereign in the sense that they each consider their own data store as the primary source of truth ("local truth first").
+      Data coming in from other nodes might be considered trusted, depending on which nodes is making statements about which part of the data,
+      or it might keep its 'foreign' label on it. A good example of this is the GitHub web editor; when a project contributor makes a change,
+      this change can be committed immediately. But when an outsider tries to do the same, the proposed change is captured in a PR instead.
+    </p>
+    <h2>Ripple effects take time</h2>
+    <p>
+      In large applications like for instance facebook.com, eventual consistency is often used to show the results of an action faster, even
+      though its effects have not yet propagated to each database server. For instance, an object may have been created successfully,
+      but it is not showing up in search results until 15 minutes later. It would be undesirable to make the user look at a spinner for
+      15 minutes in this case.
+    </p>
+    <p>
+      Even more so, when multiple systems are loosely linked together using for instance webhooks across domain boundaries, there is no
+      safe way for an application to wait for all other possible applications in the network to complete the effects of a user's action.
+    </p>
+    <p>
+      First of all, say in a network of 10 systems, if 1 system is down, the other 9 would be showing spinners in a
+      domino effect. Waiting for effects in foreign systems to complete would lead to undesirable tight coupling.
+    </p>
+    <p>
+      Second, the larger the network grows, the longer the possible multi-hop paths of ripple effects, and the longer the maximum wait times.
+    </p>
+    <p>
+      These two problems mean that spinners basically don't scale to federated systems. They only work in isolated applications where
+      the user's data is siloed.
+      Even if a spinner-first approach works for a single application, as soon as that application joins a data federation,
+      reliably displaying the spinner becomes infeasible.
+    </p>
+    <p>
+      Luckily, in Federated Bookkeeping we assume that each system adheres to "local truth first", so we expect that in many cases it will not even be
+      the user's expectation that data integrity exists across domain boundaries. So let's forget about spinners and build local-first apps!
+    </p>
+    <p>
+      One question that arises though, is how to link various heterogeneous local-first apps together. CRDTs give guarantees about how
+      little the data will have to be changed, and how little of the intent of a user's local changes will be lost,
+      when remote changes come in or when ripple effects hit constraints elsewhere.
+    </p>
+    <p>
+      However, this guarantee can only be given if each node uses not only the same data model, but also the
+      same algorithm to apply updates to the data. In that sense, mandating each node in a data federation to use a certain CRDT
+      would be too restrictive, and would violate the "local architecture requirements first" principle mentioned above.
+    </p>
+    <p>
+      So what can we do to solve this? Well, we don't know yet. :) This is an exciting area of research that we hope to be working on during the coming months.
+      Come to <a href="https://gitter.im/federatedbookkeeping/community">our Gitter channel</a> if you want to follow the conversation!
+    </p>
+  </article>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <link rel="author" href="https://michielbdejong.com/" />
+   <title>Let your software wear CLOGS</title>
+   <meta charset="utf-8" />
+   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   <style>
+     body { background-color: #A3DDDF }
+     header { width: 40em; margin: 5em auto; color: white }
+     article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+     article p img { width: 100% }
+     footer { width: 40em; margin: 5em auto; color: white }
+   </style>
+ </head>
+ <body>
+  <header>
+    <h1>Let your software wear CLOGS</h1>
+  </header>
+  <article>
+    <p>
+      Last week I was at the
+      <a href="https://www.youtube.com/watch?v=hJQqjELPcOU">Programming Local First 2022</a> workshop and the
+      Ink and Switch Unconference in Berlin, and an interesting topic we talked about is how software keeps
+      becoming obsolete. Part of this is <a href="https://indieweb.org/site-deaths">site deaths</a>. Another
+      part is old software that no longer comes out on newer operating systems, or new software that no longer
+      comes out for older operating systems.
+    </p>
+    <p>
+      Sometimes, progress is good, but there are three major potential problems when software updates or gets
+      replaced by a newer thing:
+      <ul>
+        <li>Users need to adapt to the interface of the new system</li>
+        <li>Data needs to adapt to the interface of the new system</li>
+        <li>Neighbouring systems need to adapt to the interface of the new system</li>
+      </ul>
+    </p>
+    <p>
+      Neighbouring systems can be polyglot (<a href="./26.html">CLOGS</a>-aware), and data can be translated on-the-fly. But users
+      may just prefer to keep using the user interface they are familiar with. And this may be possible through CLOGS.
+    </p>
+    <p>
+      Suppose two companies merge, and their ERP systems need to merge too. This can be achieved through an expensive
+      data migration, or with <a href="https://en.wikipedia.org/wiki/Master_data_management">Master Data Management</a>
+      and <a href="https://en.wikipedia.org/wiki/Data_virtualization">Data Virtualisation</a>, the systems
+      can run side-by-side. If data is not migrated away from the format it was in, then software can maybe also be kept
+      running.
+    </p>
+    <p>
+      To allow software to keep running despite switching dependencies, it would be good to package the software in a way
+      that includes all its dependencies, all the way down to the operating system. Docker is a useful tool that helps
+      with this.
+    </p>
+    <p>
+      Sometimes a software system will depend on a connection with a neighbouring system that gets shut down, but
+      if that neighbouring system also adheres to CLOGS, then the old API can be kept operational.
+    </p>
+    <p>
+      A major headache could be security updates; it may not always be possible to maintain an API if for instance
+      its authentication protocol is outdated.
+    </p>
+    <p>
+      Another problem would be the build-up of complexity if old database tables need to be kept around for
+      backwards compatibility. It's basically the burden of
+      <a href="https://en.wikipedia.org/wiki/Legacy_system#Problems_posed_by_legacy_computing">Legacy Code</a>.
+    </p>
+    <p>
+      In the end I think maybe this problem is fundamentally unsolvable: software just gets deprecated and it's a pity but that's it.
+    </p>
+  </article>
+ </body>
+</html>
