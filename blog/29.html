@@ -34,10 +34,13 @@
       credentials, where for instance a university puts a cryptographically signed diploma in the user's pod, which
       the user can then bring to other applications. Other examples may be user preferences and interests (the ones
       advertisers traditionally try to collect about us behind our backs). But if we go a step further, even unfinished
-      work could be ported from one application to another using Solid. For instance, I start editing a presentation
+      work could be ported from one application to another using Solid.
+    </p>
+    <p>
+      For instance, I start editing a presentation
       using an online text editor, that saves the document text to my pod. Then I could use a different online
       application to create a drawing, and insert that into the presentation. Yet another app could be used to edit
-      and include photos that that were automatically uploaded to my pod from my smartphone.
+      and include photos that were automatically uploaded to my pod from my smartphone.
     </p>
     <h2>More than a Personal Cloud Server</h2>
     <p>
@@ -52,9 +55,21 @@
     <p>
       But the Personal Data Store vision goes a step further, in that
       it also decouples itself from the applications you can bring this data into. Of course, bringing your own data to
-      an application only works if this application has a way to negotiate which data it wants, you grant it the access it needs (and
-      not to the rest of your data),
-      and the data is in a format that the application understands. For some use cases, read access is enough. For other use cases,
+      an application only works if:
+      <ul>
+        <li>this application has a way to negotiate which data it wants,</li>
+        <li>you grant it the access it needs (and not to the rest of your data),</li>
+        <li>the application knows how to interact with your personal data store over a protocol / API,</li>
+        <li>the data is in a format (serialization, ontology) that the application understands, and</li>
+        <li>the application respects the context, business logic, and implicit assumptions around the data.</li>
+      </ul>
+      All five are hard. And it's worth noting that protocol specifications like Solid, WebDAV, SQL,
+      and remoteStorage generally address only the third one. For instance, the Authorization layer of the Solid spec allows a user to
+      hand-tune access to specific documents, but it doesn't provide an easy-to-use consent dialog that a user will understand. All these
+      things will have to be built on top of the various personal data store protocols.
+    </p>
+    <p>
+      For some use cases, read access is enough. For other use cases,
       you will also want the data in your personal data store to be updated with the work you do in the application (read/write access).
       And maybe you even want to use the application to edit the permissions and share things with other humans and other organizations
       (control access).
@@ -91,17 +106,20 @@
     </p>
     <h2>Multiple pods</h2>
     <p>
-      Apart from the layers you could put on top of Solid (e.g. end-to-end encryption, or verifiable credentials), there is a fundamental
-      alternative approach to the architecture of Solid. Whereas classically we think of the situation where a user interacts with one
-      identity provider, one storage providers, recent experiments in practice have moved more towards also using multiple storage
-      providers. The advantage of this is that the organization that wants to write into your pod can also do the hosting of that section
+      Apart from the layers you could put on top of Solid (e.g. end-to-end encryption, or verifiable credentials), there is a fundamentally
+      different approach to the architecture of Solid. Whereas classically we think of the situation where a user interacts with one
+      identity provider, one storage provider, and multiple applications, recent experiments in practice have moved more towards also using
+      multiple storage providers linked to a single identity.
+    </p>
+    <p>
+      The advantage of this is that the organization that wants to write into your pod can also do the hosting of that section
       of your personal data store for you. They might even restrict you to read-only access. For instance, if a university just writes
-      "Master of Science" into a document on your pod, it would be easy for you to edit that; to fix that, they could give you a signed
+      "Master of Science" into a document on your pod, it would be too easy for you to edit that; to fix that, they could give you a signed
       version of that document. Or they could give you a link (and eternal read access) to a document that they host. Of course, this erodes
       the sovereignty of the user quite a bit, but it also mitigates the risk of people accidentally deleting their university diploma.
     </p>
     <p>
-      Luckily, when your application to support Bring-your-own-data use patterns, it doesn't matter much whether that data is on one or on
+      Luckily, when you want your application to support Bring-your-own-data use patterns, it doesn't matter much whether that data is on one or on
       multiple pods or domainnames; through hyperlinks, all data can still be found in much the same way. There are some details about editing
       the details of your profile document, which is tied directly to your WebID, but as long as all profile editor applications are aware
       that some users have one pod tied to their identity and other users may have several, these details can be resolved.
@@ -110,16 +128,22 @@
     <p>
       A third flavour of Solid, which I think was never accepted as part of the Solid specification, but has always had some traction in some
       semantic web academia circles, is the view of the Solid pod as not a file storage or "document box", but more as a database that
-      allows server-side search across multiple documents. In itself, server-side query execution feels like a natural feature to add, especially
+      allows server-side search across multiple documents.
+    </p>
+    <p>
+      In itself, server-side query execution feels like a natural feature to add, especially
       if you compare the Solid stack with traditional web development stacks like Ruby on Rails, the LAMP stack (Linux, Apache, MySQL, PHP), etcetera.
+    </p>
+    <p>
       Even though a database server, at some level, will eventually end up storing files in folders, it handles the creation of indexes on
       the server-side, and in the Solid architecture, client-side applications are responsible for creating index files beyond the basic
       file system layout.
+      Importing data from a graph store is not very different from importing that same data from a document store. If anything, it will be
+      easier, not harder, because multiple views on the same data could be generated on the fly. But there also lies the risk.
     </p>
     <p>
-      Importing data from a graph store is not very different from importing that same data from a document store. If anything, it will be
-      easier, not harder. But there also lies the risk. Interoperability between Solid applications is already hard if the Solid spec
-      is simple. The more complex the servers become, the harder it will be to agree on a single definition of that more complex behaviour,
+      Interoperability between Solid applications is already hard if the Solid spec is simple.
+      The more complex the servers become, the harder it will be to agree on a single definition of that more complex behaviour,
       the more different protocols clients will need to implemement, and the more can go wrong with it. That is why for instance in the 
       remoteStorage protocol (which predates the Solid protocol), we chose to make the protocol as simple as possible. To maximize
       interoperability, we want dumb servers and smart applications!
@@ -152,7 +176,7 @@
       Solid OS will &quot;magically&quot; show up when you open Projectron.
     </p>
     <p>
-      That's where the Solid project will start to show off its magic.
+      That is where the Solid project will start to show off its magic!
     </p>
   </article>
   </body>
