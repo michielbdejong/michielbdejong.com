@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+ <html lang="en">
+  <head>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Using all flavours of Solid</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      article p img { width: 100% }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+   <header>
+     <h1>Using all flavours of Solid</h1>
+   </header>
+   <article>
+     <h2>How it usually starts</h2>
+     <p>
+      Usually, when an organization explores how they could adopt <a href="https://solidproject.org">Solid</a>,
+      their first approach is to restructure the organization's web application in such a way that user data
+      is stored in per-user data stores. This is a good start! But it still doesn't enable data portability.
+      The vision we really want to move towards is a "Bring your own Data" world, which focuses on the data
+      a user may import into your application, rather than on the data they may export from your application.
+    </p>
+    <h2>Bring your own Data</h2>
+    <p>
+      The next step is to see which data a user may bring to your application, and how you can rely on this data.
+      A lot of proof-of-concept projects we have done so far end up using the Solid pod mostly to store verifiable
+      credentials, where for instance a university puts a cryptographically signed diploma in the user's pod, which
+      the user can then bring to other applications. Other examples may be user preferences and interests (the ones
+      advertisers traditionally try to collect about us behind our backs). But if we go a step further, even unfinished
+      work could be ported from one application to another using Solid. For instance, I start editing a presentation
+      using an online text editor, that saves the document text to my pod. Then I could use a different online
+      application to create a drawing, and insert that into the presentation. Yet another app could be used to edit
+      and include photos that that were automatically uploaded to my pod from my smartphone.
+    </p>
+    <h2>More than a Personal Cloud Server</h2>
+    <p>
+      In that sense, a Personal Data Store like the ones proposed by
+      the <a href="http://radar.oreilly.com/2011/02/singly-locker-project-telehash.html">Locker project</a>,
+      the <a href="https://unhosted.org">Unhosted project</a>,
+      the <a href="https://solidproject.org">Solid project</a>, and all the other
+      <a href="https://medium.com/@shevski/are-personal-data-stores-about-to-become-the-next-big-thing-b767295ed842">Personal Data Store projects</a>,
+      is very similar to a Personal Cloud Server like <a href="https://nextcloud.com">Nextcloud</a> or <a href="https://cozy.io/en/">Cozy</a>,
+      in that it gives the user control over their data.
+    </p>
+    <p>
+      But the Personal Data Store vision goes a step further, in that
+      it also decouples itself from the applications you can bring this data into. Of course, bringing your own data to
+      an application only works if this application has a way to negotiate which data it wants, you grant it the access it needs (and
+      not to the rest of your data),
+      and the data is in a format that the application understands. For some use cases, read access is enough. For other use cases,
+      you will also want the data in your personal data store to be updated with the work you do in the application (read/write access).
+      And maybe you even want to use the application to edit the permissions and share things with other humans and other organizations
+      (control access).
+    </p>
+    <h2>Polyglot clients</h2>
+    <p>
+      Last week, the Solid project produced <a href="https://solidproject.org/TR/2022/protocol-20221231">version 0.10 of its specification</a>.
+      It describes how data can be stored and retrieved in a Solid pod, how proof of identity can be given out by a Solid Identity Provider,
+      it gives <a href="https://solidproject.org/TR/2022/protocol-20221231#authorization">2 options for implementing access control</a>,
+      and <a href="https://solidproject.org/TR/2022/notifications-protocol-20221231#notification-channel-types">>=6 options for implementing
+      notifications</a>. This does put a little bit of burden on your application, in that it will have to use a "polyglot" approach in order
+      to be able to "speak" with all different kinds of Solid pods.
+    </p>
+    <p>
+      The WAC vs ACP dichotomy may not be as big as an issue as it seems, since most apps will not need to edit access control rules anyway.
+      Using the <a href="https://solid.github.io/data-interoperability-panel/specification/">Solid Application Interoperability Spec</a>,
+      your application can express its data needs, and be given access and pointers to all the data it needs. This data will adhere to 
+      <a href="https://shapetrees.org/TR/specification/">Shape Trees</a> which should be enough to meaningfully interpret, and correctly
+      edit the data.
+    </p>
+    <p>
+      The Webhooks, WebSockets, and other channel types of the Solid Notification spec will probably cost you some extra work, but bear
+      in mind that this is a relatively new part of the specification and I hope this will still consolidate some more in the future.
+    </p>
+    <p>
+      In any way, it is a good idea in general to make your application import data in a polyglot way. Maybe users come to your application
+      with a Solid pod, but in other cases they come with data they want to import from (and edit on) their Dropbox account, their Google
+      Drive, their remoteStorage account, their WebDAV server, etcetera. It makes sense for your application to be future proof and independent
+      of any particular protocol version. We are also planning to do some more development work on polyglot bring-your-own-data client libraries
+      like <a href="https://github.com/remotestorage/remotestorage.js/">remoteStorage.js</a> in the near future, which would help with that.
+    </p>
+    <p>
+      However, the different access protocols are not even the &quot;flavours&quot; I was referring to in the title of this blogpost.
+    </p>
+    <h2>Multiple pods</h2>
+    <p>
+      Apart from the layers you could put on top of Solid (e.g. end-to-end encryption, or verifiable credentials), there is a fundamental
+      alternative approach to the architecture of Solid. Whereas classically we think of the situation where a user interacts with one
+      identity provider, one storage providers, recent experiments in practice have moved more towards also using multiple storage
+      providers. The advantage of this is that the organization that wants to write into your pod can also do the hosting of that section
+      of your personal data store for you. They might even restrict you to read-only access. For instance, if a university just writes
+      "Master of Science" into a document on your pod, it would be easy for you to edit that; to fix that, they could give you a signed
+      version of that document. Or they could give you a link (and eternal read access) to a document that they host. Of course, this erodes
+      the sovereignty of the user quite a bit, but it also mitigates the risk of people accidentally deleting their university diploma.
+    </p>
+    <p>
+      Luckily, when your application to support Bring-your-own-data use patterns, it doesn't matter much whether that data is on one or on
+      multiple pods or domainnames; through hyperlinks, all data can still be found in much the same way. There are some details about editing
+      the details of your profile document, which is tied directly to your WebID, but as long as all profile editor applications are aware
+      that some users have one pod tied to their identity and other users may have several, these details can be resolved.
+    </p>
+    <h2>Graph Stores</h2>
+    <p>
+      A third flavour of Solid, which I think was never accepted as part of the Solid specification, but has always had some traction in some
+      semantic web academia circles, is the view of the Solid pod as not a file storage or "document box", but more as a database that
+      allows server-side search across multiple documents. In itself, server-side query execution feels like a natural feature to add, especially
+      if you compare the Solid stack with traditional web development stacks like Ruby on Rails, the LAMP stack (Linux, Apache, MySQL, PHP), etcetera.
+      Even though a database server, at some level, will eventually end up storing files in folders, it handles the creation of indexes on
+      the server-side, and in the Solid architecture, client-side applications are responsible for creating index files beyond the basic
+      file system layout.
+    </p>
+    <p>
+      Importing data from a graph store is not very different from importing that same data from a document store. If anything, it will be
+      easier, not harder. But there also lies the risk. Interoperability between Solid applications is already hard if the Solid spec
+      is simple. The more complex the servers become, the harder it will be to agree on a single definition of that more complex behaviour,
+      the more different protocols clients will need to implemement, and the more can go wrong with it. That is why for instance in the 
+      remoteStorage protocol (which predates the Solid protocol), we chose to make the protocol as simple as possible. To maximize
+      interoperability, we want dumb servers and smart applications!
+    </p>
+    <p>
+      So, because Solid servers are so simplistic, applications that write data into your personal data store, will also sometimes need to
+      update index files that make this data findable.
+      And although this burden of collective maintenance of index files can be challenging, it is not very different from the burden of collective
+      maintenance of the integrity of the main (source) documents in a personal data store.
+    </p>
+    <h2>Client-client specs</h2>
+    <p>
+      It is all part of the client-client specs, which at some level is the central part of the Solid project, and at another level is maybe
+      also the most under-developed part of it. We have Jackson's <a href="https://shaperepo.com">ShapeRepo</a> that allows you to, for instance, express
+      which attributes a <a href="https://shaperepo.com/shapes?id=https%3A%2F%2Fwww.wikidata.org%2Fwiki%2FEntitySchema%3AE176">Chilean
+      astronomer</a> has, in a machine-readable way. And we have <a href="https://pdsinterop.org/conventions/overview/">PDS Interop
+      Conventions</a> which documents
+      how Solid OS and other Solid applications store data on a pod, in human language and by example.
+    </p>
+    <p>
+      The <a href="https://solid.github.io/data-interoperability-panel/specification/">Solid Application Interoperability spec</a> is
+      probably the closest thing we have to making Solid applications interoperable with each other. It requires application developers
+      to describe their data models with ShapeTrees, which will be a bit of extra work, but may at some point be the only way to
+      allow other application developers to import the data your app exported to the user's Solid pod.
+    </p>
+    <p>
+      There is an example app called <a href="https://github.com/hackers4peace/projectron">Projectron</a> which is mentioned throughout
+      the Solid Application Interoperability spec and which can be used to track projects and issues; a first step would be to make this
+      app compatible with the <a href="https://github.com/SolidOS/issue-pane">SolidOS Issue tracker</a>, so that issues created through
+      Solid OS will &quot;magically&quot; show up when you open Projectron.
+    </p>
+    <p>
+      That's where the Solid project will start to show off its magic.
+    </p>
+  </article>
+  </body>
+</html>
