@@ -49,7 +49,7 @@
       application to create a drawing, and insert that into the presentation. Yet another app could be used to edit
       and include photos that were automatically uploaded to my pod from my smartphone.
     </p>
-    <h2>More than a Personal Cloud Server</h2>
+    <h2>Flavour One: More than a Personal Cloud Server</h2>
     <p>
       In that sense, a Personal Data Store like the ones proposed by
       the <a href="http://radar.oreilly.com/2011/02/singly-locker-project-telehash.html">Locker project</a>,
@@ -66,7 +66,7 @@
       <ul>
         <li>this application has a way to negotiate which data it wants,</li>
         <li>you grant it the access it needs (and not to the rest of your data),</li>
-        <li>the application knows how to interact with your personal data store over a protocol / API,</li>
+        <li>the application knows how to interact with your personal data store to fetch or store the data,</li>
         <li>the data is in a format (serialization, ontology) that the application understands, and</li>
         <li>the application respects the context, business logic, and implicit assumptions around the data.</li>
       </ul>
@@ -111,7 +111,7 @@
     <p>
       However, the different access protocols are not even the &quot;flavours&quot; I was referring to in the title of this blogpost.
     </p>
-    <h2>Multiple pods</h2>
+    <h2>Flavour Two: Multiple pods</h2>
     <p>
       Apart from the layers you could put on top of Solid (e.g. end-to-end encryption, or verifiable credentials), there is a fundamentally
       different approach to the architecture of Solid. Whereas classically we think of the situation where a user interacts with one
@@ -131,7 +131,7 @@
       the details of your profile document, which is tied directly to your WebID, but as long as all profile editor applications are aware
       that some users have one pod tied to their identity and other users may have several, these details can be resolved.
     </p>
-    <h2>Graph Stores</h2>
+    <h2>Flavour Three: Graph Stores</h2>
     <p>
       A third flavour of Solid, which I think was never accepted as part of the Solid specification, but has always had some traction in some
       semantic web academia circles, is the view of the Solid pod as not a file storage or "document box", but more as a database that
@@ -161,20 +161,28 @@
       And although this burden of collective maintenance of index files can be challenging, it is not very different from the burden of collective
       maintenance of the integrity of the main (source) documents in a personal data store.
     </p>
-    <h2>Client-client specs</h2>
+    <h2>Flavour <tt>i</tt>: Client-client specs</h2>
     <p>
-      It is all part of the client-client specs, which at some level is the central part of the Solid project, and at another level is maybe
-      also the most under-developed part of it. We have Jackson's <a href="https://shaperepo.com">ShapeRepo</a> that allows you to, for instance, express
+      Once you have a polyglot client that allows your users to <em>bring their own data</em> in a way that is easy for them, the rest is all about the client-client specs, which at some level are the central part of the Solid project, and at another level is maybe
+      also the most under-developed part of it.
+    <p>
+    </p>
+We have Jackson's <a href="https://shaperepo.com">ShapeRepo</a> that allows you to, for instance, express
       which attributes a <a href="https://shaperepo.com/shapes?id=https%3A%2F%2Fwww.wikidata.org%2Fwiki%2FEntitySchema%3AE176">Chilean
       astronomer</a> has, in a machine-readable way. And we have <a href="https://pdsinterop.org/conventions/overview/">PDS Interop
       Conventions</a> which documents
-      how Solid OS and other Solid applications store data on a pod, in human language and by example.
+      how Solid OS and other Solid applications store data on a pod, as developer documentation and by example.
     </p>
     <p>
       The <a href="https://solid.github.io/data-interoperability-panel/specification/">Solid Application Interoperability spec</a> is
       probably the closest thing we have to making Solid applications interoperable with each other. It requires application developers
       to describe their data models with ShapeTrees, which will be a bit of extra work, but may at some point be the only way to
       allow other application developers to import the data your app exported to the user's Solid pod.
+    </p>
+    <p>
+      Just like the &quot;Add to home screen&quot; functionality of Chrome on Android only works for
+      progressive web apps that have a service worker, and service workers only work when an app is hosted
+      on https, we could require apps to describe their data formats (at least with developer documentation and examples, but preferably also with shape trees) before we can call an app a Solid app.
     </p>
     <p>
       There is an example app called <a href="https://github.com/hackers4peace/projectron">Projectron</a> which is mentioned throughout
