@@ -48,6 +48,12 @@
       passing through a gate in that wall.
       For &quot;Write access&quot; to multi-homed data, there is a disconnect between a relying party creating a new local version of the data, and the sync messages
       that are sent betweeen servers to copy this new version to the other homes of the data.
+    </p><p>
+      The Solid protocol uses access control lists (either WAC or ACP) which bind access decisions to the folder structure of the data. But sometimes an access grant will 
+      have to affect access to different resources, in different places in the folder tree. And indeed, if you look at the PoC implementation of the SAI spec, it stores registries
+      on the user's storage, but it does not interoperate with WAC. Looking at Inrupt's answer to SAI, it also doesn't edit the ACP rules when access is granted or revoked.
+
+    </p>
     <h2>Why not CRDT?</h2>
     <p>
       Long, frequent and enjoyable conversations with George Svarovski and others led me to the conclusion that CRDTs, while solving part of the puzzle, do not offer
@@ -73,6 +79,15 @@
       services severs the connection. But the user may want to keep track of liquid data domains they control, and be able to add and remove connected services from a single
       place, even if that place is not the single source of truth for that data domain. What is left in the center then, after removing the storage server is only the auth server:
       the personal consent store.
+      </p><p>
+        And of course each services that holds a copy of the data should apply the access control on behalf of the data controller, so it might make sense to consider bundling access control 
+        with the data in the way WAC does, but on the other hand, since access grants will usually span different resources, that would mean a single access grant could lead to a thousand WAC 
+        entries. And furthermore, the idea that the data synchronisation messages that travel between servers are GET, PUT and PATCH requests on specific resources is also naive; two nodes in a 
+        Liquid Data domain might be syncing using some efficient Merkle tree updates across a whole bunch of data sets, and including copies of ACLs with each bit of data would then be a serious 
+        performance hit.
+      </p><p>
+        That's why I think the consent stores should stay user-centric, but the data storage should be allowed to move beyond the restrictive hub-and-spoke model.
+      </p>
      </p>
   </article>
   </body>
