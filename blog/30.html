@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+ <html lang="en">
+  <head>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Liquid Data and Personal Consent Stores</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      article p img { width: 100% }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+   <header>
+     <h1>Liquid Data and Personal Consent Stores</h1>
+   </header>
+   <article>
+     <p>
+      For twelve years now I have researched the "data portability by default" benefits of personal data stores.
+      And now I found two caveats with it, which I would like to improve on.
+     </p>
+     <p>
+      Using a personal data store as a pivot for data portability between applications works very well: it allows the user to
+      export data from the first app into a memorable place, rather than into zip file in the downloads folder on one of their devices,
+      and it allows data to be imported into the second app without requiring any interaction with the first app.
+    </p><p>
+      Subsequently, all apps that are connected to the personal data store should use it as the primary storage for all data pertaining to this user.
+      But apps will not always want to do that, they may want to keep their own copy as authoritative. A good example is patient records at a hospital. The
+      hospital will often trust its own copy of the data before trusting the copy that is in the personal data store which they don't control.
+    </p><p>
+      From the point of view of the hospital, everything outside its walls is out of its control, and it will have a defense layer that filters both outgoing
+      and incoming information, to prevent outgoing data leaks and incoming data corruption. The same will be true for bookkeeping and ERP systems, letting go of
+      the primary store of business critical information is a paradigm shift in the best cases, and a hard no in many other contexts.
+    </p><p>
+      I therefore started thinking about &quot;<a href="https://liquiddata.dev">Liquid Data</a>&quot; as a paradigm for multi-homed data.
+    </p><p>
+      The other caveat is in how decentralisation of data puts all our ideas about access control inside out. The idea of setting up a personal data store with which
+      the user can bring their own data to an application is at the same time powerful and simplistic. It assumes that this personal data store becomes the new server
+      around which a wall can be built to prevent unauthorized access. But when we think of data as multi-homed, and on top of that think of identity (both for the
+      data controller and the relying party) as something
+      federated, the whole notion of access control at the server gate breaks down. 
+      &quot;Read access&quot; used to mean the ability to take data out of its home. For multi-homed data, there can still be a notion of read-access when relying parties
+      take data out of one of its homes, but by doing so the relying party itself becomes an additional home of the data, changing the location of the wall rather than just
+      passing through a gate in that wall.
+      For &quot;Write access&quot; to multi-homed data, there is a disconnect between a relying party creating a new local version of the data, and the sync messages
+      that are sent betweeen servers to copy this new version to the other homes of the data.
+    <h2>Why not CRDT?</h2>
+    <p>
+      Long, frequent and enjoyable conversations with George Svarovski and others led me to the conclusion that CRDTs, while solving part of the puzzle, do not offer
+      the same &quot;data portability by default&quot; that personal data stores aim to provide, because they do not allow for translations of the data. A CRDT only
+      works if all nodes in the domain apply exactly the same algorithm to translate update messages to new local versions that can be proven to eventually converge.
+    </p><p>
+      I therefore think of Liquid Data as something slightly more high-level than a CRDT. The messages sent between servers can be any type of message which both
+      the sender and the receiver understand, but other than that they do not need to be formatted in any way relevant to the sender's or receiver's internal data format.
+    </p>
+  
+      <h2>multihop</h2>
+      <p>
+
+      On top of that, it allows
+      many-to-many data portability. For instance if you have addressbooks in Google and in Outlook, and you want to populate your new addressbooks
+      in Mastodon and in Apple, then traditionally (doing direct export-and-import without having a personal data store in the middle), this would take
+      four 
+     </p>
+     <h2>Personal Consent Stores</h2>
+     <p>
+      So what is left if we take the &quot;data store&quot; out of personal data stores? It's true, once a user sets up a synchronisation between two services, the data 
+      can stay in sync between them, for as long both servers keep access to each other, and the user's identity on both services can stay linked, until one of the two 
+      services severs the connection. But the user may want to keep track of liquid data domains they control, and be able to add and remove connected services from a single
+      place, even if that place is not the single source of truth for that data domain. What is left in the center then, after removing the storage server is only the auth server:
+      the personal consent store.
+     </p>
+  </article>
+  </body>
+</html>
