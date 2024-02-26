@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+ <html lang="en">
+  <head>
+    <link rel="author" href="https://michielbdejong.com/" />
+    <title>Liquid Data and Personal Consent Stores</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+      body { background-color: #A3DDDF }
+      header { width: 40em; margin: 5em auto; color: white }
+      article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
+      article p img { width: 100% }
+      footer { width: 40em; margin: 5em auto; color: white }
+    </style>
+  </head>
+  <body>
+   <header>
+     <h1>OAuth for multi-homed Data</h1>
+   </header>
+   <article>
+     <p>
+      In <a href="30.html">my previous blogpost</a> I started thinking about multi-homed data and access control, and this topic is still fascinating me.
+    </p>
+    <p>
+      OAuth is a very successful framework for API access control. It seems data spaces could be built using OAuth in each link. This is a bit of a paradigm shift though.
+      First of all, there will often be a requesting party like in <a href="https://en.wikipedia.org/wiki/User-Managed_Access">UMA</a>, and this is not necessarily the resource owner.
+      This is already an accepted evolution of OAuth.
+    </p>
+    <p>
+      Second, for multi-homed data, each client becomes a potential additional resource server itself. Each time access is granted, the boundary of the trust domain changes to include this 
+      new network node. This is already incorporated in how Open Cloud Mesh handles resharing, but OAuth just focuses on a single link in the network.
+    </p>
+    <p>
+      Like in the work on [OAuth scope pickers](https://github.com/pondersource/surf-token-based-access) I'm doing with SURF, auth servers will need to be more decoupled from resource servers,
+      so dynamic scopes need to be supported. 
+    </p>
+    <p>
+      And like in the work on [Open Cloud Mesh](https://github.com/cs3org/OCM-API/issues/80), the flow may not necessarily start at the client, it could be a "RS-first" flow.
+    </p>
+  </article>
+  </body>
+</html>
