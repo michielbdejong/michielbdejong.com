@@ -36,7 +36,7 @@
       and incoming information, to prevent outgoing data leaks and incoming data corruption. The same will be true for bookkeeping and ERP systems, letting go of
       the primary store of business critical information is a paradigm shift in the best cases, and a hard no in many other contexts.
     </p><p>
-      I therefore started thinking about &quot;<a href="https://liquiddata.dev">Liquid Data</a>&quot; as a paradigm for multi-homed data.
+      I therefore started thinking about &quot;<a href="https://github.com/federatedbookkeeping/task-tracking/issues/21">Liquid Data</a>&quot; as a paradigm for multi-homed data.
     </p><p>
       The other caveat is in how decentralisation of data puts all our ideas about access control inside out. The idea of setting up a personal data store with which
       the user can bring their own data to an application is at the same time powerful and simplistic. It assumes that this personal data store becomes the new server
@@ -46,12 +46,15 @@
       &quot;Read access&quot; used to mean the ability to take data out of its home. For multi-homed data, there can still be a notion of read-access when relying parties
       take data out of one of its homes, but by doing so the relying party itself becomes an additional home of the data, changing the location of the wall rather than just
       passing through a gate in that wall.
-      For &quot;Write access&quot; to multi-homed data, there is a disconnect between a relying party creating a new local version of the data, and the sync messages
-      that are sent betweeen servers to copy this new version to the other homes of the data.
+      For &quot;Write access&quot; to multi-homed data, there is a no way to stop a relying party &quot;writing&quot; from a new version of the data in its local copy.
+      The sync messages that are sent to copy this new version back to its other home may be rejected, but for multi-homed data this is then better described as a conflict
+      between two servers and no longer as a server denying access to a client.
     </p><p>
       The Solid protocol uses access control lists (either WAC or ACP) which bind access decisions to the folder structure of the data. But sometimes an access grant will 
       have to affect access to different resources, in different places in the folder tree. And indeed, if you look at the PoC implementation of the SAI spec, it stores registries
-      on the user's storage, but it does not interoperate with WAC. Looking at Inrupt's answer to SAI, it also doesn't edit the ACP rules when access is granted or revoked.
+      on the user's storage, but it does not interoperate with WAC. Looking at
+      [Inrupt's answer to SAI](https://docs.inrupt.com/developer-tools/javascript/client-libraries/tutorial/manage-access-requests-grants/), it also doesn't edit the ACP rules
+      when access is granted or revoked.
 
     </p>
     <h2>Why not CRDT?</h2>
