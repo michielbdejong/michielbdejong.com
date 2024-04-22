@@ -1,41 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-   <link rel="author" href="https://michielbdejong.com/" />
-   <title>Let your data wear CLOGS</title>
-   <meta charset="utf-8" />
-   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-   <style>
-     body { background-color: #A3DDDF }
-     header { width: 40em; margin: 5em auto; color: white }
-     article { width: 40em; margin: 5em auto; padding: 3em; border-radius: 1em; background-color: white }
-     article p img { width: 100% }
-     footer { width: 40em; margin: 5em auto; color: white }
-   </style>
- </head>
- <body>
+
+<head>
+  <link rel="author" href="https://michielbdejong.com/" />
+  <title>Let your data wear CLOGS</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background-color: #A3DDDF
+    }
+
+    header {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    article {
+      width: 40em;
+      margin: 5em auto;
+      padding: 3em;
+      border-radius: 1em;
+      background-color: white
+    }
+
+    article p img {
+      width: 100%
+    }
+
+    footer {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+  </style>
+</head>
+
+<body>
   <header>
     <h1>Let your data wear CLOGS</h1>
   </header>
   <article>
     <p>
       A checklist for what to store when importing data into a system, with a silly acronym: CLOGS.
-      <ol>
-        <li><strong>C</strong>ontent: the data as a sequence of symbols, i.e. Shannon's definition of information.</li>
-        <li><strong>L</strong>anguage: the step from the content to its (hopefully unambiguous) meaning.</li>
-        <li><strong>O</strong>rigin: which human or organisation sent this data?</li>
-        <li><strong>G</strong>rounding: the step from fiction to non-fiction. The link to reality or to common ideas.</li>
-        <li><strong>S</strong>peech-act: the intended or expected effect of this data on its audience.</li>
-      </ol>
+    <ol>
+      <li><strong>C</strong>ontent: the data as a sequence of symbols, i.e. Shannon's definition of information.</li>
+      <li><strong>L</strong>anguage: the step from the content to its (hopefully unambiguous) meaning.</li>
+      <li><strong>O</strong>rigin: which human or organisation sent this data?</li>
+      <li><strong>G</strong>rounding: the step from fiction to non-fiction. The link to reality or to common ideas.</li>
+      <li><strong>S</strong>peech-act: the intended or expected effect of this data on its audience.</li>
+    </ol>
     </p>
     <img src="./Dutchclogs.jpg" />
     <p>
       Keeping this checklist in mind helps me think about for instance
       <a href="https://www.w3.org/2013/data/">the Web of Data</a>. There, the response of a http request
       is the content.
-      The Content-Type header helps point at the language, although there are several layers there: 
-      a document might be JSON with a UTF-8 encoding, and on top of that it might be JSON-LD. If it is then the data itself
+      The Content-Type header helps point at the language, although there are several layers there:
+      a document might be JSON with a UTF-8 encoding, and on top of that it might be JSON-LD. If it is then the data
+      itself
       points to ontologies that help the receiver to interpret it unambiguously.
       The language of this web page is HTML - instructions for displaying a web page.
       But at a deeper layer, the language of its "title" tag is English.
@@ -47,26 +72,36 @@
     <p>
       The web architecture has a good definition of origin, for instance when it comes to trusting the publisher of
       executable code, or trusting (the data on) an e-commerce or online banking website based on its TLS certificate.
-      Also in  electronic data internchange, blockchain systems, self-sovereign identity, gossip networks, etc, digital
+      Also in electronic data internchange, blockchain systems, self-sovereign identity, gossip networks, etc, digital
       signatures are often used to sign data. The receiver might know the author of the data (and their domain name or
-      public key), or trust a data publishing platform on which a piece of data appears with some level of recommendations.
-      Sometimes the meaning of a piece of data is related to origin. For instance, a message saying that some stranger wants
-      to buy your guitar is only trustworthy if it also comes from that stranger. Like language, and like identity, origin
+      public key), or trust a data publishing platform on which a piece of data appears with some level of
+      recommendations.
+      Sometimes the meaning of a piece of data is related to origin. For instance, a message saying that some stranger
+      wants
+      to buy your guitar is only trustworthy if it also comes from that stranger. Like language, and like identity,
+      origin
       has multiple layers.
     </p>
     <p>
-      Grounding is a term we used in 1990s bottom-up AI research, claiming that intelligence in small robots or autonomous agents is 
-      more meaningful than the expert systems that came before it in top-down AI. It provides the link between the story and
-      actual entities that the receiver already knew from elsewhere, or that at least exist in the physical world. Grounding
+      Grounding is a term we used in 1990s bottom-up AI research, claiming that intelligence in small robots or
+      autonomous agents is
+      more meaningful than the expert systems that came before it in top-down AI. It provides the link between the story
+      and
+      actual entities that the receiver already knew from elsewhere, or that at least exist in the physical world.
+      Grounding
       is also essential for deduplicating data when it is synced from one system to another.
     </p>
     <p>
-      The <a href="https://en.wikipedia.org/wiki/Speech_act">speech-act</a> behind a piece of data can be a promise, a request,
-      or any way in which the sender of the data is trying to affect the audience. When you send a timesheet, a receipt or an
-      invoice to your manager or to a client, you are not just sharing data, you are also asking to get paid, and both sender and
+      The <a href="https://en.wikipedia.org/wiki/Speech_act">speech-act</a> behind a piece of data can be a promise, a
+      request,
+      or any way in which the sender of the data is trying to affect the audience. When you send a timesheet, a receipt
+      or an
+      invoice to your manager or to a client, you are not just sharing data, you are also asking to get paid, and both
+      sender and
       receiver understand this even though it's not part of the meaning of the content.
       Even when data is just on the web,
-      there is some meaning to the fact itself that that data appears there: it implies that this data has met the requirements
+      there is some meaning to the fact itself that that data appears there: it implies that this data has met the
+      requirements
       for appearing on whichever website it appears on.
     </p>
     <p>
@@ -74,15 +109,18 @@
       access control would be done by the data hosting service involved in transporting the data, but the
       information needed to carry out access control can be part of the scope of the CLOGS checklist.
       The speech act is where consent for resharing would be signalled, which gets close to access control.
-      And there may be access control information included in the content of the data, for instance when storing data 
+      And there may be access control information included in the content of the data, for instance when storing data
       on a Solid pod and adding ACL files to it with Web Access Control instructions.
     </p>
     <p>
       One piece of data can also change through multiple versions over time, in which case we need to keep track of
-      versioning information. In that case you should probably apply the CLOGS checklist to each changeset. For instance,
+      versioning information. In that case you should probably apply the CLOGS checklist to each changeset. For
+      instance,
       an invoice can be seen as a document that changes in the status of an order. This approach implies that the
-      "current state" of a dataset is built by replaying the change log, and each node in a federation does that calculation
-      deterministically. There may be other valid ways to share versioned data between systems though, so I'm not entirely
+      "current state" of a dataset is built by replaying the change log, and each node in a federation does that
+      calculation
+      deterministically. There may be other valid ways to share versioned data between systems though, so I'm not
+      entirely
       sure yet about this point.
     </p>
     <p>
@@ -91,22 +129,32 @@
       to interpret incoming data from other systems to automatically update our own records and trigger routine business
       actions automatically.
       This is a form of <a href="https://en.wikipedia.org/wiki/Master_data_management">Master Data Management</a>,
-      although maybe instead of a single source of truth, Federated Bookkeeping aims to create a distributed source of truth.
-      When doing so, it's vitally important to not only understand the <strong>C</strong>ontents of a business document through
+      although maybe instead of a single source of truth, Federated Bookkeeping aims to create a distributed source of
+      truth.
+      When doing so, it's vitally important to not only understand the <strong>C</strong>ontents of a business document
+      through
       the <strong>L</strong>anguage in which it is written, but also be aware of the <strong>O</strong>rigin,
       the <strong>G</strong>rounding and the <strong>S</strong>peech-act of each
       incoming and outgoing message. I hope the CLOGS acronym can help us reason about that.
     </p>
     <p>
-      <strong>ADDENDUM:</strong> other aspects of data that I thought could have deserved a place in the acronym would have been
-      versioning and authorization. The Origin carries authentication which may inform authorization, and the Speech-act may inform
-      versioning, but I still think both should ideally live at a higher layer of a properly CLOGS-aware system. In order to do
-      versioning, interpretation of the messages is needed. If you set support for versioning and access control as requirements for
-      a system, you need quite a bit of context and need to make assumptions in order to construct a single latest version of the
-      truth. I think there are many situations in Federated Bookkeeping where a computer system can achieve a single full up-to-date
-      message log at the CLOGS layer, from which various version of the truth, according to a various set of authority rules,
+      <strong>ADDENDUM:</strong> other aspects of data that I thought could have deserved a place in the acronym would
+      have been
+      versioning and authorization. The Origin carries authentication which may inform authorization, and the Speech-act
+      may inform
+      versioning, but I still think both should ideally live at a higher layer of a properly CLOGS-aware system. In
+      order to do
+      versioning, interpretation of the messages is needed. If you set support for versioning and access control as
+      requirements for
+      a system, you need quite a bit of context and need to make assumptions in order to construct a single latest
+      version of the
+      truth. I think there are many situations in Federated Bookkeeping where a computer system can achieve a single
+      full up-to-date
+      message log at the CLOGS layer, from which various version of the truth, according to a various set of authority
+      rules,
       can then be constructed at a higher layer.
     </p>
   </article>
- </body>
+</body>
+
 </html>
