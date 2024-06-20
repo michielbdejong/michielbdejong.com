@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="author" href="https://michielbdejong.com/" />
+  <title>An Inside-Out View on Human-Computer Interaction</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background-color: #A3DDDF
+    }
+
+    header {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    article {
+      width: 40em;
+      margin: 5em auto;
+      padding: 3em;
+      border-radius: 1em;
+      background-color: white
+    }
+
+    article p img {
+      width: 100%
+    }
+
+    footer {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>An Inside-Out View on Human-Computer Interaction</h1>
+  </header>
+  <article>
+    <p>
+        As app developers we often think of UX as the highest goal of everything we build.
+        And indeed, apps with bad UX suck. But I would argue UX is just a tiny cog in a bigger system.
+        Even the user is a cog in a bigger system.
+    </p><p>
+        If there are two users, one using GitHub issues and another using Jira, and we want them to have
+        the same view on the data, and have their intentions preserved during conflict resolution, then
+        why do we want that?
+    </p><p>
+        One answer is: Because that's good UX to them and that is what will make them buy our software.
+        But if you look at the system as a whole (Jira + GitHub + BridgeBot + 2 users) then the data entry
+        interface is just one small component of that larger system.
+    </p><p>
+        And I think data entry through screens, keyboards and click/touch gestures will eventually lose its
+        position as the dominant form of human-computer interaction (HCI). Maybe better HCI will come to us
+        if we stop thinking of HCI as the most salient aspect of a computer system. I have five reasons for
+        saying that.
+    </p><p>
+        First of all, if you look at &quot;user-owned data across apps&quot;, there are automatically multiple
+        HCI interfaces at play, at least one at each app. So there is no "the" user interface in a federated
+        computer system. That means it can't be the central part of the system.
+    </p><p>
+        Second, AI will change the role of human data entry. When a human has something to say
+        to a computer system, it may in the future do that through voice control using full natural language
+        sentences. Also, the one sentence &quot;make arrangements for that conference&quot; could replace hundreds
+        of clicks that we currently have to do to book registration, accommodation, travel, and to arrange the
+        payments, expense administration and invoice processing for it.
+    </p><p>
+        Third, AI will reduce the amount of HCI because the one sentence &quot;make arrangements for that conference&quot; could replace hundreds
+        of clicks that we currently have to do to book registration, accommodation, travel, and to arrange the
+        payments, expense administration and invoice processing for it.
+    </p><p>
+        Fourth, a lot of data entry currently is due to the computer systems relying on humans to implement
+        data portability. In the future, once we get data portability with on-the-fly schema migrations working,
+        like what we're trying to achieve in the <a href="https://github.com/federatedbookkeeping/task-tracking">Federated Task Tracking</a> project, humans will only
+        need to enter data once (for instance at the hotel booking site) and it will automatically propagate to
+        their calendar, payment processing system, and bookkeeping system, without the user needing to click on an email,
+        download a PDF, click in their bookkeeping software, upload the PDF, and enter all the data that OCR got wrong.
+    </p><p>
+        Fifth, if the computer system is a liquid, and users float in bubbles inside that liquid, then HCI is the inside
+        lining of that user bubble. To properly understand the way the human user fits into the bigger system, we need to
+        model that bubble from the outside, including not only HCI but also a model of how the user will process the input
+        it gets through the UX. We should essentially turn the app inside out, not view it as a tool that humans can buy
+        and hold, but as a way to wrap a human user into a bubble, UX/HCI on the inside, floating through the liquid data.
+    </p><p>
+        With this inside-out view on human-computer interaction, I think we are better equipped to think about computer
+        systems where data is free to move across multiple federated replicas, and where humans play an internal role,
+        bubbled up with HCI. This contrasts with the currently dominant view of apps as tools, to be individually useful
+        for the user to buy, but all too often leaving data portability to be out of scope, or to rely on humans copying
+        or downloading from one apps' interface, and pasting or uploading to another app they hold.
+    </p>
+    </article>
+</body>
+</html>
