@@ -145,32 +145,38 @@
     <p>
       In general, I think it's time we look at HCI inside-out: from the larger picture of "the internet of
       data" in which HCI encapsulates the user, rather
-      than from the smaller picture of the user, in which HCI encapsulates one particular app. I have five reasons for
+      than from the smaller picture of the user, in which HCI encapsulates one particular app. I have four reasons for
       saying that.
     </p>
     <p>
       <img src="/img/oz_bubbles.png" class="center">
       <i class="center">A better view: humans playing a role in the world of data, bubbled-up in HCI</i>
     </p>
+    <h2>There is no single API to multi-homed data</h2>
     <p>
       First of all, if you look at &quot;user-owned data across apps&quot;, there are automatically multiple
       HCI interfaces at play, at least one at each app. So there is no "the" user interface in a federated
       computer system. That means it can't be the central part of the system.
     </p>
+    <h2>AI will help free us from tedious HCI</h2>
     <p>
-      Second, AI will change the mode and experience of human data entry. When a human has something to say
+      Second, AI will change the mode and frequency of human data entry. When a human has something to say
       to a computer system, it may in the future do that through voice control using full natural language
-      sentences, and HCI will become more invisible.
+      sentences. Humans will spend less time and effort on just the act of HCI.
     </p>
     <p>
-      Third, AI will reduce the amount and granularity of HCI because the one sentence &quot;make arrangements for that
+      The one sentence &quot;make arrangements for that
       conference&quot;
       could replace hundreds
       of clicks that we currently have to do to book registration, accommodation, travel, and to arrange the
       payments, expense administration and invoice processing for it.
+      And as HCI becomes more of an invisible commodity, with probably thousands of apps sharing a single
+      &quot;personal assistant&quot; user interface, it will also become less of a
+      unique selling point for apps.
     </p>
+    <h2>Humans as a conduit for data portability</h2>
     <p>
-      Fourth, a lot of data entry currently is due to the computer systems relying on humans to implement
+      Third, a lot of data entry currently is due to the computer systems relying on humans to implement
       data portability. In the future, once we get data portability with on-the-fly schema migrations working,
       like what we're trying to achieve in the <a href="https://github.com/federatedbookkeeping/task-tracking">Federated
         Task Tracking</a> project, humans will only
@@ -178,11 +184,20 @@
       their calendar, payment processing system, and bookkeeping system, without the user needing to click on an email,
       download a PDF, click in their bookkeeping software, upload the PDF, and enter all the data that OCR got wrong.
     </p>
+    <p>      
+      All too often, the currently dominant view of apps as tools (to be individually useful
+      for the user to buy) leaves data portability out of scope, and relies on humans copying
+      or downloading from one apps' interface, and pasting or uploading to another app they hold.
+    </p>
+    <h2>Modeling the user as a system component</h2>
     <p>
-      Fifth, we also want to model the user's behaviour, in the context of the bigger system.
+      Fourth and finally, we also want to model the user's behaviour, in the context of the bigger system.
       Consider the computer system (the internet of data) as a liquid, and users floating in bubbles inside that liquid.
       So HCI is then the inside
-      lining of that user bubble. Now, to properly understand the way the human user fits into the bigger system, we need to
+      lining of that user bubble.
+    </p>
+    <p>
+      Now, to properly understand the way the human user fits into the bigger system, we need to
       model that bubble from the outside, including not only HCI but also a model of how the user will process the input
       it gets through the UX.
     </p>
@@ -193,9 +208,21 @@
       and hold, but as a way to wrap a human user into a bubble, UX/HCI on the inside, floating through the liquid data.
     </p>
     <p>
-      This contrasts with the currently dominant view of apps as tools, to be individually useful
-      for the user to buy, but all too often leaving data portability to be out of scope, or to rely on humans copying
-      or downloading from one apps' interface, and pasting or uploading to another app they hold.
+      When trying to design computer systems that work well, we should also engineer the user component. Nudge the user
+      to corectly codify their intent, so that the next component in the system will be able to understand and preserve
+      that intent. Don't allow the user to output free text that is not machine-readable. This is a goal that becomes
+      obvious once we adopt this new inside-out view of HCI for multi-homed data.
+    </p>
+    <p>
+      There is a whole stream of research into interfaces that reverse engineer the structured meaning of a human
+      user's output, such as <a href="https://www.inkandswitch.com/potluck/">Ink &amp; Switch PotLuck</a>, which try to achieve
+      both: extract machine-readable data from the user's brain, while still allowing them to write free form text.
+    </p>
+    <p>
+      And in local-first research, I think an understanding is arising that user interfaces should try to
+      <a href="https://www.inkandswitch.com/cambria/#option-5-explicit-articulation">explicitly articulate</a> the intent
+      of a particular user gesture they capture, so that it can be propagated to other system components. Simply displaying an action's
+      result back to the user is enough for the user, but not for the rest of the system.
     </p>
     <p>
       With this inside-out view on human-computer interaction, I think we are better equipped to think about computer
@@ -207,7 +234,7 @@
       machine-readable data portability.
     </p>
     <p>
-      Many thanks to Michael Toomim who read an earlier version of this blog post and gave very valuable feedback!
+      <i>Many thanks to Michael Toomim who read an earlier version of this blog post and gave very valuable feedback!</i>
     </p>
   </article>
 </body>
