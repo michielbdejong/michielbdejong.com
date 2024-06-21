@@ -66,7 +66,7 @@
     <p>
       We can design a software application that helps a single user
       <a href="https://www.geeksforgeeks.org/tcd-task-centered-system-design/">perform a task</a>, like sending
-      an email. The humans are fully in control, and emails are still sent in human-readable formats.
+      an email. The humans are fully in control, and emails are sent in human-readable formats.
     </p>
     <p>
       But humans collaborate. Starting from
@@ -100,11 +100,11 @@
       is like fast food: it feels good but it's not good for us.
     </p>
     <p>
-      We do of course think of data portability at times. For instance, if there are two users, one using GitHub
+      We do of course think of data portability at times. For instance, consider two users, one using GitHub
       issues
-      and another using Jira, and we want them to have
-      the same view on the data, and have their intentions preserved during conflict resolution. But let's reconsider
-      <i>why</i> we want that.
+      and another using Jira, who want to have
+      the same view on the data, and have their intentions preserved during conflict resolution. Now, let's reconsider
+      <i>why</i> we want to build that data sync feature.
     </p>
     <p>
       One answer is: because it's good UX to both users, which will make them buy our software (business
@@ -123,7 +123,7 @@
       stop thinking of HCI as the most salient aspect of a computer system.
     </p>
     <p>
-      For instance, consider the feature on GitHub issues where you can mention another issue in a text comment.
+      As another example of a product feature, consider the feature on GitHub issues where you can mention another issue in a text comment.
       This will become a hyperlink, and the other issue will get an event on its timeline with a backlink.
     </p>
     <p>
@@ -137,10 +137,12 @@
       the phrase &quot;work related to this&quot; is perfectly human-readable, it's not machine-readable.
     </p>
     <p>
-      Every time we humans enter human-readable data into an application, we are making things worse for data
-      portability.
-      And we will often cause more data entry work down the line, where a human has to copy-paste that data into another
-      user interface!
+      Every time we humans enter free-form data into an application, a kitten dies. Free-form data entry makes
+      data portability and process automation very hard. We'll say &quot;yes, but these are just my own mental notes&quot;.
+      But these notes contain data that could have been be used to trigger events elsewhere.
+      It will often cause more data entry work down the line, where a human has to copy-paste that data into another
+      user interface, which could have been avoided if we would have made the user articulate their intent in a machine-readable
+      way.
     </p>
     <p>
       In general, I think it's time we look at HCI inside-out: from the larger picture of "the internet of
