@@ -53,13 +53,13 @@
   <article>
     <h2>Data Liberation and TUBS Syncables</h2>
     <p>
-      For over 15 years now, with <a href="https://unhosted.org">Unhosted</a>, <a href="https://solidproject.org">Solid</a>, <a href="https://pdsinterop.org">PDS Interop</a> and other open source projects, I have been working on data liberation: allowing people to get a meaningful copy of their data (not just a zip file) out of online platforms and into a personal data store. In my current <a href="https://nlnet.nl/project/TUBS">NLNet-funded</a> project, "<a href="https://tubsproject.org/">The Ultimate Bookkeeping System (TUBS)</a>", I'm even generalising the concept of data liberation to multi-homed data, where we no longer think of data being in a specific system of record, but in multiple ones at the same time. The core component of TUBS will be <a href="https://github.com/tubsproject/devonian">Devonian</a>, but the simpler one I'm starting with is (for now) called <a href="https://github.com/tubsproject/syncables">Syncables</a>.
+      For over 15 years now, with <a href="https://unhosted.org">Unhosted</a>, <a href="https://solidproject.org">Solid</a>, <a href="https://pdsinterop.org">PDS Interop</a> and other open source projects, I have been working on data liberation: allowing people to get a meaningful copy of their data (not just a zip file) out of online platforms and into a personal data store. In my current <a href="https://nlnet.nl/project/TUBS">NLNet-funded</a> project, "<a href="https://tubsproject.org/">The Ultimate Bookkeeping System (TUBS)</a>", I'm even generalising the concept of data liberation to multi-homed data, where we no longer think of data as belonging in a specific system of record, but in multiple ones at the same time. The core component of TUBS will be <a href="https://github.com/tubsproject/devonian">Devonian</a>, but the simpler one I'm starting with is (for now) called <a href="https://github.com/tubsproject/syncables">Syncables</a>.
     </p>
     <p>
       The goal of Syncables is to provide a tool that can create a local client-side copy of data that lives server-side behind an API. <a href="https://www.openapis.org/">OpenAPI specs</a> are a great help with that, because they specify which API endpoints are available, and which schema the downloaded data will be in. Even the security schemes such as OAuth flows and their endpoints can be specified, so for APIs that use OAuth, all you really have to add to get a client that works out of the box is a client ID and a client secret. But there are a few things that OpenAPI does not provide.
     </p>
     <p>
-      One important piece of information that is needed to understand the data that lives behind an API is how endpoints relate to each other. For instance if some endpoint has a <tt>{projectId}</tt> parameter in its URL, you may first need to fetch the list of the current user's projects, and then substitute their <tt>id</tt> field value there. 
+      One important piece of information that is needed to understand the data that lives behind an API is how endpoints relate to each other. For instance if some endpoint has a <tt>{projectId}</tt> parameter in its URL, you may first need to fetch the list of the current user's <tt>projects</tt>, and then substitute their <tt>id</tt> field value there. 
     </p>
     <p>
       If you want to use an SQL database for the local data copy, then nested objects in API response bodies need to be dealt with in some way, possibly with linked tables. I haven't fully worked that part out yet, maybe I will prefer to have some sort of &quot;schema store&quot; that can deal with relational tables but also with nested objects.
@@ -75,17 +75,17 @@
       When reading a list of items from an API, the result is often paginated. For instance, if a collection has 42 items in it, a request to list these items may first return only the first 10 results (the first "page" of the data), then allowing additional HTTP requests for retrieving the other pages. From experience I knew that many APIs offer a <tt>page</tt> parameter where the API client can specify which page number it wants to retrieve. Others offer a slightly more flexible <tt>offset</tt> parameter where the API client can specify the index of the first row to return - a pattern we also know from SQL.
     </p>
     <p>
-      Another popular (and potentially more robust) pagination scheme is to provide an opaque token in the response of each request except for the last one, which the client can then add as a parameter in the next request. This has the advantage that such a token can encode a snapshot identifier, so that if an item is inserted or removed during pagination, the results don't skew. For instance, if a client retrieves items 1-10 as a first page, then item 3 is removed from the collection, and the client then requests the second page of the data, item 11 will have moved from page 2 to page 1 to fill up the space left behind by the removal of item 3, and the second page would consist of items 12-21. But if the token encodes the fact that this client started pagination before the removal of item 3, then the server can consistently server up items 11-20 in response to the second request.
+      Another popular (and potentially more robust) pagination scheme is to provide an opaque token in the response of each request except for the last one, which the client can then add as a parameter in the next request. This has the advantage that such a token can encode a snapshot identifier, so that if an item is inserted or removed during pagination, the results don't skew. For instance, if a client retrieves items 1-10 as a first page, then item 3 is removed from the collection, and the client then requests the second page of the data, item 11 will have moved from page 2 to page 1 to fill up the space left behind by the removal of item 3, and the second page would consist of items 12-21. But if the token encodes the fact that this client started pagination before the removal of item 3, then the server can consistently serve up items 11-20 in response to the second request.
     </p>
     <p>
-      A fourth way to allow pagination, which is both versatile and simple, is for the server to include a link in a response header or inside the response body of all requests except the last one, for the client to use to retrieve the next page. This means the client does not have to do any URL construction, and the server can even make use of page number, offset, and token pagination in that URL, since it is opaque to the client. Like for token-based pagionation, if no token or link is present in the response, the client knows that pagination is complete and all data has been received.
+      A fourth way to allow pagination, which is both versatile and simple, is for the server to include a link in a response header or inside the response body of all requests except the last one, for the client to use to retrieve the next page. This means the client does not have to do any URL construction, and the server can even make use of page number, offset, and token pagination in that URL, since it is opaque to the client. Like for token-based pagination, if no token or link is present in the response, the client knows that pagination is complete and all data has been received.
     </p>
     <h2>Some Uncommon Pagination Schemes</h2>
     <p>
       I first researched different APIs for <a href="https://letspeppol.org">Let's Peppol</a> and to get some more general real-world data, I used <a href="https://apis.guru">APIs.guru</a> as an information source. There, with some heuristic and manual search, I found 361 APIs that offer token-based pagination, 147 that understand a page number parameter for at least some of their endpoints, 135 that understand offset, and 116 that offer a next page link in some of their API responses. There are a few APIs that offered a pagination scheme that does not fit into any of these four types.
     </p>
     <p>
-      The Heroku API accepts a Range header on some API endpoints, that allow specifying the id of the first item to include, and number of items to return.
+      The Heroku API accepts a Range header on some API endpoints, that allows specifying the id of the first item to include, and the number of items to return.
     </p>
     <p>
       The Billingo API accepts a parameter where the client can specify the last item id of the previous page.
@@ -97,7 +97,7 @@
       The Scrada API implements a sort of message queue of which only the first few items are visible, and then allows the client to mark individual items from a collection as confirmed, so that next items start showing up. This is however not repeatable; once an item has been confirmed, it has been popped from the queue and will never appear again.
     </p>
     <p>
-      Some APIs offer filters for for instance date range that can be used instead of pagination, and then there are API endpoints that only the first page of search results, but with no way to retrieve subsequent pages, so we also don't count that as a pagination scheme.
+      Some APIs offer filters for for instance date range that can be used instead of pagination, and then there are API endpoints that only return the first page of search results, but with no way to retrieve subsequent pages, so we also don't count that as a pagination scheme.
     </p>
     <p>
       These observations led me to define a <tt>paginationSchemes</tt> extension for OpenAPI, similar to <a href="https://learn.openapis.org/specification/security.html">securitySchemes</a>. The format I propose is as follows.
@@ -106,7 +106,7 @@
       A <tt>paginationSchemes</tt> should have a string-valued <tt>paginate</tt> property that is an absolute or relative JSON path to the array in the response body that is being paginated. Sometimes this is the root of the response body ("$"), sometimes it is a value called "results", "items" or "rows", and I guess in rare cases it might be nested such as "result.rows".
     </p>
     <p>
-      Apart from that it needs either a "pageNumber", "offset", "token" or "nextPageLink" object. In there, a string-valued "parameter" or "requestBody" attribute can indicate which query parameter (indicated by its name) or request body field (indicated with JSON path) can be used to specify a page number, offset or token in a page request.
+      Apart from the "paginate" attribute it needs a "pageNumber", "offset", "token" and/or a "nextPageLink" object. In there, a string-valued "parameter" or "requestBody" attribute can indicate which query parameter (indicated by its name) or request body field (indicated with JSON path) can be used to specify a page number, offset or token in a page request.
     </p>
     <p>
       A string-valued "responseBody" or "responseHeader" attribute can indicate where the next page link or the next token can be found in a page response (absence means the last page has been reached), and where applicable it can also specify where the current page number or the current offset can be found in the response, for information and sanity checking.
@@ -118,6 +118,16 @@
       Additional information for knowing when the last page has been reached can be described where available, in  "totalCount", "pageCount", "lastPageLink", and "hasNext".
       Additional information for sanity checking and maybe for simplifying the client code can be described where available, in  "previousPageLink", "currentPageLink", "firstPageLink", and "hasPrevious".
     </p>
+    <p>
+      Here is an example of a pagination scheme:
+    </p>
+    <pre>
+paginate: $
+offset:
+  parameter: offset
+pageSize:
+  parameter: limit
+    </pre>
     <p>
       When an API offers pagination in some endpoints but not in others, it seems doable to write auto-detect code, for instance if a pageNumber paginationScheme is described with a parameter name of "page", a client can conclude that it should be used on all endpoints that accept a "page" parameter, and on none of the endpoints that don't. 
     </p>
