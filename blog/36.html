@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="author" href="https://michielbdejong.com/" />
+  <title>Stopping Hand-Writing Code</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background-color: #A3DDDF
+    }
+
+    header {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    article {
+      width: 40em;
+      margin: 5em auto;
+      padding: 3em;
+      border-radius: 1em;
+      background-color: white
+    }
+
+    article p img {
+      width: 100%
+    }
+
+    footer {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Stopping Hand-Writing Code</h1>
+  <span>March 2026</span>
+</header>
+<article>
+  <em>WARNING: there is a P.S. message at the end of this &quot;blogpost&quot; :)</em>
+  <p>In 1996, as a student in the Netherlands, I took a paid job writing Pascal. It was the beginning of a 30-year career in which I hand-wrote code in Pascal, C++, PHP, JavaScript, TypeScript, Bash, and more. Last week, I stopped.</p>
+
+  <p>I say "stopped hand-writing code" rather than "stopped coding" because I don't think what I'm doing has fundamentally changed — I'm still directing computers to do things. I'm still reading error messages, understanding data structures, designing systems, and debugging logic. But I'm no longer the one typing most of the characters.</p>
+
+  <p>The tipping point came gradually and then suddenly. For the past year or so I've been watching colleagues become measurably more productive by directing AI to write their code, and resisting the temptation to do the same. I told myself I enjoyed the craft. I told myself I understood my code better when I wrote it myself. Both things were true, but they stopped being sufficient reasons.</p>
+
+  <p>What pushed me over the edge was a combination of things. Spotify announced it was stopping hand-coding. Other companies followed. And in the past few months the AI tools crossed a threshold where they're not just saving you from typing boilerplate — they can hold the full context of a project, make multi-file edits, run tests, read the errors, and iterate. Not perfectly, and not without supervision, but well enough that the equation changed.</p>
+
+  <p>I spent the past few weeks testing this on my own project, <a href="https://github.com/tubsproject/syncables">Syncables</a>. I described what I wanted. I reviewed what came back. I pushed back when it was wrong. I approved when it was right. The code that got committed was not code I typed — but it was code I understood and was responsible for. That felt like a reasonable division of labour.</p>
+
+  <p>There is something I want to be clear about: I don't think this makes me less of a programmer. A carpenter who uses a nail gun instead of a hammer is still a carpenter. What changes is the nature of the skill. The valuable thing is no longer the ability to hold syntax in your head and translate intent into characters at 80 words per minute. The valuable thing is judgment — knowing what to build, recognising when the output is wrong, understanding why it failed, and knowing how to explain what you want clearly enough that the tool can help you get there. Those are skills I've been building for 30 years, and they still matter.</p>
+
+  <p>I also want to be honest about what I don't know. I don't know whether AI-written code will turn out to have subtler, harder-to-catch bugs than hand-written code. I don't know whether the loss of the writing habit will gradually erode the judgment I rely on to review it. These are real risks, and I'll be watching for them.</p>
+
+  <p>But the direction of travel seems clear. The question is no longer whether to use these tools, but how to use them well.</p>
+  
+  <p><em>P.S. This blog post was also not hand-written. It was written word for word by Claude. The irony was not lost on me. This was the prompt:</em>
+  </p>
+    <tt>I think after 30 years of writing code in various programming languages as a profession (I started programming in Pascal in a paid student job in 1996), and seeing people around me become more productive through the use of AI, I finally decided to follow the example of Spotify and other companies during the past few months to stop hand-writing code. The developments of the past few months seem to have brought on a tipping point, with several companies deciding to stop hand-coding. So I decided to do so as well.
+
+Can you help me write a blogpost about this to publish on my website, https://michielbdejong.com/.</tt>
+</article>
+</body>
+</html>
