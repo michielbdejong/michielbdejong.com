@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XKUCD diagrams — MST diff anatomy</title>
+<style>
+  :root{
+    --paper:#f7f9fa; --card:#ffffff; --ink:#1b2733; --muted:#5b6b7a; --line:#dde4ea;
+    --keep:#1e3a8a; --update:#d99a06; --create:#16a34a; --delete:#dc2626; --x:#334155;
+    --bar-both:#cfe6f5; --bar-new:#c9ecca; --bar-old:#f6cfd9;
+    --mono:ui-monospace,'SF Mono','Cascadia Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:15px/1.5 'Avenir Next','Segoe UI',system-ui,sans-serif;}
+  header{padding:26px 28px 6px;max-width:1200px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.3px}
+  h1 .mono{font-family:var(--mono)}
+  header p{margin:2px 0;color:var(--muted);max-width:78ch}
+  header code{font-family:var(--mono);background:#eef2f5;padding:0 4px;border-radius:3px}
+  .controls{max-width:1200px;margin:10px auto 0;padding:0 28px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  button{font:600 13px/1 inherit;color:var(--ink);background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:8px 12px;cursor:pointer}
+  button:hover{border-color:#9fb2c2}
+  button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip{font-family:var(--mono);font-weight:500}
+  main{max-width:1200px;margin:14px auto 60px;padding:0 28px;display:flex;flex-direction:column;gap:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px 8px}
+  .cardbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .cardbar input{flex:1;min-width:200px;font:14px var(--mono);padding:8px 10px;border:1px solid var(--line);
+    border-radius:6px;background:#fbfcfd;color:var(--ink)}
+  .cardbar input:focus{outline:2px solid #9fc3dd;outline-offset:0}
+  .err{color:var(--delete);font-family:var(--mono);font-size:13px;padding:6px 2px}
+  .svgwrap{overflow-x:auto;padding-bottom:6px}
+  svg{display:block}
+  .legend{max-width:1200px;margin:6px auto 0;padding:12px 28px;display:flex;flex-wrap:wrap;gap:14px 26px;
+    font-size:13px;color:var(--muted);align-items:center}
+  .legend .item{display:flex;gap:7px;align-items:center;white-space:nowrap}
+  .sw{width:26px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+  .dotsw{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .seam{width:2px;height:16px;display:inline-block}
+  footer{max-width:1200px;margin:0 auto 40px;padding:0 28px;color:var(--muted);font-size:13px;max-width:1200px}
+  footer p{max-width:90ch}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="mono">XKUCD</span> diagrams</h1>
+  <p>Visualising a repository diff (<em>draft-holmgren-at-synchronization</em> §4.1 / §4.4.2) as one picture of
+     both MSTs. Entries are classified <b>K</b>ept / <b>U</b>pdated / <b>C</b>reated / <b>D</b>eleted, with two
+     e<b>X</b>tra sentinel entries <code>000…</code> and <code>FFF…</code> at layer&nbsp;128.
+     The <b>old</b> tree contains K+U+D entries, the <b>new</b> tree K+U+C; entries never move,
+     so both trees share one key axis.</p>
+  <p>Where old and new disagree, the <b>top half</b> of a layer band shows the old tree's node and the
+     <b>bottom half</b> the new tree's. Vertical seams show splits (under a create) and merges (under a delete).</p>
+</header>
+
+<div class="legend">
+  <span class="item"><span class="dotsw" style="background:var(--keep)"></span>K kept</span>
+  <span class="item"><span class="dotsw" style="background:var(--update)"></span>U updated</span>
+  <span class="item"><span class="dotsw" style="background:var(--create)"></span>C created</span>
+  <span class="item"><span class="dotsw" style="background:var(--delete)"></span>D deleted</span>
+  <span class="item"><span class="dotsw" style="background:var(--x)"></span>X sentinel</span>
+  <span class="item"><span class="sw" style="background:var(--bar-both)"></span>node in both trees</span>
+  <span class="item"><span class="sw" style="background:var(--bar-new)"></span>node only in new tree</span>
+  <span class="item"><span class="sw" style="background:var(--bar-old)"></span>node only in old tree</span>
+  <span class="item"><span class="sw" style="background:var(--bar-both);border:1.6px dashed #46617a"></span>contents changed → node block re-emitted in diff</span>
+  <span class="item"><span class="seam" style="background:repeating-linear-gradient(var(--create) 0 3px,transparent 3px 6px)"></span>split seam (under C)</span>
+  <span class="item"><span class="seam" style="background:repeating-linear-gradient(var(--delete) 0 3px,transparent 3px 6px)"></span>merge seam (under D)</span>
+</div>
+
+<div class="controls">
+  <button class="primary" id="addRandom">+ Random example</button>
+  <span style="color:var(--muted);font-size:13px">presets:</span>
+  <button class="chip" data-preset="X128 K1 C3 D2 U5 K0 X128">K1 C3 D2 U5 K0</button>
+  <button class="chip" data-preset="X128 K0 K1 K0 C2 K0 U0 K0 X128">split under C2</button>
+  <button class="chip" data-preset="X128 K0 U0 D2 K1 K0 X128">merge under D2</button>
+  <button class="chip" data-preset="X128 C0 K0 D1 K2 U0 C1 K0 D0 K1 X128">deep churn</button>
+</div>
+
+<main id="gallery"></main>
+
+<footer>
+  <p><b>Reading the diagram.</b> Each band is one MST layer (L0 at the bottom, root L128 at the top; the
+  single-child pass-through chain in between is compressed). A bar is a tree node; its width covers the entries
+  and subtrees it contains. Small stems with a dot mark where a lower node hangs as a subtree pointer inside its
+  parent. Dashed outlines mark every node whose hash changes between revisions — exactly the set of MST node
+  blocks a §4.1.1 diff must carry. Note how a create/delete above layer&nbsp;0 tears or heals the nodes on every
+  layer beneath it along the seam, while an update never changes the node topology at all.</p>
+</footer>
+
+<script>
+/* ============================ XKUCD-LOGIC-BEGIN ============================ */
+function parseXKUCD(str){
+  const toks = str.trim().split(/\s+/).filter(Boolean);
+  if(!toks.length) throw new Error('empty string');
+  let entries = toks.map(t=>{
+    const m = /^([XKUCDxkucd])(\d{1,3})$/.exec(t);
+    if(!m) throw new Error('bad token "'+t+'" — expected e.g. K0, U2, C3, D1, X128');
+    return {cls:m[1].toUpperCase(), layer:+m[2]};
+  });
+  if(entries[0].cls!=='X') entries.unshift({cls:'X',layer:128});
+  if(entries.length<2 || entries[entries.length-1].cls!=='X') entries.push({cls:'X',layer:128});
+  entries.forEach((e,i)=>{ e.idx=i; });
+  entries.forEach((e,i)=>{
+    if(e.cls==='X'){
+      if(e.layer!==128) throw new Error('X entries live at layer 128');
+      if(i!==0 && i!==entries.length-1) throw new Error('X entries only at the two ends');
+    }else if(e.layer>=128){ throw new Error('real entries must sit below layer 128'); }
+  });
+  if(entries.length<3) throw new Error('need at least one real entry between the X sentinels');
+  return entries;
+}
+
+function nodesForTree(entries, inTree, Lmax){
+  const tree = entries.filter(e=>e.cls==='X'||inTree(e.cls));
+  const byLayer=[];
+  for(let j=0;j<=Lmax;j++){
+    const seps = tree.filter(e=>e.layer>j);
+    const nodes=[];
+    for(let s=0;s<seps.length-1;s++){
+      const a=seps[s], b=seps[s+1];
+      const gap = tree.filter(e=>e.idx>a.idx && e.idx<b.idx && e.layer<=j);
+      if(!gap.length) continue;
+      nodes.push({layer:j,left:a.idx,right:b.idx,
+        own:gap.filter(e=>e.layer===j), covered:gap, match:null, dirty:false});
+    }
+    byLayer.push(nodes);
+  }
+  return byLayer;
+}
+
+function childrenOf(byLayer,node){
+  if(node.layer===0) return [];
+  return byLayer[node.layer-1].filter(c=>c.left>=node.left && c.right<=node.right);
+}
+
+function computeModel(entries){
+  const real = entries.filter(e=>e.cls!=='X');
+  const Lmax = real.length ? Math.max(...real.map(e=>e.layer)) : 0;
+  const oldB = nodesForTree(entries, c=>'KUD'.includes(c), Lmax);
+  const newB = nodesForTree(entries, c=>'KUC'.includes(c), Lmax);
+  // Two nodes correspond ("same slot") when they are each other's unique
+  // key-range overlap at that layer. They are *identical blocks* when their
+  // covered entry sets are equal and contain no Update.
+  const ids=nd=>new Set(nd.covered.map(e=>e.idx));
+  const intersects=(a,b)=>{const s=ids(a);return b.covered.some(e=>s.has(e.idx));};
+  for(let j=0;j<=Lmax;j++){
+    for(const on of oldB[j]) on.olap = newB[j].filter(nn=>intersects(on,nn));
+    for(const nn of newB[j]) nn.olap = oldB[j].filter(on=>intersects(on,nn));
+    for(const nn of newB[j]){
+      const on = nn.olap.length===1 ? nn.olap[0] : null;
+      if(on && on.olap.length===1 && on.olap[0]===nn){ nn.match=on; on.match=nn; }
+    }
+    for(const nn of newB[j]){
+      if(!nn.match){ nn.dirty=true; continue; }
+      const a=[...ids(nn)].sort().join(','), b=[...ids(nn.match)].sort().join(',');
+      nn.dirty = a!==b || nn.covered.some(e=>e.cls==='U');
+      nn.match.dirty = nn.dirty;
+    }
+  }
+  const changed = real.some(e=>'CDU'.includes(e.cls));
+  return {entries, real, Lmax, oldB, newB, changed};
+}
+/* ============================ XKUCD-LOGIC-END ============================ */
+
+/* ------------------------------ rendering ------------------------------ */
+const CSSC = n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COLORS = ()=>({K:CSSC('--keep'),U:CSSC('--update'),C:CSSC('--create'),D:CSSC('--delete'),X:CSSC('--x'),
+  both:CSSC('--bar-both'),nw:CSSC('--bar-new'),old:CSSC('--bar-old')});
+
+function el(name,attrs,parent){
+  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
+  for(const k in attrs) e.setAttribute(k,attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function tip(node,text){ const t=el('title',{},node); t.textContent=text; }
+
+function render(model, svg){
+  const C=COLORS();
+  const n=model.entries.length;
+  const STEP=60, MX=64, BH=46, GAP=16, CH=34, LBL=34;
+  const x=i=>MX+i*STEP;
+  const width=MX*2+(n-1)*STEP;
+  const bands=[]; // draw order top->bottom: root, compressed, Lmax..0
+  let y=14;
+  const rootY=y; y+=BH+GAP;
+  const compY=y; y+=CH+GAP;
+  const layerY={};
+  for(let j=model.Lmax;j>=0;j--){ layerY[j]=y; y+=BH+GAP; }
+  const lblY=y; y+=LBL;
+  svg.setAttribute('viewBox',`0 0 ${width} ${y}`);
+  svg.setAttribute('width',width); svg.setAttribute('height',y);
+  svg.setAttribute('font-family',CSSC('--mono'));
+
+  const gSeam=el('g',{},svg), gBars=el('g',{},svg), gConn=el('g',{},svg),
+        gDots=el('g',{},svg), gTxt=el('g',{},svg);
+
+  const padOf=j=>Math.min(9+6*j,44);
+  const span=node=>{
+    const xs=node.covered.map(e=>x(e.idx));
+    const p=padOf(node.layer);
+    return [Math.min(...xs)-p, Math.max(...xs)+p];
+  };
+  const cx=node=>{const [a,b]=span(node);return (a+b)/2;};
+
+  // layer labels (left margin)
+  const lbl=(yy,t)=>{
+    const tx=el('text',{x:10,y:yy,fill:CSSC('--muted'),'font-size':12},gTxt); tx.textContent=t;
+  };
+  lbl(rootY+BH/2+4,'L128');
+  lbl(compY+CH/2+4,'⋮');
+  for(let j=0;j<=model.Lmax;j++) lbl(layerY[j]+BH/2+4,'L'+j);
+
+  // ---- bars for layers 0..Lmax ----
+  const describe=(node,who)=>`${who} · layer ${node.layer} node · entries [${node.own.map(e=>e.cls+e.layer).join(' ')||'pass-through'}] · covers ${node.covered.length} entr${node.covered.length===1?'y':'ies'}`;
+  for(let j=0;j<=model.Lmax;j++){
+    const yT=layerY[j];
+    for(const nn of model.newB[j]){
+      if(nn.match){
+        const [a1,b1]=span(nn),[a2,b2]=span(nn.match);
+        const a=Math.min(a1,a2), b=Math.max(b1,b2);
+        const r=el('rect',{x:a,y:yT,width:b-a,height:BH,rx:6,fill:C.both,
+          stroke: nn.dirty?'#46617a':'#b7cddc','stroke-width':nn.dirty?1.6:1,
+          'stroke-dasharray': nn.dirty?'5 3':'none'},gBars);
+        tip(r,describe(nn,'same node slot in both trees')+(nn.dirty?' · hash changed → re-emitted in diff':' · identical block, not in diff'));
+      }else{
+        const [a,b]=span(nn);
+        const r=el('rect',{x:a,y:yT+BH/2,width:b-a,height:BH/2-1,rx:5,fill:C.nw,
+          stroke:'#3f8a4b','stroke-width':1.4,'stroke-dasharray':'5 3'},gBars);
+        tip(r,describe(nn,'new node (created)'));
+      }
+    }
+    for(const on of model.oldB[j]){
+      if(on.match) continue;
+      const [a,b]=span(on);
+      const r=el('rect',{x:a,y:yT+1,width:b-a,height:BH/2-1,rx:5,fill:C.old,
+        stroke:'#c06277','stroke-width':1.2},gBars);
+      tip(r,describe(on,'old node (gone in new tree)'));
+    }
+  }
+
+  // ---- pass-through chain + root ----
+  const allReal=model.real;
+  if(allReal.length){
+    const a=x(Math.min(...allReal.map(e=>e.idx)))-48, b=x(Math.max(...allReal.map(e=>e.idx)))+48;
+    const rc=el('rect',{x:a,y:compY,width:b-a,height:CH,rx:6,fill:C.both,opacity:.75,
+      stroke:model.changed?'#46617a':'#b7cddc','stroke-width':model.changed?1.4:1,
+      'stroke-dasharray':model.changed?'5 3':'none'},gBars);
+    tip(rc,`layers ${model.Lmax+1}…127 — pass-through nodes, one subtree each${model.changed?' · hashes changed':''}`);
+    const ct=el('text',{x:(a+b)/2,y:compY+CH/2+4,'text-anchor':'middle','font-size':11.5,
+      fill:'#46617a'},gTxt);
+    ct.textContent=`L${model.Lmax+1} … L127 · pass-through (1 subtree each)`;
+  }
+  const ra=x(0)-18, rb=x(n-1)+18;
+  const rr=el('rect',{x:ra,y:rootY,width:rb-ra,height:BH,rx:6,fill:C.both,
+    stroke:model.changed?'#46617a':'#b7cddc','stroke-width':model.changed?1.6:1,
+    'stroke-dasharray':model.changed?'5 3':'none'},gBars);
+  tip(rr,'root node, layer 128 · entries [X128 X128]'+(model.changed?' · hash changed (this is the commit data root)':''));
+
+  // ---- connectors (subtree pointers) ----
+  const topEdge=node=> node.match||node.cls==='both' ? layerY[node.layer] :
+      (node.isOld ? layerY[node.layer]+1 : layerY[node.layer]+BH/2);
+  const stem=(x1,yChildTop,yParentBot,color,dash)=>{
+    el('line',{x1,y1:yChildTop,x2:x1,y2:yParentBot,stroke:color,'stroke-width':1.4,
+      'stroke-dasharray':dash||'none',opacity:.9},gConn);
+    el('circle',{cx:x1,cy:yParentBot,r:2.6,fill:color},gConn);
+  };
+  for(let j=1;j<=model.Lmax;j++){
+    for(const nn of model.newB[j]){
+      const pBot=layerY[j]+BH;
+      for(const c of childrenOf(model.newB,nn)){
+        const shared=!!(nn.match&&c.match);
+        const yTop=c.match?layerY[j-1]:layerY[j-1]+BH/2;
+        stem(cx(c),yTop,pBot,shared?'#8aa0b4':'#3f8a4b');
+      }
+    }
+    for(const on of model.oldB[j]){
+      const pBot= on.match? layerY[j]+BH : layerY[j]+BH/2;
+      for(const c of childrenOf(model.oldB,on)){
+        if(on.match&&c.match) continue; // already drawn as shared
+        const yTop=c.match?layerY[j-1]:layerY[j-1]+1;
+        stem(cx(c)-3,yTop,pBot,'#c06277','2.5 2.5');
+      }
+    }
+  }
+  // chain to compressed band and root
+  if(model.newB[model.Lmax] && model.newB[model.Lmax].length){
+    const t=model.newB[model.Lmax][0];
+    stem(cx(t),layerY[model.Lmax],compY+CH,'#8aa0b4','2 3');
+  } else if(model.oldB[model.Lmax] && model.oldB[model.Lmax].length){
+    const t=model.oldB[model.Lmax][0];
+    stem(cx(t),layerY[model.Lmax],compY+CH,'#c06277','2 3');
+  }
+  if(allReal.length){
+    const mid=(x(Math.min(...allReal.map(e=>e.idx)))+x(Math.max(...allReal.map(e=>e.idx))))/2;
+    stem(mid,compY,rootY+BH,'#8aa0b4','2 3');
+  }
+
+  // ---- seams under C/D at layer >= 1 ----
+  for(const e of model.real){
+    if(e.layer<1 || (e.cls!=='C'&&e.cls!=='D')) continue;
+    const yTopSeam=layerY[e.layer]+BH;      // just below the entry's own layer
+    const yBotSeam=layerY[0]+BH;            // through the bottom of L0
+    el('line',{x1:x(e.idx),y1:yTopSeam,x2:x(e.idx),y2:yBotSeam,
+      stroke:e.cls==='C'?C.C:C.D,'stroke-width':2,'stroke-dasharray':'4 4',opacity:.65},gSeam);
+  }
+
+  // ---- entry dots ----
+  for(const e of model.entries){
+    let yy, ring=null;
+    if(e.cls==='X'){ yy=rootY+BH/2; }
+    else{
+      const yT=layerY[e.layer];
+      if(e.cls==='D'){
+        const on=model.oldB[e.layer].find(nd=>nd.own.includes(e));
+        yy = on && !on.match ? yT+BH/4 : yT+BH*0.32;
+      }else if(e.cls==='C'){
+        const nn=model.newB[e.layer].find(nd=>nd.own.includes(e));
+        yy = nn && !nn.match ? yT+BH*0.75 : yT+BH*0.68;
+      }else{
+        const nn=model.newB[e.layer].find(nd=>nd.own.includes(e));
+        yy = nn && !nn.match ? yT+BH*0.75 : yT+BH/2;
+        const on=model.oldB[e.layer].find(nd=>nd.own.includes(e));
+        if(on && !on.match){ // also show it faded inside the old half-bar it came from
+          el('circle',{cx:x(e.idx),cy:yT+BH/4,r:5.5,fill:C[e.cls],opacity:.4,
+            stroke:'#fff','stroke-width':1.2},gDots);
+        }
+      }
+    }
+    const d=el('circle',{cx:x(e.idx),cy:yy,r:5.5,fill:C[e.cls],
+      stroke:e.cls==='U'?'#8a6103':'#ffffff','stroke-width':1.4},gDots);
+    tip(d,{K:'kept — same value in both trees',U:'updated — same key & layer, new hash link value',
+           C:'created — only in the new tree',D:'deleted — only in the old tree',
+           X:'sentinel entry (000…/FFF…), layer 128'}[e.cls]+` · ${e.cls}${e.layer}`);
+  }
+
+  // ---- XKUCD string along the bottom ----
+  for(const e of model.entries){
+    const t=el('text',{x:x(e.idx),y:lblY+16,'text-anchor':'middle','font-size':13.5,
+      'font-weight':600,fill:C[e.cls]},gTxt);
+    t.textContent=e.cls+e.layer;
+    el('line',{x1:x(e.idx),y1:layerY[0]+BH+3,x2:x(e.idx),y2:lblY+2,
+      stroke:'#c8d2da','stroke-width':1,'stroke-dasharray':'1.5 3'},gConn);
+  }
+}
+
+/* ------------------------------- app shell ------------------------------- */
+function randomXKUCD(){
+  const nn=5+Math.floor(Math.random()*7);
+  const cls=()=>{const r=Math.random();return r<.40?'K':r<.62?'U':r<.81?'C':'D';};
+  const lyr=()=>{const r=Math.random();return r<.50?0:r<.78?1:r<.92?2:r<.98?3:4;};
+  const t=[]; for(let i=0;i<nn;i++) t.push(cls()+lyr());
+  if(!t.some(s=>'CD'.includes(s[0]))) t[Math.floor(Math.random()*t.length)]=(Math.random()<.5?'C':'D')+lyr();
+  if(!t.some(s=>'KU'.includes(s[0]))) t.push('K'+lyr());
+  return 'X128 '+t.join(' ')+' X128';
+}
+
+const gallery=document.getElementById('gallery');
+function addCard(str){
+  const card=document.createElement('div'); card.className='card';
+  const bar=document.createElement('div'); bar.className='cardbar';
+  const input=document.createElement('input'); input.value=str; input.spellcheck=false;
+  const redraw=document.createElement('button'); redraw.textContent='Redraw';
+  const shuffle=document.createElement('button'); shuffle.textContent='Shuffle'; shuffle.title='new random string';
+  const close=document.createElement('button'); close.textContent='✕'; close.title='remove';
+  bar.append(input,redraw,shuffle,close);
+  const err=document.createElement('div'); err.className='err'; err.style.display='none';
+  const wrap=document.createElement('div'); wrap.className='svgwrap';
+  const svg=el('svg',{role:'img'}); wrap.appendChild(svg);
+  card.append(bar,err,wrap);
+  const draw=()=>{
+    err.style.display='none'; svg.replaceChildren();
+    try{ render(computeModel(parseXKUCD(input.value)),svg); }
+    catch(ex){ err.textContent='⚠ '+ex.message; err.style.display='block'; }
+  };
+  redraw.onclick=draw;
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')draw();});
+  shuffle.onclick=()=>{input.value=randomXKUCD();draw();};
+  close.onclick=()=>card.remove();
+  gallery.appendChild(card); draw();
+  return card;
+}
+
+document.getElementById('addRandom').onclick=()=>{
+  const c=addCard(randomXKUCD()); c.scrollIntoView&&c.scrollIntoView({behavior:"smooth",block:"center"});
+};
+document.querySelectorAll('[data-preset]').forEach(b=>{
+  b.onclick=()=>{const c=addCard(b.dataset.preset);c.scrollIntoView&&c.scrollIntoView({behavior:"smooth",block:"center"});};
+});
+
+/* initial examples: the spec example + a split, a merge, and two random ones */
+addCard('X128 K1 C3 D2 U5 K0 X128');
+addCard('X128 K0 K1 K0 C2 K0 U0 K0 X128');
+addCard('X128 K0 U0 D2 K1 K0 X128');
+addCard(randomXKUCD());
+addCard(randomXKUCD());
+</script>
+</body>
+</html>
