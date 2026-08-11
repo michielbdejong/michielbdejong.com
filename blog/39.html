@@ -56,13 +56,13 @@
 </header>
 <article>
   <em>I wrote this blog post myself using a text editor.
-    <b>(engage on <a href="https://bsky.app/profile/michielbdejong.com">Bluesky</a>)</b></em>
+    <b>(engage on <a href="https://bsky.app/profile/michielbdejong.com/post/3msssk25vdk26">Bluesky</a>)</b></em>
   <p>I'm trying out the <a href="https://standard.site/docs/quick-start/">standard.site quick start</a>. Mainly writing this up so I can refer to it later and copy-paste the commands when I publish a next blog post.
   </p><p>
     For <a href="https://standard.site/docs/quick-start/#2-create-a-publication-record">step 2</a> I needed to add a record to my PDS. I thought I could do this with <a href="https://github.com/bluesky-social/goat">GOAT</a> but I didn't find a way to use that for posting a JSON record (it only seems to allow posting a text post). I found <a href="https://docs.bsky.app/blog/create-post">HTTPie-based instructions</a> and tried those against my own PDS.
   </p><p>
     Luckily I could still find my account password in my password manager. The following commands get an auth token for my PDS and publish this blog as a whole in a <tt>site.standard.publication</tt> record (that part will only need to be done once):</p>
-<pre>
+<pre><code>
   export BLUESKY_HANDLE=michielbdejong.com
   export BLUESKY_APP_PASSWORD=...
   export AUTH_TOKEN=`http post \
@@ -86,10 +86,10 @@ identifier="$BLUESKY_HANDLE" password="$BLUESKY_APP_PASSWORD" | json accessJwt`
     repo="$BLUESKY_HANDLE" \
     collection=site.standard.publication \
     record:="$JSON"
-</pre>
+</code></pre>
   <p>I checked the output of that last command, manually copy the "uri" from it, store that in a text file that I uploaded to <a href="https://michielbdejong.com/.well-known/site.standard.publication">https://michielbdejong.com/.well-known/site.standard.publication</a>.
     Then I uploaded a record for this post (this is the part I'll need to repeat for each next blog post):</p>
-  <pre>
+  <pre><code>
     export DOC="{\
   \"\$type\": \"site.standard.document\",\
   \"site\": \
@@ -108,12 +108,13 @@ a blogpost to the Atmosphere\",\
     repo="$BLUESKY_HANDLE" \
     collection=site.standard.document \
     record:="$DOC"
-</pre>
+</code></pre>
   <p>I left out the <tt>textContent</tt> field because first of all I'm still writing it and second I don't know how to properly convert from html to plain text for this. How can I include hyperlinks? It took a few tries to get the escaping right and get the <tt>| json</tt> check working correctly.
   </p><p>
     The URI that was created is <tt>at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25</tt> but I was surprised to see nothing got posted on <a href="https://bsky.app/profile/michielbdejong.com">my public Bluesky profile</a>. I'm adding a link tag
   <tt><link rel="site.standard.document" href="at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25" /></tt> in the header of this HTML page. Let's see what happens if I upload it.</p>
   <p><tt>goat get at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25</tt> works. Ah, let's see what happens if I now post a http link to this html page on Bluesky, maybe it is able to retrieve the metadata from the document record.</p>
+  <p>I'm putting the link to the <a href="https://bsky.app/profile/michielbdejong.com/post/3msssk25vdk26">microblog post announcing this long-form post</a> at the top because I can still only see my long-form post with goat and not with bsky.app.</p>
 
 </article>
 </body>
