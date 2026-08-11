@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="author" href="https://michielbdejong.com/" />
+  <link rel="site.standard.document" href="at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25" />
+  <title>Publishing to the Atmosphere</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background-color: #A3DDDF
+    }
+
+    header {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    article {
+      width: 40em;
+      margin: 5em auto;
+      padding: 3em;
+      border-radius: 1em;
+      background-color: white
+    }
+
+    article p img {
+      width: 100%
+    }
+
+    footer {
+      width: 40em;
+      margin: 5em auto;
+      color: white
+    }
+
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Publishing to the Atmosphere</h1>
+  <span>August 2026</span>
+</header>
+<article>
+  <em>I wrote this blog post myself using a text editor.
+    <b>(engage on <a href="https://bsky.app/profile/michielbdejong.com">Bluesky</a>)</b></em>
+  <p>I'm trying out the <a href="https://standard.site/docs/quick-start/">standard.site quick start</a>. Mainly writing this up so I can refer to it later and copy-paste the commands when I publish a next blog post. For <a href="https://standard.site/docs/quick-start/#2-create-a-publication-record">step 2</a> I needed to add a record to my PDS. I thought I could do this with <a href="https://github.com/bluesky-social/goat">GOAT</a> but I didn't find a way to use that for posting a JSON record (it only seems to allow posting a text post). I found <a href="https://docs.bsky.app/blog/create-post">HTTPie-based instructions</a> and tried those against my own PDS. Luckily I could still find my account password in my password manager. The following commands get an auth token for my PDS and publish this blog as a whole in a <tt>site.standard.publication</tt> record (that part will only need to be done once):</p>
+<tt>
+  export BLUESKY_HANDLE=michielbdejong.com
+  export BLUESKY_APP_PASSWORD=...
+  export AUTH_TOKEN=`http post https://bsky.michielbdejong.com/xrpc/com.atproto.server.createSession identifier="$BLUESKY_HANDLE" password="$BLUESKY_APP_PASSWORD" | json accessJwt`
+  echo $AUTH_TOKEN
+
+  export JSON="{\
+  \"\$type\": \"site.standard.publication\",\
+  \"url\": \"https://michielbdejong.com\",\
+  \"name\": \"Michiel's Blog\",\
+  \"description\": \"Michiel B. de Jong's Personal Blog\",\
+  \"preferences\": {\
+    \"showInDiscover\": true\
+  }\
+}"
+  echo $JSON | json
+
+  http post https://bsky.michielbdejong.com/xrpc/com.atproto.repo.createRecord \
+    Authorization:"Bearer $AUTH_TOKEN" \
+    repo="$BLUESKY_HANDLE" \
+    collection=site.standard.publication \
+    record:="$JSON"
+</tt>
+  <p>I checked the output of that last command, manually copy the "uri" from it, store that in a text file that I uploaded to https://michielbdejong.com/.well-known/site.standard.publication">https://michielbdejong.com/.well-known/site.standard.publication</a>. Then I uploaded a record for this post (this is the part I'll need to repeat for each next blog post):</p>
+  <tt>
+    export DOC="{\
+  \"\$type\": \"site.standard.document\",\
+  \"site\": \"at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.publication/3mssqd6mv6s25\",\
+  \"title\": \"Publishing to the Atmosphere\",\
+  \"path\": \"/blog/39.html\",\
+  \"description\": \"A blogpost in which I try out how to properly publish a blogpost to the Atmosphere\",\
+  \"publishedAt\": \"2026-08-11T14:30:00.000Z\",\
+  \"tags\": [\"atmosphere\", \"blog\"]\
+}"
+  echo $DOC | json
+  http post https://bsky.michielbdejong.com/xrpc/com.atproto.repo.createRecord \
+    Authorization:"Bearer $AUTH_TOKEN" \
+    repo="$BLUESKY_HANDLE" \
+    collection=site.standard.document \
+    record:="$DOC"
+  </tt>
+  <p>I left out the <tt>textContent</tt> field because first of all I'm still writing it and second I don't know how to properly convert from html to plain text for this. How can I include hyperlinks? It took a few tries to get the escaping right and get the <tt>| json</tt> check working correctly. The URI that was created is <tt>at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25</tt> but I was surprised to see nothing got posted on <a href="https://bsky.app/profile/michielbdejong.com">my public Bluesky profile</a>. I'm adding a link tag
+  <tt><link rel="site.standard.document" href="at://did:plc:ta2fuhked4lzt7mb6vsemcxb/site.standard.document/3mssr4vlsxk25" /></tt> in the header of this HTML page. Let's see what happens if I upload it.</p>
+
+</article>
+</body>
+</html>
