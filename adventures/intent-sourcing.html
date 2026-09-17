@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intent sourcing, two peers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --ink:#1d2a33; --muted:#5d6b75; --line:#cfd6db;
+  --a:#2457a6; --a-soft:#e3ebf8; --b:#3f7a4f; --b-soft:#e4f0e6;
+  --warn:#b8741a; --warn-soft:#f6ead6; --bad:#a8322e; --bad-soft:#f5e1e0;
+  --add:#2f6b3a; --del:#a8322e; --code:#f5f7f8;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a1f; --panel:#1c242b; --ink:#e6ebef; --muted:#9aa7b1; --line:#34414b;
+  --a:#7ea3e6; --a-soft:#22344f; --b:#8ec59b; --b-soft:#213a29;
+  --warn:#e0a24a; --warn-soft:#3e2f16; --bad:#e2736d; --bad-soft:#44201f;
+  --add:#8ec59b; --del:#e2736d; --code:#151c22;
+}}
+:root[data-theme="dark"]{
+  --bg:#141a1f; --panel:#1c242b; --ink:#e6ebef; --muted:#9aa7b1; --line:#34414b;
+  --a:#7ea3e6; --a-soft:#22344f; --b:#8ec59b; --b-soft:#213a29;
+  --warn:#e0a24a; --warn-soft:#3e2f16; --bad:#e2736d; --bad-soft:#44201f;
+  --add:#8ec59b; --del:#e2736d; --code:#151c22;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:26px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+p.lede{max-width:70ch;color:var(--muted);margin:0 0 24px}
+.peers{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.peers{grid-template-columns:1fr}}
+.peer{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;border-top:4px solid var(--peer)}
+.peer.a{--peer:var(--a);--peer-soft:var(--a-soft)}
+.peer.b{--peer:var(--b);--peer-soft:var(--b-soft)}
+.peer h2{margin:0 0 12px;font-size:16px;font-weight:600;color:var(--peer)}
+table.state{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:14px}
+table.state td{padding:5px 0;border-bottom:1px solid var(--line)}
+table.state td:first-child{color:var(--muted);width:42%}
+table.state td.mono{font-family:"IBM Plex Mono",monospace}
+.tomb{color:var(--bad);font-weight:500}
+.actions{display:grid;gap:8px}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.row label{color:var(--muted);font-size:13px;min-width:74px}
+input,select,button{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:4px;padding:6px 8px;background:var(--panel);color:var(--ink)}
+input[type=number]{width:80px}
+input[type=text]{flex:1;min-width:140px}
+button{cursor:pointer;background:var(--peer-soft,var(--code))}
+button:hover{border-color:var(--peer,var(--muted))}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--a);outline-offset:1px}
+.syncbar{display:flex;align-items:center;justify-content:center;gap:14px;margin:20px 0;padding:14px;border:1px dashed var(--line);border-radius:6px}
+.syncbar button{padding:9px 18px;font-weight:500;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.syncbar .pending{color:var(--muted);font-size:14px}
+h3{font-size:15px;font-weight:600;margin:24px 0 8px}
+.disc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:6px;padding:10px 14px;margin-bottom:8px;font-size:14px}
+.disc.resolved{border-left-color:var(--warn)}
+.disc b{font-weight:600}
+.disc .k{color:var(--muted)}
+.empty{color:var(--muted);font-size:14px}
+.logs{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.logs{grid-template-columns:1fr}}
+.log{display:flex;flex-direction:column;gap:10px}
+.commit{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.commit.merge{border-color:var(--warn)}
+.commit.destroy{border-color:var(--bad)}
+.commit .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 12px 0;font-size:12px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.commit .head .who{color:var(--peerc)}
+.layer{padding:8px 12px;border-top:1px solid var(--line)}
+.layer:first-of-type{border-top:0}
+.layer .t{font-size:12px;color:var(--muted);margin-bottom:2px}
+.intent{font-size:15px}
+.prog{font-family:"IBM Plex Mono",monospace;font-size:13px;white-space:pre-wrap;background:var(--code);padding:8px 10px;border-radius:4px;margin:0}
+.effect{font-family:"IBM Plex Mono",monospace;font-size:13px;margin:0;white-space:pre-wrap}
+.effect .add{color:var(--add)}.effect .del{color:var(--del)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-top:1px solid var(--line);font-size:12px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
+.chip.ok{color:var(--add);border-color:var(--add)}
+.chip.att{color:var(--warn);border-color:var(--warn)}
+.chip.bad{color:var(--bad);border-color:var(--bad)}
+.chip.reason{color:var(--bad);border-color:var(--bad)}
+.verify{margin-left:auto;font-size:12px;padding:2px 8px}
+.txn{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--code)}
+.txn .t{font-size:12px;color:var(--muted)}
+.txn .m{font-size:14px;margin-bottom:8px}
+.txn .commit{margin-top:8px}
+.note{font-size:13px;color:var(--muted);margin-top:4px}
+.scen{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 18px 12px;margin-bottom:20px;max-width:78ch}
+.scen h3{margin:12px 0 6px}
+.scen ol{margin:0;padding-left:22px}
+.scen li{margin:6px 0}
+.scen code{font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--code);padding:0 4px;border-radius:3px}
+@media (prefers-reduced-motion:no-preference){.commit{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<main>
+<h1>Intent sourcing, two peers</h1>
+<p class="lede">Two peers hold the same record and edit it while disconnected. Every commit stores its intent, a deterministic program, and the effect the program had. When the peers sync, programs are re-executed against the common base: if they commute there is nothing to merge; if not, a reconciliation program is written and the disagreement is classified. Press “verify” on any commit to re-run its program and compare the effect.</p>
+
+<section class="scen">
+  <h3>Four things to try, in order</h3>
+  <ol>
+    <li><b>Semantic rebase.</b> Peer A sets inches to 70. Peer B runs the exact lens (still on 68). Sync. The programs don't commute, but one ordering satisfies both postconditions, so a <code>reconcileByOrdering</code> merge commit appears and B's derivation is flagged as having produced a different effect on the new base.</li>
+    <li><b>Translation discrepancy.</b> Both peers run a lens, A exact and B rounded. Sync. Same source, different programs: the discrepancy stays open and the latest value is kept.</li>
+    <li><b>Derived vs authored.</b> Peer A runs a lens, peer B types cm by hand. Sync. The authored value wins by policy and <code>heightCm</code> becomes unowned.</li>
+    <li><b>Destroy vs edit.</b> Peer A sets inches, peer B destroys with reason <code>purged</code>. Sync. These commute, so no merge commit; the tombstone carries its sticky reason.</li>
+  </ol>
+  <p class="note">The prompt box does the two-step: try <i>make me 6 feet tall</i>. A canned planner turns it into <code>setHeightInches(72)</code>, shown as a transaction whose message is the prompt, with the planning step marked attested and the program marked reproducible.</p>
+</section>
+
+<section class="peers" id="peers"></section>
+
+<div class="syncbar">
+  <button id="syncBtn">Sync peers</button>
+  <span class="pending" id="pending"></span>
+</div>
+
+<h3>Discrepancies</h3>
+<div id="disc"><div class="empty">None yet. Try: peer A sets inches to 70, peer B derives cm from the old inches, then sync. Or derive cm on both peers with different lenses.</div></div>
+
+<h3>Commit logs</h3>
+<div class="logs" id="logs"></div>
+</main>
+
+<script>
+/* ---------- deterministic program library ---------- */
+const LENSES = {
+  exact:   { name:'inchesToCm(exact)',   f:i=>Math.round(i*2.54*100)/100, src:'cm = inches * 2.54  // 2 decimals' },
+  rounded: { name:'inchesToCm(rounded)', f:i=>Math.round(i*2.54),         src:'cm = round(inches * 2.54)' },
+};
+const REASONS = ['withdrawn','enteredInError','supersededBy','purged'];
+const STICKY = { withdrawn:false, enteredInError:true, supersededBy:true, purged:true };
+
+// A program is {name, source, run(state)->state, post(state)->bool, kind, meta}
+function P(name, source, run, post, kind, meta={}) { return {name, source, run, post, kind, ...meta}; }
+
+const lib = {
+  setInches: n => P(`setHeightInches(${n})`, `set(person, heightInches, ${n})`,
+    s => ({...s, heightInches:n}), s => s.heightInches===n, 'authored', {prop:'heightInches'}),
+  deriveCm: lens => P(`deriveHeightCm via ${LENSES[lens].name}`,
+    `cm = lens.${lens}(read(person, heightInches))\n${LENSES[lens].src}\nset(person, heightCm, cm)\nown(heightCm, lens.${lens})`,
+    s => ({...s, heightCm:LENSES[lens].f(s.heightInches), owner:'lens.'+lens}),
+    s => s.owner==='lens.'+lens && s.heightCm===LENSES[lens].f(s.heightInches),
+    'derivation', {prop:'heightCm', lens, derivedFrom:'heightInches'}),
+  typeCm: n => P(`setHeightCm(${n})`, `set(person, heightCm, ${n})\nrelease(heightCm)   // authored value, no owner`,
+    s => ({...s, heightCm:n, owner:null}), s => s.heightCm===n && s.owner===null, 'authored', {prop:'heightCm'}),
+  destroy: r => P(`destroy(${r})`, `destroy(person, reason=${r})`,
+    s => ({...s, destroyed:r}), s => s.destroyed===r, 'destroy', {reason:r, sticky:STICKY[r]}),
+  order: (names, note) => P(`reconcileByOrdering`, `apply(${names.join(')\napply(')})\n// ${note}`, null, null, 'merge'),
+  override: (names) => P(`reconcileByOverride`, `apply(${names.join(')\napply(')})\n// policy: authored value overrides derivation`, null, null, 'merge'),
+  lww: (names, kind) => P(`reconcileByLWW`, `apply(${names.join(')\napply(')})\n// ${kind}: kept latest, discrepancy left open`, null, null, 'merge'),
+};
+
+/* ---------- planner: prompt -> program (attested step) ---------- */
+function plan(prompt){
+  const t = prompt.toLowerCase(), num = parseFloat((t.match(/[\d.]+/)||[''])[0]);
+  if (/feet|foot|ft/.test(t) && num) return { thought:`"${prompt}" asks for height in feet; convert to inches (${num}×12) and set the authored value.`, prog:lib.setInches(num*12) };
+  if (/inch/.test(t) && num) return { thought:`"${prompt}" gives inches directly.`, prog:lib.setInches(num) };
+  if (/cm|centim/.test(t) && num) return { thought:`"${prompt}" gives centimetres; that property is normally derived, so this becomes an authored override.`, prog:lib.typeCm(num) };
+  if (/delete|remove|forget/.test(t)) return { thought:`"${prompt}" asks to delete; choosing reason=withdrawn since no error or replacement is mentioned.`, prog:lib.destroy('withdrawn') };
+  return { thought:`Could not map "${prompt}" to a library function; no action.`, prog:null };
+}
+
+/* ---------- state & helpers ---------- */
+const h = s => { let x=5381; for (const c of s) x=((x<<5)+x+c.charCodeAt(0))|0; return (x>>>0).toString(16).padStart(8,'0'); };
+const shash = s => h(JSON.stringify(s));
+let clock = 0, idc = 0;
+const base0 = { name:'Michiel', heightInches:68, heightCm:172.72, owner:'lens.exact', destroyed:null };
+const peers = {
+  A:{ id:'A', label:'Peer A (laptop)', state:{...base0}, log:[], since:[], head:'genesis', model:'did:ad:agent:planner-1' },
+  B:{ id:'B', label:'Peer B (phone)',  state:{...base0}, log:[], since:[], head:'genesis', model:'did:ad:agent:planner-1' },
+};
+let common = {...base0};
+const discs = [];
+
+function diff(a,b){ const out=[]; for (const k of ['heightInches','heightCm','owner','destroyed']) if (a[k]!==b[k]) out.push({k,from:a[k],to:b[k]}); return out; }
+function effectHash(e){ return h(JSON.stringify(e)); }
+
+function commit(peer, prog, extra={}){
+  const before = peer.state, after = prog.run(before), eff = diff(before,after);
+  const c = { id:'c'+(++idc), t:++clock, peer:peer.id, intent:extra.intent||prog.name, prog, base:{...before}, baseHash:shash(before),
+    effect:eff, effectHash:effectHash(eff), parents:[peer.head], reproducible:true, producedBy:extra.producedBy||null, txn:extra.txn||null };
+  peer.state = after; peer.head = c.id; peer.log.push(c); peer.since.push(c); return c;
+}
+
+/* ---------- sync ---------- */
+function applyAll(state, cs){ let s={...state}; for (const c of cs) s=c.prog.run(s); return s; }
+function sync(){
+  const A=peers.A, B=peers.B, ca=A.since, cb=B.since;
+  if (!ca.length && !cb.length) return;
+  if (!ca.length || !cb.length){ // one-sided: just replay
+    const src = ca.length?A:B, dst = ca.length?B:A;
+    for (const c of src.since){ dst.log.push(c); dst.head=c.id; }
+    dst.state = {...src.state};
+  } else {
+    const ab = applyAll(common,[...ca,...cb]), ba = applyAll(common,[...cb,...ca]);
+    const all=[...ca,...cb], names=all.map(c=>c.id+': '+c.prog.name);
+    let final, merge, disc=null;
+    if (shash(ab)===shash(ba)){
+      final = ab; // commuting: no merge commit
+    } else {
+      const okAB = all.every(c=>c.prog.post(ab)), okBA = all.every(c=>c.prog.post(ba));
+      const derivs = all.filter(c=>c.prog.kind==='derivation'), auth = all.filter(c=>c.prog.kind==='authored');
+      const reexec = derivs.filter(c=>{ const pre = applyAll(common, all.filter(x=>x!==c)); return effectHash(diff(pre, c.prog.run(pre)))!==c.effectHash; });
+      if (okAB || okBA){
+        final = okAB?ab:ba; const ord = okAB?[...ca,...cb]:[...cb,...ca];
+        const note = reexec.length? `${reexec.map(c=>c.id).join(',')} re-executed on a new base; effect changed`:'ordering satisfies all postconditions';
+        merge = lib.order(ord.map(c=>c.id+': '+c.prog.name), note);
+        if (reexec.length) disc={kind:'semantic rebase (no conflict)',resolved:true,detail:`${reexec.map(c=>c.prog.name).join(', ')} produced a different effect on the merged base than when recorded. Both postconditions hold; flagged for review only.`};
+      } else if (derivs.length && auth.some(c=>derivs.some(d=>d.prop===c.prop))){
+        const d=derivs[0], a=auth.find(c=>c.prop===d.prop);
+        final = applyAll(common, [...all.filter(c=>c!==a), a]); // authored applied last
+        merge = lib.override([d,a].map(c=>c.id+': '+c.prog.name));
+        disc={kind:'derived-vs-authored',resolved:true,detail:`${a.peer} authored ${a.prop}=${final[a.prop]} while ${d.peer} derived it via ${d.prog.lens}. Policy: authored value overrides the derivation; ${d.prop} is now unowned and the derivation is stale-by-choice.`};
+      } else if (derivs.length>=2 && derivs[0].prog.lens!==derivs[1].prog.lens){
+        const later = derivs.slice().sort((x,y)=>y.t-x.t)[0];
+        final = applyAll(common, [...all.filter(c=>c!==later), later]);
+        merge = lib.lww(all.map(c=>c.id+': '+c.prog.name),'translation discrepancy');
+        disc={kind:'translation discrepancy',resolved:false,detail:`Same source (heightInches=${common.heightInches}), different lenses: ${derivs.map(c=>`${c.peer} ${c.prog.lens} → ${LENSES[c.prog.lens].f(common.heightInches)}`).join('; ')}. Kept the latest (${later.peer}); resolve by endorsing one lens for this schema pair.`};
+      } else {
+        final = ab; merge = lib.lww(names,'unclassified conflict');
+        disc={kind:'conflict',resolved:false,detail:'Neither ordering satisfies all postconditions and no policy applies. Kept A-then-B; left open.'};
+      }
+    }
+    // install union + merge commit on both peers
+    const union = [...ca,...cb].sort((x,y)=>x.t-y.t);
+    for (const p of [A,B]){ for (const c of union) if (!p.log.includes(c)) p.log.push(c); }
+    if (merge){
+      const eff = diff(common, final);
+      const m = { id:'c'+(++idc), t:++clock, peer:'A+B', intent:'Reconcile concurrent changes', prog:merge, base:{...common}, baseHash:shash(common),
+        effect:eff, effectHash:effectHash(eff), parents:[A.head,B.head], reproducible:true, merge:true };
+      m.prog.run = s=>({...final}); m.prog.post = s=>shash(s)===shash(final);
+      for (const p of [A,B]){ p.log.push(m); p.head=m.id; }
+    } else { const last = union[union.length-1]; A.head=B.head=last.id; }
+    if (disc) discs.unshift(disc);
+    A.state={...final}; B.state={...final};
+  }
+  common = {...A.state}; A.since=[]; B.since=[]; render();
+}
+
+/* ---------- rendering ---------- */
+const $ = s=>document.querySelector(s);
+function fmt(v){ return v===null?'—':String(v); }
+function stateTable(p){
+  const s=p.state;
+  return `<table class="state">
+    <tr><td>name</td><td>${s.name}</td></tr>
+    <tr><td>heightInches</td><td class="mono">${fmt(s.heightInches)}</td></tr>
+    <tr><td>heightCm</td><td class="mono">${fmt(s.heightCm)} <span class="note">${s.owner?`owned by ${s.owner}`:'authored, no owner'}</span></td></tr>
+    <tr><td>status</td><td>${s.destroyed?`<span class="tomb">tombstone · reason ${s.destroyed}</span>`:'live'}</td></tr>
+  </table>`;
+}
+function renderPeers(){
+  $('#peers').innerHTML = Object.values(peers).map(p=>`
+  <div class="peer ${p.id.toLowerCase()}">
+    <h2>${p.label}</h2>
+    ${stateTable(p)}
+    <div class="actions">
+      <div class="row"><label>inches</label><input type="number" id="in${p.id}" value="70"><button data-act="setInches" data-p="${p.id}">Set inches</button></div>
+      <div class="row"><label>derive cm</label><select id="lens${p.id}"><option value="exact">exact lens</option><option value="rounded">rounded lens</option></select><button data-act="deriveCm" data-p="${p.id}">Run lens</button></div>
+      <div class="row"><label>type cm</label><input type="number" id="cm${p.id}" value="180"><button data-act="typeCm" data-p="${p.id}">Set cm directly</button></div>
+      <div class="row"><label>delete</label><select id="rs${p.id}">${REASONS.map(r=>`<option>${r}</option>`).join('')}</select><button data-act="destroy" data-p="${p.id}">Destroy with reason</button></div>
+      <div class="row"><label>prompt</label><input type="text" id="pr${p.id}" placeholder="make me 6 feet tall"><button data-act="prompt" data-p="${p.id}">Ask</button></div>
+    </div>
+  </div>`).join('');
+  $('#pending').textContent = `${peers.A.since.length} unsynced on A, ${peers.B.since.length} on B`;
+}
+function card(c){
+  const cls = c.merge?'merge':(c.prog.kind==='destroy'?'destroy':'');
+  const col = c.peer==='A'?'var(--a)':c.peer==='B'?'var(--b)':'var(--warn)';
+  const eff = c.effect.length? c.effect.map(e=>`<span class="del">- ${e.k}: ${fmt(e.from)}</span>\n<span class="add">+ ${e.k}: ${fmt(e.to)}</span>`).join('\n') : '(no change)';
+  const chips = [
+    `<span class="chip">parents ${c.parents.join(', ')}</span>`,
+    c.reproducible?`<span class="chip ok">reproducible</span>`:`<span class="chip att">attested</span>`,
+    c.prog.kind==='derivation'?`<span class="chip">derivedFrom heightInches@${c.baseHash}</span>`:'',
+    c.producedBy?`<span class="chip att">producedBy ${c.producedBy}</span>`:'',
+    c.prog.reason?`<span class="chip reason">reason ${c.prog.reason}${c.prog.sticky?' (sticky)':''}</span>`:'',
+    `<span class="chip">effect ${c.effectHash}</span>`,
+    `<button class="verify" data-verify="${c.id}">verify</button>`,
+    `<span id="v${c.id}"></span>`
+  ].join('');
+  return `<div class="commit ${cls}" style="--peerc:${col}">
+    <div class="head"><span class="who">${c.id} · ${c.peer}</span><span>t=${c.t}</span></div>
+    <div class="layer"><div class="t">intent</div><div class="intent">${c.intent}</div></div>
+    <div class="layer"><div class="t">program</div><pre class="prog">${c.prog.source}</pre></div>
+    <div class="layer"><div class="t">effect on base ${c.baseHash}</div><pre class="effect">${eff}</pre></div>
+    <div class="chips">${chips}</div>
+  </div>`;
+}
+function renderLogs(){
+  $('#logs').innerHTML = Object.values(peers).map(p=>`<div class="log"><h3 style="margin:0;color:${p.id==='A'?'var(--a)':'var(--b)'}">${p.label}</h3>${
+    p.log.length? p.log.slice().reverse().map(c=>c.txn?`<div class="txn"><div class="t">transaction · message</div><div class="m">${c.txn.prompt}</div><div class="t">planning step (attested, not recomputed)</div><div class="note">${c.txn.thought}</div>${card(c)}</div>`:card(c)).join('')
+    :'<div class="empty">No commits yet.</div>'}</div>`).join('');
+}
+function renderDisc(){
+  $('#disc').innerHTML = discs.length? discs.map(d=>`<div class="disc ${d.resolved?'resolved':''}"><b>${d.kind}</b> <span class="k">${d.resolved?'· resolved by policy':'· open'}</span><div>${d.detail}</div></div>`).join('')
+    : `<div class="empty">None yet. Try: peer A sets inches to 70, peer B derives cm from the old inches, then sync. Or derive cm on both peers with different lenses.</div>`;
+}
+function render(){ renderPeers(); renderLogs(); renderDisc(); }
+
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id==='syncBtn') return sync();
+  if (b.dataset.verify){
+    const c = Object.values(peers).flatMap(p=>p.log).find(x=>x.id===b.dataset.verify);
+    const ok = effectHash(diff(c.base, c.prog.run(c.base)))===c.effectHash;
+    $('#v'+c.id).innerHTML = ok?`<span class="chip ok">re-executed: same effect</span>`:`<span class="chip bad">re-executed: effect differs</span>`;
+    return;
+  }
+  const p = peers[b.dataset.p]; if (!p) return;
+  const act = b.dataset.act;
+  if (act==='setInches') commit(p, lib.setInches(+$('#in'+p.id).value), {intent:`Set my height to ${$('#in'+p.id).value} inches`});
+  if (act==='deriveCm') commit(p, lib.deriveCm($('#lens'+p.id).value), {intent:`Fill in heightCm from heightInches`});
+  if (act==='typeCm') commit(p, lib.typeCm(+$('#cm'+p.id).value), {intent:`Type ${$('#cm'+p.id).value} cm by hand`});
+  if (act==='destroy') commit(p, lib.destroy($('#rs'+p.id).value), {intent:`Delete this record`});
+  if (act==='prompt'){
+    const prompt = $('#pr'+p.id).value.trim(); if (!prompt) return;
+    const pl = plan(prompt);
+    if (!pl.prog){ alert(pl.thought); return; }
+    commit(p, pl.prog, {intent:pl.prog.name, producedBy:p.model, txn:{prompt, thought:pl.thought}});
+    $('#pr'+p.id).value='';
+  }
+  render();
+});
+render();
+</script>
+</body>
+</html>
