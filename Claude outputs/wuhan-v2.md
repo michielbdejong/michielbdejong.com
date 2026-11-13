@@ -4,7 +4,7 @@
 
 ## Wuhan: thirty percent
 
-Thirty percent. That was the probability Kristian Andersen privately assigned to a laboratory origin of COVID-19, according to [Slack messages released in July 2026](https://www.hsgac.senate.gov/media/reps/new-doc-drop-slack-messages-reveal-proximal-origin-authors-privately-doubted-the-science-behind-their-own-paper-coordinated-with-intelligence-community-and-nih/). Andersen co-authored the March 2020 Nature Medicine paper that dismissed laboratory scenarios as implausible. Thirty percent leaves quite a lot of room for “we don’t know.”
+Thirty percent. That was the probability Kristian Andersen privately assigned to a laboratory origin of COVID-19, according to [Slack messages released in July 2026](https://web.archive.org/web/20260911204023/https://www.hsgac.senate.gov/media/reps/new-doc-drop-slack-messages-reveal-proximal-origin-authors-privately-doubted-the-science-behind-their-own-paper-coordinated-with-intelligence-community-and-nih/). Andersen co-authored the March 2020 Nature Medicine paper that dismissed laboratory scenarios as implausible. Thirty percent leaves quite a lot of room for “we don’t know.”
 
 Then there was the separate Lancet letter, which condemned origin-related “conspiracy theories” and declared no competing interests. Signatory Peter Daszak ran EcoHealth Alliance, which funded coronavirus research at the Wuhan Institute of Virology. [The fuller disclosure came in 2021](https://doi.org/10.1016/S0140-6736(21)01377-5).
 
